@@ -1,0 +1,66 @@
+[tool.ruff]
+# Target Python version
+target-version = "py310"
+
+# Set the maximum line length (88 is the Black standard, 100-120 is also popular)
+line-length = 88
+
+# Enumerate all fixed violations.
+fix = true
+
+[tool.ruff.lint]
+# 1. Enable specific rule sets
+# E, W: pycodestyle (Basic PEP8)
+# F: Pyflakes (Logic errors, unused vars)
+# I: isort (Import sorting/formatting)
+# D: pydocstyle (Docstring requirements)
+# Q: flake8-quotes (Force single/double quotes)
+# B: flake8-bugbear (Common design flaws)
+# UP: pyupgrade (Force modern Python syntax)
+# C4: flake8-comprehensions (Better list/dict comprehensions)
+select = ["E", "W", "F", "I", "D", "Q", "B", "UP", "C4"]
+
+# 2. Ignore specific rules that might be too annoying
+ignore = [
+    "B007", # Loop control variable 'i' not used within the loop body
+    "D100", # Missing docstring in public module
+    "D104", # Missing docstring in public package (__init__.py)
+    "D203", # One blank line before class (conflicts with D211)
+    "D213", # Multi-line docstring summary should start at the second line
+    "F841", # Local variable assigned but never used
+]
+
+[tool.ruff.lint.pydocstyle]
+# Use Google-style or Numpy-style docstrings
+convention = "google"
+
+[tool.ruff.lint.flake8-quotes]
+# Requirement: Use single quotes wherever possible
+inline-quotes = "single"
+multiline-quotes = "double"
+docstring-quotes = "double"
+
+[tool.ruff.lint.isort]
+# Requirement: Automatic wrapping and new lines for imports
+force-single-line = false
+lines-after-imports = 2
+# Groups imports into: stdlib, third-party, first-party, and local
+combine-as-imports = true
+
+[tool.ruff.format]
+# 1) Use single quotes for strings (where possible)
+quote-style = "single"
+
+# 2) Indent with spaces (standard 4 spaces)
+indent-style = "space"
+
+# 3) Magic trailing comma: when enabled, Ruff follows Black's behavior 
+# and wraps arguments to new lines if there's a trailing comma.
+skip-magic-trailing-comma = false
+
+# 4) Automatically detect and use the best line ending (LF/CRLF)
+line-ending = "auto"
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore docstring requirements in tests
+"tests/**/*.py" = ["D101", "D102", "D103"]
