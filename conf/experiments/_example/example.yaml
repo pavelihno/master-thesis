@@ -1,0 +1,25 @@
+defaults:
+  - ../../pytorch@_global_
+  - _self_
+
+train_dataloader:
+  _target_: utils.dataloaders.ExampleDataLoader
+  dataset:
+    _target_: utils.dataloaders.ExampleDataset
+    train: true
+  batch_size: 32
+  shuffle: true
+
+test_dataloader:
+  _target_: utils.dataloaders.ExampleDataLoader
+  dataset:
+    _target_: utils.dataloaders.ExampleDataset
+    train: false
+  batch_size: 32
+  shuffle: false
+
+training:
+  epochs: 100
+  checkpoint_dir: ./torch/checkpoints/_example
+  model_dir: ./torch/models/_example
+  model_name: example_model
