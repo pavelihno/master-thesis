@@ -7,10 +7,10 @@ import hydra
 import mlflow
 from omegaconf import DictConfig
 
-from utils.config import get_dataloader, get_device
-from utils.evaluators import get_pytorch_accuracy
+from utils.config_factories import get_dataloader, get_device
+from utils.metrics import pytorch_accuracy
 from utils.mlflow import log_experiment
-from utils.trainer import train_pytorch_model
+from utils.training import train_pytorch_model
 
 
 @hydra.main(
@@ -35,7 +35,7 @@ def main_task(cfg: DictConfig) -> float:
     test_loader = get_dataloader(cfg, loader_type='test')
     device = get_device(cfg)
 
-    test_acc = get_pytorch_accuracy(model, test_loader, device)
+    test_acc = pytorch_accuracy(model, test_loader, device)
 
     mlflow.log_metric('test_accuracy', test_acc)
 

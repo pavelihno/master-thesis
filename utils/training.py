@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 from omegaconf import DictConfig
 
-from utils.config import (
+from utils.config_factories import (
     get_dataloader,
     get_device,
     get_loss_fn,

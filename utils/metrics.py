@@ -1,7 +1,7 @@
 import torch
 
 
-def get_pytorch_accuracy(model, test_loader, device=None):
+def pytorch_accuracy(model, test_loader, device=None):
     model.to(device)
     model.eval()
 

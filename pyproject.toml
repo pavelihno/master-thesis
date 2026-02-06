@@ -1,6 +1,7 @@
 [tool.ruff]
 # Target Python version
 target-version = "py310"
+extend-include = ["*.ipynb"]
 
 # Set the maximum line length (88 is the Black standard, 100-120 is also popular)
 line-length = 88
@@ -18,7 +19,7 @@ fix = true
 # B: flake8-bugbear (Common design flaws)
 # UP: pyupgrade (Force modern Python syntax)
 # C4: flake8-comprehensions (Better list/dict comprehensions)
-select = ["E", "W", "F", "I", "D", "Q", "B", "UP", "C4"]
+select = ["E", "W", "F", "I", "Q", "B", "UP", "C4"]
 
 # 2. Ignore specific rules that might be too annoying
 ignore = [
