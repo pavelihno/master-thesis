@@ -130,7 +130,7 @@ def process_files(directory, dataset_key):
 
 
 def download_datasets(json_path='datasets/links.json', output_dir='datasets/raw'):
-    """Main function to download and process all datasets.
+    """Main function to download all datasets.
 
     Args:
         json_path: Path to JSON file containing dataset links
@@ -145,7 +145,7 @@ def download_datasets(json_path='datasets/links.json', output_dir='datasets/raw'
     # Process each dataset
     for dataset_key, url in links.items():
         print(f'\n{"=" * 60}')
-        print(f'Processing: {dataset_key}')
+        print(f'{dataset_key}')
         print(f'{"=" * 60}')
 
         # Download zip file
@@ -168,7 +168,7 @@ def download_datasets(json_path='datasets/links.json', output_dir='datasets/raw'
         print(f'Completed: {dataset_key}')
 
     print(f'\n{"=" * 60}')
-    print('All datasets downloaded and processed successfully!')
+    print('All datasets downloaded successfully!')
     print(f'{"=" * 60}')
 
 

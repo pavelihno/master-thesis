@@ -1,3 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "master-thesis"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+include = ["train*", "models*", "preprocess*", "utils*"]
+exclude = ["experiments*", "conf*", "datasets*"]
+
 [tool.ruff]
 # Target Python version
 target-version = "py310"

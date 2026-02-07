@@ -1,7 +1,6 @@
 import os
 
 import mlflow
-import pandas as pd
 import torch
 from omegaconf import DictConfig
 
@@ -14,7 +13,7 @@ from utils.config_factories import (
 )
 
 
-def train_pytorch_model(cfg: DictConfig):
+def train_model(cfg: DictConfig):
     """
     Train PyTorch model with Hydra configuration, MLflow logging.
 
@@ -122,13 +121,5 @@ def train_pytorch_model(cfg: DictConfig):
         mlflow.log_artifact(file_path)
 
         print(f'Model weights saved to "{file_path}"')
-
-    return model
-
-
-def train_sklearn_model(cfg: DictConfig, X_train: pd.DataFrame, y_train: pd.DataFrame):
-    model = get_model(cfg)
-
-    model.fit(X_train, y_train)
 
     return model

@@ -7,10 +7,10 @@ import hydra
 import mlflow
 from omegaconf import DictConfig
 
+from train.pytorch import train_model
 from utils.config_factories import get_dataloader, get_device
 from utils.metrics import pytorch_accuracy
 from utils.mlflow import log_experiment
-from utils.training import train_pytorch_model
 
 
 @hydra.main(
@@ -31,7 +31,7 @@ def main_task(cfg: DictConfig) -> float:
     To run:
         python experiments/_example/example.py
     """
-    model = train_pytorch_model(cfg)
+    model = train_model(cfg)
     test_loader = get_dataloader(cfg, loader_type='test')
     device = get_device(cfg)
 
