@@ -1,5 +1,6 @@
-import torch
 from torch.utils.data import DataLoader, Dataset
+
+import torch
 
 
 class ExampleDataset(Dataset):

@@ -1,10 +1,10 @@
 import os
 
 import mlflow
-import torch
 from omegaconf import DictConfig
 
-from utils.config_factories import (
+import torch
+from train.config import (
     get_dataloader,
     get_device,
     get_loss_fn,

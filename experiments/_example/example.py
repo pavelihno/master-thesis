@@ -7,10 +7,10 @@ import hydra
 import mlflow
 from omegaconf import DictConfig
 
+from train.config import get_dataloader, get_device
+from train.metrics import pytorch_accuracy
+from train.mlflow import log_experiment
 from train.pytorch import train_model
-from utils.config_factories import get_dataloader, get_device
-from utils.metrics import pytorch_accuracy
-from utils.mlflow import log_experiment
 
 
 @hydra.main(

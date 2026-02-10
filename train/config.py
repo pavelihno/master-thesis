@@ -1,6 +1,7 @@
-import torch
 from hydra.utils import instantiate
 from omegaconf import DictConfig
+
+import torch
 
 
 def get_model(cfg: DictConfig):
