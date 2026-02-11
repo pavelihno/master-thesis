@@ -1,0 +1,94 @@
+{
+    "BPIC_12": {
+        "mean_cycle": 8.623843703364981,
+        "normalization_factor": 137.22148162037038
+    },
+    "BPIC_13_C": {
+        "mean_cycle": 178.8848765535879,
+        "normalization_factor": 2254.8485069444446
+    },
+    "BPIC_13_I": {
+        "mean_cycle": 12.079344325792565,
+        "normalization_factor": 771.3517708333334
+    },
+    "BPIC_15_1": {
+        "mean_cycle": 95.71857049084113,
+        "normalization_factor": 1486.0
+    },
+    "BPIC_15_2": {
+        "mean_cycle": 160.1060730641248,
+        "normalization_factor": 1325.9583333333333
+    },
+    "BPIC_15_3": {
+        "mean_cycle": 62.23151074113503,
+        "normalization_factor": 1512.0
+    },
+    "BPIC_15_4": {
+        "mean_cycle": 116.80170310356654,
+        "normalization_factor": 926.9583333333334
+    },
+    "BPIC_15_5": {
+        "mean_cycle": 98.34008178945598,
+        "normalization_factor": 1343.9583333333333
+    },
+    "BPIC_17": {
+        "mean_cycle": 21.899605591087365,
+        "normalization_factor": 286.07243812499996
+    },
+    "BPIC_20_DD": {
+        "mean_cycle": 11.525721979717813,
+        "normalization_factor": 469.23631944444446
+    },
+    "BPIC_20_ID": {
+        "mean_cycle": 86.4517285535943,
+        "normalization_factor": 742.0
+    },
+    "BPIC_20_PTC": {
+        "mean_cycle": 36.79117383388033,
+        "normalization_factor": 324.97599537037036
+    },
+    "BPIC_20_RFP": {
+        "mean_cycle": 12.007786312943061,
+        "normalization_factor": 405.99306712962965
+    },
+    "BPIC_20_TPD": {
+        "mean_cycle": 87.39003753014339,
+        "normalization_factor": 1190.3287152777777
+    },
+    "Traffic_Fines": {
+        "mean_cycle": 341.67626299572163,
+        "normalization_factor": 4372.0
+    },
+    "Sepsis": {
+        "mean_cycle": 28.469142824074073,
+        "normalization_factor": 422.3239467592593
+    },
+    "Hospital_Billing": {
+        "mean_cycle": 127.36268815405093,
+        "normalization_factor": 1035.4212037037037
+    },
+    "Helpdesk": {
+        "mean_cycle": 40.85840765000809,
+        "normalization_factor": 59.99496527777778
+    },
+    "Env_Permits_1": {
+        "mean_cycle": 89.91153347217282,
+        "normalization_factor": 882.0
+    },
+    "Env_Permits_2": {
+        "mean_cycle": 148.81727564240597,
+        "normalization_factor": 789.0
+    },
+    "Env_Permits_3": {
+        "mean_cycle": 59.82070820130158,
+        "normalization_factor": 1512.0
+    },
+    "Env_Permits_4": {
+        "mean_cycle": 120.28849419384443,
+        "normalization_factor": 926.9583333333334
+    },
+    "Env_Permits_5": {
+        "mean_cycle": 89.92117792154542,
+        "normalization_factor": 779.5949768518518
+    }
+}
