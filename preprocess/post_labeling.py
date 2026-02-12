@@ -61,7 +61,7 @@ class BinaryDatasetPostLabeler(FilterPostLabeler):
         filtered_df = super().apply_labeling_rules(labels_df)
 
         filtered_df['outcome'] = filtered_df['outcome'].apply(
-            lambda x: 1 if x == self.positive_label else 0
+            lambda x: self.positive_label if x == self.positive_label else 'Other'
         )
         return filtered_df
 

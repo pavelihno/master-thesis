@@ -1,1051 +1,1051 @@
 case_id,outcome
-A,1
-B,1
-C,1
-D,1
-E,0
-F,1
-G,1
-H,0
-I,1
-J,1
-K,1
-L,1
-M,0
-N,1
-O,1
-P,0
-Q,0
-R,0
-S,1
-T,0
-U,0
-V,1
-W,1
-X,1
-Y,0
-Z,1
-AA,0
-BA,1
-CA,0
-DA,0
-EA,1
-FA,0
-GA,1
-HA,1
-IA,0
-JA,1
-KA,1
-LA,0
-MA,1
-,0
-OA,0
-PA,0
-QA,0
-RA,0
-SA,1
-TA,1
-UA,1
-VA,1
-WA,1
-XA,0
-YA,0
-ZA,0
-AB,0
-BB,0
-CB,1
-DB,1
-EB,0
-FB,0
-GB,1
-HB,1
-IB,1
-JB,0
-KB,1
-LB,0
-MB,0
-NB,1
-OB,1
-PB,1
-QB,1
-RB,1
-SB,1
-TB,1
-UB,0
-VB,1
-WB,0
-XB,0
-YB,1
-ZB,1
-AC,1
-BC,0
-CC,0
-DC,1
-EC,1
-FC,1
-GC,1
-HC,0
-IC,1
-JC,1
-KC,1
-LC,1
-MC,1
-NC,0
-OC,1
-PC,0
-QC,1
-RC,1
-SC,0
-TC,1
-UC,1
-VC,1
-WC,1
-XC,0
-YC,0
-ZC,0
-AD,1
-BD,1
-CD,0
-DD,0
-ED,1
-FD,0
-GD,0
-HD,1
-ID,0
-JD,1
-KD,1
-LD,1
-MD,1
-ND,1
-OD,0
-PD,0
-QD,0
-RD,0
-SD,1
-TD,0
-UD,0
-VD,1
-WD,0
-XD,1
-YD,0
-ZD,1
-AE,1
-BE,1
-CE,1
-DE,0
-EE,1
-FE,1
-GE,1
-HE,1
-IE,1
-JE,1
-KE,1
-LE,0
-ME,1
-NE,0
-OE,0
-PE,0
-QE,1
-RE,0
-SE,1
-TE,0
-UE,1
-VE,1
-WE,1
-XE,0
-YE,1
-ZE,0
-AF,1
-BF,1
-CF,1
-DF,0
-EF,1
-FF,0
-GF,1
-HF,1
-IF,1
-JF,0
-KF,1
-LF,0
-MF,0
-NF,1
-OF,0
-PF,1
-QF,1
-RF,0
-SF,1
-TF,1
-UF,1
-VF,1
-WF,1
-XF,1
-YF,1
-ZF,1
-AG,0
-BG,1
-CG,1
-DG,1
-EG,0
-FG,1
-GG,1
-HG,1
-IG,1
-JG,1
-KG,1
-LG,0
-MG,0
-NG,0
-OG,1
-PG,1
-QG,1
-RG,1
-SG,0
-TG,1
-UG,0
-VG,1
-WG,1
-XG,0
-YG,0
-ZG,0
-AH,1
-BH,1
-CH,1
-DH,1
-EH,1
-FH,1
-GH,0
-HH,1
-IH,1
-JH,1
-KH,1
-LH,1
-MH,0
-NH,1
-OH,1
-PH,0
-QH,0
-RH,0
-SH,1
-TH,1
-UH,0
-VH,0
-WH,0
-XH,1
-YH,1
-ZH,1
-AI,1
-BI,0
-CI,1
-DI,1
-EI,0
-FI,0
-GI,1
-HI,1
-II,1
-JI,0
-KI,1
-LI,1
-MI,0
-NI,1
-OI,0
-PI,1
-QI,1
-RI,1
-SI,1
-TI,0
-UI,1
-VI,1
-WI,1
-XI,1
-YI,1
-ZI,1
-AJ,1
-BJ,1
-CJ,0
-DJ,1
-EJ,1
-FJ,1
-GJ,1
-HJ,1
-IJ,1
-JJ,1
-KJ,1
-LJ,0
-MJ,1
-NJ,1
-OJ,1
-PJ,0
-QJ,1
-RJ,0
-SJ,1
-TJ,1
-UJ,1
-VJ,1
-XJ,1
-YJ,1
-ZJ,1
-AK,0
-BK,1
-CK,0
-DK,1
-EK,0
-FK,1
-GK,0
-HK,0
-IK,0
-JK,1
-KK,1
-LK,1
-MK,1
-NK,1
-OK,1
-PK,1
-QK,1
-RK,1
-SK,0
-TK,0
-UK,1
-VK,1
-WK,1
-XK,0
-YK,1
-ZK,1
-AL,1
-BL,1
-CL,0
-DL,1
-EL,1
-FL,0
-GL,1
-HL,1
-IL,1
-JL,1
-KL,0
-LL,1
-ML,1
-NL,0
-OL,1
-PL,0
-QL,0
-RL,1
-SL,1
-TL,1
-UL,0
-VL,1
-WL,1
-XL,1
-YL,1
-ZL,1
-AM,0
-BM,0
-CM,1
-DM,0
-EM,1
-FM,1
-GM,0
-HM,0
-IM,1
-JM,0
-KM,1
-LM,1
-MM,1
-NM,1
-OM,1
-PM,0
-QM,1
-RM,1
-SM,1
-TM,0
-UM,0
-VM,1
-WM,1
-XM,1
-YM,1
-ZM,1
-AN,0
-BN,1
-CN,0
-DN,0
-EN,0
-FN,0
-GN,0
-HN,1
-IN,0
-JN,1
-KN,1
-LN,1
-MN,1
-NN,1
-ON,1
-PN,0
-QN,1
-RN,0
-SN,0
-TN,1
-UN,0
-VN,1
-WN,0
-XN,1
-YN,0
-ZN,0
-AO,1
-BO,0
-CO,1
-DO,1
-EO,1
-FO,1
-GO,1
-HO,1
-IO,1
-JO,1
-KO,1
-LO,0
-MO,1
-NO,1
-OO,1
-PO,1
-QO,1
-RO,0
-SO,1
-TO,1
-UO,0
-VO,1
-WO,1
-XO,0
-YO,1
-ZO,1
-AP,0
-BP,1
-CP,0
-DP,1
-EP,0
-FP,0
-GP,1
-HP,1
-IP,1
-JP,0
-KP,1
-LP,0
-MP,1
-NP,1
-OP,0
-PP,0
-QP,1
-RP,1
-SP,0
-TP,1
-UP,1
-VP,0
-WP,1
-XP,1
-YP,0
-ZP,1
-AQ,1
-BQ,1
-CQ,1
-DQ,0
-EQ,1
-FQ,0
-GQ,1
-HQ,1
-IQ,1
-JQ,0
-KQ,1
-LQ,1
-MQ,1
-NQ,0
-OQ,1
-PQ,1
-QQ,1
-RQ,0
-SQ,0
-TQ,1
-UQ,1
-VQ,0
-WQ,1
-XQ,1
-YQ,1
-ZQ,1
-AR,1
-BR,1
-CR,1
-DR,1
-ER,0
-FR,0
-GR,0
-HR,1
-IR,0
-JR,1
-KR,0
-LR,1
-MR,1
-NR,0
-OR,1
-PR,0
-QR,0
-RR,1
-SR,1
-TR,0
-UR,0
-VR,0
-WR,0
-XR,0
-YR,1
-ZR,1
-AS,0
-BS,0
-CS,0
-DS,1
-ES,1
-FS,0
-GS,0
-HS,0
-IS,1
-JS,1
-KS,1
-LS,1
-MS,1
-NS,0
-OS,1
-PS,1
-QS,1
-RS,1
-SS,1
-TS,0
-US,1
-VS,1
-WS,0
-XS,0
-YS,1
-ZS,1
-AT,0
-BT,1
-CT,1
-DT,1
-ET,1
-FT,1
-GT,1
-HT,1
-IT,1
-JT,1
-KT,1
-LT,1
-MT,1
-NT,1
-OT,1
-PT,1
-QT,0
-RT,1
-ST,1
-TT,0
-UT,1
-VT,1
-WT,1
-XT,1
-YT,1
-ZT,0
-AU,1
-BU,1
-CU,1
-DU,0
-EU,1
-FU,1
-GU,1
-HU,0
-IU,1
-JU,1
-KU,0
-LU,1
-MU,1
-NU,1
-OU,1
-PU,0
-QU,1
-RU,1
-SU,0
-TU,0
-UU,1
-VU,1
-WU,1
-XU,0
-YU,0
-ZU,1
-AV,1
-BV,1
-CV,1
-DV,0
-EV,0
-FV,0
-GV,0
-HV,1
-IV,0
-JV,1
-KV,1
-LV,0
-MV,1
-NV,1
-OV,0
-PV,1
-QV,0
-RV,0
-SV,0
-TV,1
-UV,1
-VV,0
-WV,1
-XV,0
-YV,1
-ZV,1
-AW,0
-BW,1
-CW,1
-DW,1
-EW,1
-FW,1
-GW,0
-HW,0
-IW,1
-JW,1
-KW,1
-LW,1
-MW,0
-NW,1
-OW,1
-PW,1
-QW,1
-RW,1
-SW,1
-TW,1
-UW,1
-VW,1
-WW,1
-XW,1
-YW,1
-ZW,1
-AX,0
-BX,1
-CX,1
-DX,1
-EX,1
-FX,1
-GX,0
-HX,1
-IX,0
-JX,1
-KX,1
-LX,1
-MX,1
-NX,1
-OX,1
-PX,0
-QX,0
-RX,0
-SX,1
-TX,1
-UX,0
-VX,0
-WX,0
-XX,0
-YX,1
-ZX,1
-AY,0
-BY,0
-CY,0
-DY,1
-EY,0
-FY,1
-GY,1
-HY,1
-IY,1
-JY,1
-KY,0
-LY,0
-MY,0
-NY,0
-OY,1
-PY,0
-QY,1
-RY,1
-SY,1
-TY,0
-UY,0
-VY,1
-WY,0
-XY,1
-YY,1
-ZY,0
-AZ,1
-BZ,1
-CZ,0
-DZ,1
-EZ,0
-FZ,1
-GZ,0
-HZ,1
-IZ,1
-JZ,0
-KZ,1
-LZ,1
-MZ,1
-NZ,1
-OZ,0
-PZ,0
-QZ,1
-RZ,1
-SZ,0
-TZ,0
-UZ,0
-VZ,0
-WZ,0
-XZ,0
-YZ,1
-ZZ,1
-AAA,1
-BAA,1
-CAA,0
-DAA,1
-EAA,0
-FAA,1
-GAA,1
-HAA,1
-IAA,1
-JAA,0
-KAA,1
-LAA,0
-MAA,1
-NAA,0
-OAA,1
-PAA,0
-QAA,0
-RAA,0
-SAA,0
-TAA,1
-UAA,0
-VAA,1
-WAA,1
-XAA,1
-YAA,1
-ZAA,1
-ABA,1
-BBA,1
-CBA,1
-DBA,1
-EBA,1
-FBA,1
-GBA,1
-HBA,0
-IBA,1
-JBA,0
-KBA,1
-LBA,0
-MBA,1
-NBA,0
-OBA,1
-PBA,0
-QBA,1
-RBA,1
-SBA,1
-TBA,1
-UBA,1
-VBA,0
-WBA,1
-XBA,1
-YBA,1
-ZBA,1
-ACA,0
-BCA,0
-CCA,0
-DCA,1
-ECA,1
-FCA,1
-GCA,1
-HCA,0
-ICA,0
-JCA,0
-KCA,1
-LCA,0
-MCA,0
-NCA,1
-OCA,0
-PCA,0
-QCA,1
-RCA,1
-SCA,1
-TCA,1
-UCA,0
-VCA,1
-WCA,1
-XCA,1
-YCA,0
-ZCA,0
-ADA,1
-BDA,1
-CDA,0
-DDA,1
-EDA,1
-FDA,1
-GDA,1
-HDA,1
-IDA,1
-JDA,0
-KDA,0
-LDA,1
-MDA,0
-NDA,1
-ODA,0
-PDA,1
-QDA,1
-RDA,0
-SDA,1
-TDA,1
-UDA,1
-VDA,1
-WDA,1
-XDA,0
-YDA,1
-ZDA,1
-AEA,0
-BEA,0
-CEA,1
-DEA,1
-EEA,1
-FEA,1
-GEA,1
-HEA,1
-IEA,1
-JEA,0
-KEA,0
-LEA,0
-MEA,1
-NEA,1
-OEA,0
-PEA,1
-QEA,0
-REA,0
-SEA,1
-TEA,1
-UEA,0
-VEA,0
-WEA,0
-XEA,1
-YEA,1
-ZEA,1
-AFA,1
-BFA,0
-CFA,1
-DFA,1
-EFA,0
-FFA,0
-GFA,1
-HFA,0
-IFA,0
-JFA,1
-KFA,1
-LFA,1
-MFA,1
-NFA,0
-OFA,0
-PFA,1
-QFA,0
-RFA,0
-SFA,1
-TFA,0
-UFA,0
-VFA,1
-WFA,1
-XFA,1
-YFA,1
-ZFA,1
-AGA,1
-BGA,1
-CGA,0
-DGA,0
-EGA,1
-FGA,0
-GGA,0
-HGA,1
-IGA,1
-JGA,1
-KGA,0
-LGA,0
-MGA,0
-NGA,0
-OGA,1
-PGA,1
-QGA,0
-RGA,1
-SGA,0
-TGA,1
-UGA,1
-VGA,0
-WGA,0
-XGA,1
-YGA,1
-ZGA,1
-AHA,1
-BHA,1
-CHA,1
-DHA,0
-EHA,1
-FHA,1
-GHA,1
-HHA,1
-IHA,1
-JHA,1
-KHA,1
-LHA,1
-MHA,1
-NHA,1
-OHA,1
-PHA,0
-QHA,1
-RHA,1
-SHA,1
-THA,1
-UHA,0
-VHA,0
-WHA,1
-XHA,0
-YHA,1
-ZHA,1
-AIA,1
-BIA,1
-CIA,0
-DIA,0
-EIA,1
-FIA,0
-GIA,0
-HIA,1
-IIA,1
-JIA,0
-KIA,1
-LIA,1
-MIA,1
-NIA,1
-OIA,1
-PIA,1
-QIA,1
-RIA,1
-SIA,0
-TIA,1
-UIA,1
-VIA,1
-WIA,0
-XIA,0
-YIA,1
-ZIA,0
-AJA,0
-BJA,1
-CJA,1
-DJA,1
-EJA,1
-FJA,1
-GJA,1
-HJA,1
-IJA,0
-JJA,1
-KJA,0
-LJA,0
-MJA,0
-NJA,1
-OJA,0
-PJA,0
-QJA,0
-RJA,0
-SJA,1
-TJA,1
-UJA,0
-VJA,0
-WJA,0
-XJA,1
-YJA,1
-ZJA,1
-AKA,0
-BKA,1
-CKA,1
-DKA,1
-EKA,1
-FKA,1
-GKA,0
-HKA,0
-IKA,0
-JKA,0
-KKA,1
-LKA,1
-MKA,1
-NKA,1
-OKA,1
-PKA,1
-QKA,1
-RKA,1
-SKA,0
-TKA,1
-UKA,1
-VKA,0
-WKA,0
-XKA,1
-YKA,1
-ZKA,1
-ALA,1
-BLA,1
-CLA,0
-DLA,0
-ELA,1
-FLA,0
-GLA,1
-HLA,1
-ILA,1
-JLA,1
-KLA,1
-LLA,0
-MLA,0
-NLA,0
-OLA,1
-PLA,1
-QLA,0
-RLA,0
-SLA,1
-TLA,0
-ULA,1
-VLA,0
-WLA,1
-XLA,0
-YLA,1
-ZLA,1
-AMA,1
-BMA,1
-CMA,0
-DMA,0
-EMA,1
-FMA,1
-GMA,1
-HMA,0
-IMA,0
-JMA,1
-KMA,0
-LMA,1
-MMA,0
-NMA,1
-OMA,1
-PMA,1
-QMA,1
-SMA,1
-TMA,1
-UMA,1
-VMA,0
-WMA,0
-XMA,0
-YMA,1
-ZMA,0
-ANA,1
-BNA,1
-CNA,1
-DNA,0
-ENA,0
-FNA,0
-GNA,1
-HNA,1
-INA,0
-JNA,0
-KNA,1
-LNA,0
+A,Release A
+B,Release A
+C,Release A
+D,Release A
+E,Other
+F,Release A
+G,Release A
+H,Other
+I,Release A
+J,Release A
+K,Release A
+L,Release A
+M,Other
+N,Release A
+O,Release A
+P,Other
+Q,Other
+R,Other
+S,Release A
+T,Other
+U,Other
+V,Release A
+W,Release A
+X,Release A
+Y,Other
+Z,Release A
+AA,Other
+BA,Release A
+CA,Other
+DA,Other
+EA,Release A
+FA,Other
+GA,Release A
+HA,Release A
+IA,Other
+JA,Release A
+KA,Release A
+LA,Other
+MA,Release A
+,Other
+OA,Other
+PA,Other
+QA,Other
+RA,Other
+SA,Release A
+TA,Release A
+UA,Release A
+VA,Release A
+WA,Release A
+XA,Other
+YA,Other
+ZA,Other
+AB,Other
+BB,Other
+CB,Release A
+DB,Release A
+EB,Other
+FB,Other
+GB,Release A
+HB,Release A
+IB,Release A
+JB,Other
+KB,Release A
+LB,Other
+MB,Other
+NB,Release A
+OB,Release A
+PB,Release A
+QB,Release A
+RB,Release A
+SB,Release A
+TB,Release A
+UB,Other
+VB,Release A
+WB,Other
+XB,Other
+YB,Release A
+ZB,Release A
+AC,Release A
+BC,Other
+CC,Other
+DC,Release A
+EC,Release A
+FC,Release A
+GC,Release A
+HC,Other
+IC,Release A
+JC,Release A
+KC,Release A
+LC,Release A
+MC,Release A
+NC,Other
+OC,Release A
+PC,Other
+QC,Release A
+RC,Release A
+SC,Other
+TC,Release A
+UC,Release A
+VC,Release A
+WC,Release A
+XC,Other
+YC,Other
+ZC,Other
+AD,Release A
+BD,Release A
+CD,Other
+DD,Other
+ED,Release A
+FD,Other
+GD,Other
+HD,Release A
+ID,Other
+JD,Release A
+KD,Release A
+LD,Release A
+MD,Release A
+ND,Release A
+OD,Other
+PD,Other
+QD,Other
+RD,Other
+SD,Release A
+TD,Other
+UD,Other
+VD,Release A
+WD,Other
+XD,Release A
+YD,Other
+ZD,Release A
+AE,Release A
+BE,Release A
+CE,Release A
+DE,Other
+EE,Release A
+FE,Release A
+GE,Release A
+HE,Release A
+IE,Release A
+JE,Release A
+KE,Release A
+LE,Other
+ME,Release A
+NE,Other
+OE,Other
+PE,Other
+QE,Release A
+RE,Other
+SE,Release A
+TE,Other
+UE,Release A
+VE,Release A
+WE,Release A
+XE,Other
+YE,Release A
+ZE,Other
+AF,Release A
+BF,Release A
+CF,Release A
+DF,Other
+EF,Release A
+FF,Other
+GF,Release A
+HF,Release A
+IF,Release A
+JF,Other
+KF,Release A
+LF,Other
+MF,Other
+NF,Release A
+OF,Other
+PF,Release A
+QF,Release A
+RF,Other
+SF,Release A
+TF,Release A
+UF,Release A
+VF,Release A
+WF,Release A
+XF,Release A
+YF,Release A
+ZF,Release A
+AG,Other
+BG,Release A
+CG,Release A
+DG,Release A
+EG,Other
+FG,Release A
+GG,Release A
+HG,Release A
+IG,Release A
+JG,Release A
+KG,Release A
+LG,Other
+MG,Other
+NG,Other
+OG,Release A
+PG,Release A
+QG,Release A
+RG,Release A
+SG,Other
+TG,Release A
+UG,Other
+VG,Release A
+WG,Release A
+XG,Other
+YG,Other
+ZG,Other
+AH,Release A
+BH,Release A
+CH,Release A
+DH,Release A
+EH,Release A
+FH,Release A
+GH,Other
+HH,Release A
+IH,Release A
+JH,Release A
+KH,Release A
+LH,Release A
+MH,Other
+NH,Release A
+OH,Release A
+PH,Other
+QH,Other
+RH,Other
+SH,Release A
+TH,Release A
+UH,Other
+VH,Other
+WH,Other
+XH,Release A
+YH,Release A
+ZH,Release A
+AI,Release A
+BI,Other
+CI,Release A
+DI,Release A
+EI,Other
+FI,Other
+GI,Release A
+HI,Release A
+II,Release A
+JI,Other
+KI,Release A
+LI,Release A
+MI,Other
+NI,Release A
+OI,Other
+PI,Release A
+QI,Release A
+RI,Release A
+SI,Release A
+TI,Other
+UI,Release A
+VI,Release A
+WI,Release A
+XI,Release A
+YI,Release A
+ZI,Release A
+AJ,Release A
+BJ,Release A
+CJ,Other
+DJ,Release A
+EJ,Release A
+FJ,Release A
+GJ,Release A
+HJ,Release A
+IJ,Release A
+JJ,Release A
+KJ,Release A
+LJ,Other
+MJ,Release A
+NJ,Release A
+OJ,Release A
+PJ,Other
+QJ,Release A
+RJ,Other
+SJ,Release A
+TJ,Release A
+UJ,Release A
+VJ,Release A
+XJ,Release A
+YJ,Release A
+ZJ,Release A
+AK,Other
+BK,Release A
+CK,Other
+DK,Release A
+EK,Other
+FK,Release A
+GK,Other
+HK,Other
+IK,Other
+JK,Release A
+KK,Release A
+LK,Release A
+MK,Release A
+NK,Release A
+OK,Release A
+PK,Release A
+QK,Release A
+RK,Release A
+SK,Other
+TK,Other
+UK,Release A
+VK,Release A
+WK,Release A
+XK,Other
+YK,Release A
+ZK,Release A
+AL,Release A
+BL,Release A
+CL,Other
+DL,Release A
+EL,Release A
+FL,Other
+GL,Release A
+HL,Release A
+IL,Release A
+JL,Release A
+KL,Other
+LL,Release A
+ML,Release A
+NL,Other
+OL,Release A
+PL,Other
+QL,Other
+RL,Release A
+SL,Release A
+TL,Release A
+UL,Other
+VL,Release A
+WL,Release A
+XL,Release A
+YL,Release A
+ZL,Release A
+AM,Other
+BM,Other
+CM,Release A
+DM,Other
+EM,Release A
+FM,Release A
+GM,Other
+HM,Other
+IM,Release A
+JM,Other
+KM,Release A
+LM,Release A
+MM,Release A
+NM,Release A
+OM,Release A
+PM,Other
+QM,Release A
+RM,Release A
+SM,Release A
+TM,Other
+UM,Other
+VM,Release A
+WM,Release A
+XM,Release A
+YM,Release A
+ZM,Release A
+AN,Other
+BN,Release A
+CN,Other
+DN,Other
+EN,Other
+FN,Other
+GN,Other
+HN,Release A
+IN,Other
+JN,Release A
+KN,Release A
+LN,Release A
+MN,Release A
+NN,Release A
+ON,Release A
+PN,Other
+QN,Release A
+RN,Other
+SN,Other
+TN,Release A
+UN,Other
+VN,Release A
+WN,Other
+XN,Release A
+YN,Other
+ZN,Other
+AO,Release A
+BO,Other
+CO,Release A
+DO,Release A
+EO,Release A
+FO,Release A
+GO,Release A
+HO,Release A
+IO,Release A
+JO,Release A
+KO,Release A
+LO,Other
+MO,Release A
+NO,Release A
+OO,Release A
+PO,Release A
+QO,Release A
+RO,Other
+SO,Release A
+TO,Release A
+UO,Other
+VO,Release A
+WO,Release A
+XO,Other
+YO,Release A
+ZO,Release A
+AP,Other
+BP,Release A
+CP,Other
+DP,Release A
+EP,Other
+FP,Other
+GP,Release A
+HP,Release A
+IP,Release A
+JP,Other
+KP,Release A
+LP,Other
+MP,Release A
+NP,Release A
+OP,Other
+PP,Other
+QP,Release A
+RP,Release A
+SP,Other
+TP,Release A
+UP,Release A
+VP,Other
+WP,Release A
+XP,Release A
+YP,Other
+ZP,Release A
+AQ,Release A
+BQ,Release A
+CQ,Release A
+DQ,Other
+EQ,Release A
+FQ,Other
+GQ,Release A
+HQ,Release A
+IQ,Release A
+JQ,Other
+KQ,Release A
+LQ,Release A
+MQ,Release A
+NQ,Other
+OQ,Release A
+PQ,Release A
+QQ,Release A
+RQ,Other
+SQ,Other
+TQ,Release A
+UQ,Release A
+VQ,Other
+WQ,Release A
+XQ,Release A
+YQ,Release A
+ZQ,Release A
+AR,Release A
+BR,Release A
+CR,Release A
+DR,Release A
+ER,Other
+FR,Other
+GR,Other
+HR,Release A
+IR,Other
+JR,Release A
+KR,Other
+LR,Release A
+MR,Release A
+NR,Other
+OR,Release A
+PR,Other
+QR,Other
+RR,Release A
+SR,Release A
+TR,Other
+UR,Other
+VR,Other
+WR,Other
+XR,Other
+YR,Release A
+ZR,Release A
+AS,Other
+BS,Other
+CS,Other
+DS,Release A
+ES,Release A
+FS,Other
+GS,Other
+HS,Other
+IS,Release A
+JS,Release A
+KS,Release A
+LS,Release A
+MS,Release A
+NS,Other
+OS,Release A
+PS,Release A
+QS,Release A
+RS,Release A
+SS,Release A
+TS,Other
+US,Release A
+VS,Release A
+WS,Other
+XS,Other
+YS,Release A
+ZS,Release A
+AT,Other
+BT,Release A
+CT,Release A
+DT,Release A
+ET,Release A
+FT,Release A
+GT,Release A
+HT,Release A
+IT,Release A
+JT,Release A
+KT,Release A
+LT,Release A
+MT,Release A
+NT,Release A
+OT,Release A
+PT,Release A
+QT,Other
+RT,Release A
+ST,Release A
+TT,Other
+UT,Release A
+VT,Release A
+WT,Release A
+XT,Release A
+YT,Release A
+ZT,Other
+AU,Release A
+BU,Release A
+CU,Release A
+DU,Other
+EU,Release A
+FU,Release A
+GU,Release A
+HU,Other
+IU,Release A
+JU,Release A
+KU,Other
+LU,Release A
+MU,Release A
+NU,Release A
+OU,Release A
+PU,Other
+QU,Release A
+RU,Release A
+SU,Other
+TU,Other
+UU,Release A
+VU,Release A
+WU,Release A
+XU,Other
+YU,Other
+ZU,Release A
+AV,Release A
+BV,Release A
+CV,Release A
+DV,Other
+EV,Other
+FV,Other
+GV,Other
+HV,Release A
+IV,Other
+JV,Release A
+KV,Release A
+LV,Other
+MV,Release A
+NV,Release A
+OV,Other
+PV,Release A
+QV,Other
+RV,Other
+SV,Other
+TV,Release A
+UV,Release A
+VV,Other
+WV,Release A
+XV,Other
+YV,Release A
+ZV,Release A
+AW,Other
+BW,Release A
+CW,Release A
+DW,Release A
+EW,Release A
+FW,Release A
+GW,Other
+HW,Other
+IW,Release A
+JW,Release A
+KW,Release A
+LW,Release A
+MW,Other
+NW,Release A
+OW,Release A
+PW,Release A
+QW,Release A
+RW,Release A
+SW,Release A
+TW,Release A
+UW,Release A
+VW,Release A
+WW,Release A
+XW,Release A
+YW,Release A
+ZW,Release A
+AX,Other
+BX,Release A
+CX,Release A
+DX,Release A
+EX,Release A
+FX,Release A
+GX,Other
+HX,Release A
+IX,Other
+JX,Release A
+KX,Release A
+LX,Release A
+MX,Release A
+NX,Release A
+OX,Release A
+PX,Other
+QX,Other
+RX,Other
+SX,Release A
+TX,Release A
+UX,Other
+VX,Other
+WX,Other
+XX,Other
+YX,Release A
+ZX,Release A
+AY,Other
+BY,Other
+CY,Other
+DY,Release A
+EY,Other
+FY,Release A
+GY,Release A
+HY,Release A
+IY,Release A
+JY,Release A
+KY,Other
+LY,Other
+MY,Other
+NY,Other
+OY,Release A
+PY,Other
+QY,Release A
+RY,Release A
+SY,Release A
+TY,Other
+UY,Other
+VY,Release A
+WY,Other
+XY,Release A
+YY,Release A
+ZY,Other
+AZ,Release A
+BZ,Release A
+CZ,Other
+DZ,Release A
+EZ,Other
+FZ,Release A
+GZ,Other
+HZ,Release A
+IZ,Release A
+JZ,Other
+KZ,Release A
+LZ,Release A
+MZ,Release A
+NZ,Release A
+OZ,Other
+PZ,Other
+QZ,Release A
+RZ,Release A
+SZ,Other
+TZ,Other
+UZ,Other
+VZ,Other
+WZ,Other
+XZ,Other
+YZ,Release A
+ZZ,Release A
+AAA,Release A
+BAA,Release A
+CAA,Other
+DAA,Release A
+EAA,Other
+FAA,Release A
+GAA,Release A
+HAA,Release A
+IAA,Release A
+JAA,Other
+KAA,Release A
+LAA,Other
+MAA,Release A
+NAA,Other
+OAA,Release A
+PAA,Other
+QAA,Other
+RAA,Other
+SAA,Other
+TAA,Release A
+UAA,Other
+VAA,Release A
+WAA,Release A
+XAA,Release A
+YAA,Release A
+ZAA,Release A
+ABA,Release A
+BBA,Release A
+CBA,Release A
+DBA,Release A
+EBA,Release A
+FBA,Release A
+GBA,Release A
+HBA,Other
+IBA,Release A
+JBA,Other
+KBA,Release A
+LBA,Other
+MBA,Release A
+NBA,Other
+OBA,Release A
+PBA,Other
+QBA,Release A
+RBA,Release A
+SBA,Release A
+TBA,Release A
+UBA,Release A
+VBA,Other
+WBA,Release A
+XBA,Release A
+YBA,Release A
+ZBA,Release A
+ACA,Other
+BCA,Other
+CCA,Other
+DCA,Release A
+ECA,Release A
+FCA,Release A
+GCA,Release A
+HCA,Other
+ICA,Other
+JCA,Other
+KCA,Release A
+LCA,Other
+MCA,Other
+NCA,Release A
+OCA,Other
+PCA,Other
+QCA,Release A
+RCA,Release A
+SCA,Release A
+TCA,Release A
+UCA,Other
+VCA,Release A
+WCA,Release A
+XCA,Release A
+YCA,Other
+ZCA,Other
+ADA,Release A
+BDA,Release A
+CDA,Other
+DDA,Release A
+EDA,Release A
+FDA,Release A
+GDA,Release A
+HDA,Release A
+IDA,Release A
+JDA,Other
+KDA,Other
+LDA,Release A
+MDA,Other
+NDA,Release A
+ODA,Other
+PDA,Release A
+QDA,Release A
+RDA,Other
+SDA,Release A
+TDA,Release A
+UDA,Release A
+VDA,Release A
+WDA,Release A
+XDA,Other
+YDA,Release A
+ZDA,Release A
+AEA,Other
+BEA,Other
+CEA,Release A
+DEA,Release A
+EEA,Release A
+FEA,Release A
+GEA,Release A
+HEA,Release A
+IEA,Release A
+JEA,Other
+KEA,Other
+LEA,Other
+MEA,Release A
+NEA,Release A
+OEA,Other
+PEA,Release A
+QEA,Other
+REA,Other
+SEA,Release A
+TEA,Release A
+UEA,Other
+VEA,Other
+WEA,Other
+XEA,Release A
+YEA,Release A
+ZEA,Release A
+AFA,Release A
+BFA,Other
+CFA,Release A
+DFA,Release A
+EFA,Other
+FFA,Other
+GFA,Release A
+HFA,Other
+IFA,Other
+JFA,Release A
+KFA,Release A
+LFA,Release A
+MFA,Release A
+NFA,Other
+OFA,Other
+PFA,Release A
+QFA,Other
+RFA,Other
+SFA,Release A
+TFA,Other
+UFA,Other
+VFA,Release A
+WFA,Release A
+XFA,Release A
+YFA,Release A
+ZFA,Release A
+AGA,Release A
+BGA,Release A
+CGA,Other
+DGA,Other
+EGA,Release A
+FGA,Other
+GGA,Other
+HGA,Release A
+IGA,Release A
+JGA,Release A
+KGA,Other
+LGA,Other
+MGA,Other
+NGA,Other
+OGA,Release A
+PGA,Release A
+QGA,Other
+RGA,Release A
+SGA,Other
+TGA,Release A
+UGA,Release A
+VGA,Other
+WGA,Other
+XGA,Release A
+YGA,Release A
+ZGA,Release A
+AHA,Release A
+BHA,Release A
+CHA,Release A
+DHA,Other
+EHA,Release A
+FHA,Release A
+GHA,Release A
+HHA,Release A
+IHA,Release A
+JHA,Release A
+KHA,Release A
+LHA,Release A
+MHA,Release A
+NHA,Release A
+OHA,Release A
+PHA,Other
+QHA,Release A
+RHA,Release A
+SHA,Release A
+THA,Release A
+UHA,Other
+VHA,Other
+WHA,Release A
+XHA,Other
+YHA,Release A
+ZHA,Release A
+AIA,Release A
+BIA,Release A
+CIA,Other
+DIA,Other
+EIA,Release A
+FIA,Other
+GIA,Other
+HIA,Release A
+IIA,Release A
+JIA,Other
+KIA,Release A
+LIA,Release A
+MIA,Release A
+NIA,Release A
+OIA,Release A
+PIA,Release A
+QIA,Release A
+RIA,Release A
+SIA,Other
+TIA,Release A
+UIA,Release A
+VIA,Release A
+WIA,Other
+XIA,Other
+YIA,Release A
+ZIA,Other
+AJA,Other
+BJA,Release A
+CJA,Release A
+DJA,Release A
+EJA,Release A
+FJA,Release A
+GJA,Release A
+HJA,Release A
+IJA,Other
+JJA,Release A
+KJA,Other
+LJA,Other
+MJA,Other
+NJA,Release A
+OJA,Other
+PJA,Other
+QJA,Other
+RJA,Other
+SJA,Release A
+TJA,Release A
+UJA,Other
+VJA,Other
+WJA,Other
+XJA,Release A
+YJA,Release A
+ZJA,Release A
+AKA,Other
+BKA,Release A
+CKA,Release A
+DKA,Release A
+EKA,Release A
+FKA,Release A
+GKA,Other
+HKA,Other
+IKA,Other
+JKA,Other
+KKA,Release A
+LKA,Release A
+MKA,Release A
+NKA,Release A
+OKA,Release A
+PKA,Release A
+QKA,Release A
+RKA,Release A
+SKA,Other
+TKA,Release A
+UKA,Release A
+VKA,Other
+WKA,Other
+XKA,Release A
+YKA,Release A
+ZKA,Release A
+ALA,Release A
+BLA,Release A
+CLA,Other
+DLA,Other
+ELA,Release A
+FLA,Other
+GLA,Release A
+HLA,Release A
+ILA,Release A
+JLA,Release A
+KLA,Release A
+LLA,Other
+MLA,Other
+NLA,Other
+OLA,Release A
+PLA,Release A
+QLA,Other
+RLA,Other
+SLA,Release A
+TLA,Other
+ULA,Release A
+VLA,Other
+WLA,Release A
+XLA,Other
+YLA,Release A
+ZLA,Release A
+AMA,Release A
+BMA,Release A
+CMA,Other
+DMA,Other
+EMA,Release A
+FMA,Release A
+GMA,Release A
+HMA,Other
+IMA,Other
+JMA,Release A
+KMA,Other
+LMA,Release A
+MMA,Other
+NMA,Release A
+OMA,Release A
+PMA,Release A
+QMA,Release A
+SMA,Release A
+TMA,Release A
+UMA,Release A
+VMA,Other
+WMA,Other
+XMA,Other
+YMA,Release A
+ZMA,Other
+ANA,Release A
+BNA,Release A
+CNA,Release A
+DNA,Other
+ENA,Other
+FNA,Other
+GNA,Release A
+HNA,Release A
+INA,Other
+JNA,Other
+KNA,Release A
+LNA,Other
