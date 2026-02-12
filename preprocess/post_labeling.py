@@ -1,6 +1,8 @@
 import pandas as pd
 from labeling import DatasetLabeler
 
+from utils.stats import print_class_balance
+
 
 class DatasetPostLabeler(DatasetLabeler):
     def __init__(
@@ -19,7 +21,9 @@ class DatasetPostLabeler(DatasetLabeler):
         original_labels_df = pd.read_csv(self.original_label_path)
         new_labels = self.apply_labeling_rules(original_labels_df)
 
-        self._print_class_balance(new_labels)
+        print_class_balance(
+            new_labels, dataset_names=[self.dataset_name, 'Post-labeled']
+        )
 
         return self._save_labels(new_labels)
 

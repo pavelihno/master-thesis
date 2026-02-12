@@ -4,6 +4,8 @@ import pandas as pd
 import pm4py
 from pm4py.objects.conversion.log import converter as log_converter
 
+from utils.stats import print_class_balance
+
 
 class DatasetLabeler:
     def __init__(
@@ -23,7 +25,7 @@ class DatasetLabeler:
         log = log_converter.apply(log_df)
         labels = self.apply_labeling_rules(log)
 
-        self._print_class_balance(labels)
+        print_class_balance(labels, dataset_names=[self.dataset_name, 'Labeled'])
 
         return self._save_labels(labels)
 
@@ -34,27 +36,6 @@ class DatasetLabeler:
         [{'case_id': '1', 'outcome': 0}, ...]
         """
         pass
-
-    def _print_class_balance(self, labels):
-        labels_df = pd.DataFrame(labels)
-        label_col = [col for col in labels_df.columns if col != 'case_id'][0]
-
-        print('\n=== Class Balance ===')
-        counts = labels_df[label_col].value_counts().sort_index()
-        percentages = (
-            labels_df[label_col].value_counts(normalize=True).sort_index() * 100
-        )
-
-        balance_df = pd.DataFrame(
-            {
-                'Class': counts.index,
-                'Count': counts.values,
-                'Percentage': percentages.values,
-            }
-        )
-
-        print(balance_df.to_string(index=False))
-        print(f'Total cases: {len(labels_df)}\n')
 
     def _save_labels(self, labels):
         labels_df = pd.DataFrame(labels)
