@@ -19,7 +19,6 @@ class BaseLogDataset(ABC):
         time_col='time:timestamp',
         activity_col='concept:name',
         resource_col='org:resource',
-        feature_names=None,
     ):
         # Path constants
         self.dataset_folder = dataset_folder
@@ -35,7 +34,6 @@ class BaseLogDataset(ABC):
         self.time_col = time_col
         self.activity_col = activity_col
         self.resource_col = resource_col
-        self.feature_names = feature_names
 
         self.raw_df = None
 
@@ -55,7 +53,7 @@ class BaseLogDataset(ABC):
         return self
 
     def _extract_features(self, df):
-        """Extract temporal and calendar features, then filter by feature_names."""
+        """Extract temporal and calendar features."""
         # Avoid modifying the original
         df = df.copy()
 
@@ -76,17 +74,7 @@ class BaseLogDataset(ABC):
         df['hour_sin'] = np.sin(2 * np.pi * hour / 24)
         df['hour_cos'] = np.cos(2 * np.pi * hour / 24)
 
-        # Filter features: keep all columns if features are not specified
-        if self.feature_names is None:
-            return df
-
-        # Columns that must always be kept
-        essential_cols = [self.case_id_col, self.time_col, self.activity_col]
-
-        cols_to_keep = list(set(essential_cols + self.feature_names))
-        cols_to_keep = [col for col in cols_to_keep if col in df.columns]
-
-        return df[cols_to_keep]
+        return df
 
     def get_prefixes(self, df):
         """Optimized Pandas-based prefix generation."""

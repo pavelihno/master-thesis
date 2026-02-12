@@ -20,15 +20,6 @@ dataset = OutcomeDataset(
     dataset_name=dataset_name,
     dataset_folder=dataset_folder,
     labels_folder=labels_folder,
-    feature_names=[
-        'time_since_start',
-        'time_since_last_event',
-        'event_index',
-        'day_of_week',
-        'hour_of_day',
-        'hour_sin',
-        'hour_cos',
-    ],
     min_prefix=3,
     max_prefix=10,
 )
