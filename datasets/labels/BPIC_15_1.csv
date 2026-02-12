@@ -1,4 +1,199 @@
 case_id,outcome
+10009138,No violation
+10051383,Violation
+10053042,No violation
+10083315,No violation
+10093171,No violation
+10128431,No violation
+10153084,No violation
+10154600,No violation
+10186016,No violation
+10186644,No violation
+10292508,No violation
+10294414,No violation
+10295206,No violation
+10297111,No violation
+10333518,No violation
+10339356,No violation
+10342607,No violation
+10361639,No violation
+10368001,Violation
+10432793,No violation
+10434329,No violation
+10443842,No violation
+10457489,No violation
+10492879,No violation
+10497848,No violation
+10499998,No violation
+10501095,No violation
+10542627,No violation
+10547191,No violation
+10548783,No violation
+10549639,No violation
+10563369,No violation
+10564529,No violation
+10593326,No violation
+10621018,No violation
+10658101,No violation
+10658878,No violation
+10667547,No violation
+10678601,No violation
+10680228,No violation
+10721050,Violation
+10729965,No violation
+10785146,No violation
+10786320,No violation
+10788794,No violation
+10845919,No violation
+10853127,No violation
+10880883,No violation
+10882557,No violation
+10883461,No violation
+10885734,No violation
+10896735,No violation
+10906419,No violation
+10909487,No violation
+10914682,No violation
+10917408,No violation
+10922143,No violation
+10948750,No violation
+10949790,Violation
+10958968,No violation
+10963040,No violation
+10965702,Violation
+10984450,No violation
+10996067,No violation
+10997930,No violation
+11031897,No violation
+11032730,Violation
+11044389,No violation
+11080766,No violation
+11090471,No violation
+11092833,No violation
+11156570,No violation
+11175470,No violation
+11179969,No violation
+11203549,No violation
+11206781,No violation
+11210950,No violation
+11214970,No violation
+11215986,No violation
+11217514,No violation
+11246177,No violation
+11247144,No violation
+11248492,No violation
+11276025,No violation
+11288632,Violation
+11315741,No violation
+11318823,No violation
+11319620,No violation
+11332348,Violation
+11483837,No violation
+11510141,No violation
+11514392,Violation
+11553586,No violation
+11556826,No violation
+11563660,No violation
+11579112,No violation
+11585113,No violation
+11587185,No violation
+11588105,No violation
+11590099,No violation
+11593238,Violation
+11662273,No violation
+11672705,No violation
+11717156,No violation
+11722708,No violation
+11740586,No violation
+11741491,No violation
+11742935,No violation
+11746282,No violation
+11773351,No violation
+11776149,No violation
+11778258,No violation
+11782352,No violation
+11798638,No violation
+11800377,No violation
+11903517,No violation
+11907102,No violation
+11908759,No violation
+11942572,No violation
+11984428,No violation
+12001876,No violation
+12004820,No violation
+12009101,No violation
+12026796,No violation
+12034946,Violation
+12088688,No violation
+12093942,No violation
+12095288,No violation
+12095533,No violation
+12097890,No violation
+12112495,No violation
+12114492,No violation
+12122647,Violation
+12181116,No violation
+12189089,No violation
+12228074,No violation
+12237927,No violation
+12336689,No violation
+12341499,No violation
+12349956,No violation
+12460352,No violation
+12462194,No violation
+12467162,No violation
+12491915,No violation
+12515664,No violation
+12517999,No violation
+12536197,No violation
+12539803,No violation
+12543359,No violation
+12550928,No violation
+12566305,No violation
+12589627,No violation
+12592359,No violation
+12593329,No violation
+12594261,No violation
+12594996,No violation
+12615754,No violation
+12621803,No violation
+12626041,No violation
+12626231,No violation
+12638851,No violation
+12645853,No violation
+12662262,No violation
+12663845,No violation
+12687734,No violation
+12689191,No violation
+12744703,No violation
+12747066,No violation
+12748452,No violation
+12751727,Violation
+12761395,No violation
+12784487,No violation
+12789816,No violation
+12790913,No violation
+12791802,No violation
+12812467,No violation
+12814085,No violation
+12814326,No violation
+12904946,No violation
+12907069,No violation
+12936380,No violation
+12993808,No violation
+12998180,No violation
+12999831,Violation
+13055065,No violation
+13060554,No violation
+13063833,No violation
+13090033,No violation
+13094767,No violation
+13097569,Violation
+13109180,No violation
+13113275,No violation
+13155051,No violation
+13160265,No violation
+13166580,Violation
 2742737,Violation
 2760925,Violation
 2771451,Violation
@@ -149,7 +344,7 @@ case_id,outcome
 3237542,Violation
 3238727,Violation
 3248466,Violation
-3256221,No violation
+3256221,Violation
 3257628,Violation
 3257848,Violation
 3258671,Violation
@@ -197,7 +392,6 @@ case_id,outcome
 3399381,Violation
 3399416,Violation
 3401947,Violation
-3407261,Violation
 3407887,Violation
 3410972,Violation
 3415302,Violation
@@ -936,3 +1130,71 @@ case_id,outcome
 9074955,No violation
 9080437,No violation
 9082329,No violation
+9123525,No violation
+9147603,No violation
+9173797,No violation
+9179654,No violation
+9185626,Violation
+9191160,No violation
+9294701,No violation
+9296294,No violation
+9348937,No violation
+9354048,No violation
+9368765,No violation
+9381889,No violation
+9385395,Violation
+9410769,No violation
+9415247,No violation
+9431949,No violation
+9444111,No violation
+9446160,No violation
+9457704,No violation
+9471821,No violation
+9508399,No violation
+9539245,No violation
+9540271,No violation
+9545290,No violation
+9546721,No violation
+9548111,No violation
+9565244,No violation
+9566055,No violation
+9591194,No violation
+9609455,No violation
+9612474,Violation
+9619198,No violation
+9622266,No violation
+9623724,No violation
+9634805,No violation
+9658627,No violation
+9659664,No violation
+9691153,No violation
+9716323,No violation
+9716526,No violation
+9725997,No violation
+9726383,No violation
+9730398,No violation
+9733006,No violation
+9745837,No violation
+9754884,No violation
+9757039,No violation
+9763464,No violation
+9800628,No violation
+9819575,No violation
+9822102,No violation
+9825880,No violation
+9837234,No violation
+9838258,No violation
+9843323,No violation
+9857886,No violation
+9863829,No violation
+9870146,No violation
+9882236,No violation
+9888564,No violation
+9890936,No violation
+9892199,Violation
+9895294,Violation
+9928031,No violation
+9930454,No violation
+9934040,Violation
+9935064,Violation
+9996445,No violation

@@ -233,7 +233,6 @@ case_id,outcome
 20815288,Violation
 20815822,Violation
 20816316,Violation
-20822159,No violation
 20824575,No violation
 20825648,No violation
 20830093,No violation
@@ -289,6 +288,194 @@ case_id,outcome
 21302970,No violation
 21304127,No violation
 21306641,Violation
+21313311,Violation
+21351282,No violation
+21369324,No violation
+21381083,No violation
+21399390,No violation
+21424555,No violation
+21435708,No violation
+21456353,No violation
+21458097,No violation
+21478250,No violation
+21495152,No violation
+21501006,No violation
+21517822,No violation
+21549231,No violation
+21573264,No violation
+21579910,No violation
+21589467,No violation
+21617251,No violation
+21626495,No violation
+21637952,No violation
+21640743,No violation
+21642623,No violation
+21714537,No violation
+21717670,No violation
+21736280,No violation
+21773689,No violation
+21796510,No violation
+21802492,No violation
+21808719,No violation
+21844204,No violation
+21854428,No violation
+21856692,Violation
+21868940,No violation
+21872844,Violation
+21894166,No violation
+21896134,No violation
+21910199,No violation
+21916271,No violation
+21934408,No violation
+21954576,No violation
+21976799,Violation
+21980386,No violation
+21984658,No violation
+21986652,No violation
+21989885,No violation
+21990661,No violation
+21998413,No violation
+22060494,No violation
+22062304,No violation
+22097188,No violation
+22098080,No violation
+22139866,No violation
+22147285,No violation
+22148117,No violation
+22148949,No violation
+22174304,No violation
+22183913,No violation
+22189663,No violation
+22218099,No violation
+22232798,No violation
+22261669,No violation
+22324748,No violation
+22334274,No violation
+22375130,No violation
+22376119,No violation
+22377156,Violation
+22392166,Violation
+22392896,Violation
+22393560,Violation
+22407656,No violation
+22408351,No violation
+22438262,Violation
+22444108,No violation
+22470372,No violation
+22481235,No violation
+22483206,No violation
+22483804,Violation
+22484619,Violation
+22485638,Violation
+22486434,Violation
+22510431,Violation
+22515681,No violation
+22530896,No violation
+22532312,No violation
+22533149,Violation
+22540251,No violation
+22550166,No violation
+22550776,No violation
+22566467,No violation
+22624995,No violation
+22643612,No violation
+22646051,No violation
+22658760,No violation
+22666108,Violation
+22697053,No violation
+22711053,No violation
+22764070,No violation
+22785252,No violation
+22815767,No violation
+22824338,No violation
+22856401,No violation
+22883463,No violation
+22892836,No violation
+22918881,No violation
+22943324,No violation
+22945390,No violation
+22948893,No violation
+22998783,No violation
+23038756,No violation
+23049119,No violation
+23052772,No violation
+23061401,No violation
+23064297,No violation
+23099644,No violation
+23102359,No violation
+23142529,No violation
+23146987,No violation
+23167616,No violation
+23168741,No violation
+23169434,No violation
+23198275,No violation
+23199878,No violation
+23220227,No violation
+23220804,No violation
+23224358,No violation
+23231061,No violation
+23233551,No violation
+23249768,No violation
+23286371,No violation
+23303231,No violation
+23361241,No violation
+23368302,No violation
+23384608,No violation
+23395262,No violation
+23427526,No violation
+23430762,No violation
+23445974,No violation
+23464188,No violation
+23466177,No violation
+23467330,No violation
+23514471,No violation
+23573880,No violation
+23577427,Violation
+23589730,No violation
+23590518,No violation
+23592233,No violation
+23621704,No violation
+23624496,No violation
+23625632,No violation
+23626331,No violation
+23627175,No violation
+23627887,No violation
+23629487,No violation
+23631499,No violation
+23633764,No violation
+23646304,No violation
+23650624,No violation
+23651368,No violation
+23652285,No violation
+23682610,No violation
+23684836,No violation
+23697074,No violation
+23698302,No violation
+23704897,No violation
+23713336,No violation
+23772305,No violation
+23775864,No violation
+23776760,No violation
+23821630,No violation
+23835166,No violation
+23860509,No violation
+23863874,No violation
+23865607,No violation
+23867068,No violation
+23879863,No violation
+23882135,No violation
+23892441,No violation
+23909138,No violation
+23934544,No violation
+23969668,No violation
+24027637,No violation
+24032798,No violation
+24074682,No violation
+24129041,No violation
+24129720,No violation
+24130200,No violation
+24153462,No violation
+24154137,No violation
 3461877,Violation
 3466211,Violation
 3467726,Violation

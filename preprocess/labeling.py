@@ -9,10 +9,12 @@ class DatasetLabeler:
     def __init__(
         self,
         dataset_name,
+        dataset_folder='datasets/raw',
+        label_folder='datasets/labels',
     ):
         self.dataset_name = dataset_name
-        self.dataset_path = f'datasets/raw/{dataset_name}.xes'
-        self.label_path = f'datasets/labels/{dataset_name}.csv'
+        self.dataset_path = f'{dataset_folder}/{dataset_name}.xes'
+        self.label_path = f'{label_folder}/{dataset_name}.csv'
 
     def run(self):
         print(f'\n=== Labeling {self.dataset_name} ===')
@@ -28,8 +30,8 @@ class DatasetLabeler:
     @abstractmethod
     def apply_labeling_rules(self, log):
         """
-        Returns a list of dictionaries with case_id and label, e.g.:
-        [{'case_id': '1', 'label': 0}, ...]
+        Returns a list of dictionaries with case_id and outcome, e.g.:
+        [{'case_id': '1', 'outcome': 0}, ...]
         """
         pass
 
@@ -141,15 +143,14 @@ class BPIC15Labeler(DatasetLabeler):
             events = [ev['concept:name'] for ev in trace]
 
             indices_a = [i for i, act in enumerate(events) if act == EVENT_A]
-            violation = False
+            outcome = 'No violation'
 
             for idx_a in indices_a:
                 event_b = any(act == EVENT_B for act in events[idx_a + 1 :])
                 if not event_b:
-                    violation = True
+                    outcome = 'Violation'
                     break
-
-            labels.append({'case_id': case_id, 'outcome': int(violation)})
+            labels.append({'case_id': case_id, 'outcome': outcome})
         return labels
 
 
@@ -348,16 +349,25 @@ class TrafficFinesLabeler(DatasetLabeler):
 
 
 if __name__ == '__main__':
-    BPIC12Labeler('BPIC_12').run()
-    BPIC13ILabeler('BPIC_13_I').run()
-    BPIC17Labeler('BPIC_17').run()
+    labelers = [
+        ('BPIC_12', BPIC12Labeler),
+        ('BPIC_13_I', BPIC13ILabeler),
+        ('BPIC_17', BPIC17Labeler),
+        ('BPIC_20_DD', BPIC20DDLabeler),
+        ('BPIC_20_PTC', BPIC20PTCLabeler),
+        ('BPIC_20_RFP', BPIC20RFPLabeler),
+        ('Helpdesk', HelpdeskLabeler),
+        ('Hospital_Billing', HospitalBillingLabeler),
+        ('Sepsis', SepsisLabeler),
+        ('Traffic_Fines', TrafficFinesLabeler),
+    ]
+
     for i in range(1, 6):
-        BPIC15Labeler(f'BPIC15_{i}').run()
-        BPIC15Labeler(f'Env_Permits_{i}').run()
-    BPIC20DDLabeler('BPIC_20_DD').run()
-    BPIC20PTCLabeler('BPIC_20_PTC').run()
-    BPIC20RFPLabeler('BPIC_20_RFP').run()
-    HelpdeskLabeler('Helpdesk').run()
-    HospitalBillingLabeler('Hospital_Billing').run()
-    SepsisLabeler('Sepsis').run()
-    TrafficFinesLabeler('Traffic_Fines').run()
+        labelers.append((f'BPIC_15_{i}', BPIC15Labeler))
+        labelers.append((f'Env_Permits_{i}', BPIC15Labeler))
+
+    for dataset_name, labeler_class in labelers:
+        try:
+            labeler_class(dataset_name).run()
+        except Exception as e:
+            print(f'Failed to process {dataset_name}: {e}\n')
