@@ -1,17 +1,48 @@
+from abc import ABC, abstractmethod
+
 import pandas as pd
-from sklearn.base import TransformerMixin
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class AggregateTransformer(TransformerMixin):
+class BaseTransformer(BaseEstimator, TransformerMixin, ABC):
+    """Base class for all feature transformers."""
+
+    def __init__(self):
+        self.columns = None
+
+    @abstractmethod
+    def fit(self, X, y=None):
+        """Fit the transformer on the data."""
+        pass
+
+    @abstractmethod
+    def transform(self, X, y=None):
+        """Transform the data into features."""
+        pass
+
+    def _ensure_consistent_columns(self, result):
+        """Ensure consistent columns across fit/transform calls."""
+        if self.columns is None:
+            self.columns = result.columns
+        else:
+            # Add missing columns with zeros
+            missing_cols = [col for col in self.columns if col not in result.columns]
+            for col in missing_cols:
+                result[col] = 0
+            result = result[self.columns]
+        return result
+
+
+class AggregateTransformer(BaseTransformer):
     """Aggregates features per case using statistics."""
 
     def __init__(self, case_id_col, cat_cols, num_cols, boolean=False, fillna=True):
+        super().__init__()
         self.case_id_col = case_id_col
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.boolean = boolean
         self.fillna = fillna
-        self.columns = None
 
     def fit(self, X, y=None):
         return self
@@ -48,27 +79,18 @@ class AggregateTransformer(TransformerMixin):
             result = result.fillna(0)
 
         # Ensure consistent columns across fit/transform calls
-        if self.columns is None:
-            self.columns = result.columns
-        else:
-            # Add missing columns with zeros
-            missing_cols = [col for col in self.columns if col not in result.columns]
-            for col in missing_cols:
-                result[col] = 0
-            result = result[self.columns]
-
-        return result
+        return self._ensure_consistent_columns(result)
 
 
-class IndexBasedExtractor(TransformerMixin):
+class IndexBasedExtractor(BaseTransformer):
     """Extracts only index-based encoded features up to max_events."""
 
     def __init__(self, cat_cols, num_cols, max_events, fillna=True):
+        super().__init__()
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.max_events = max_events
         self.fillna = fillna
-        self.columns = None
 
     def fit(self, X, y=None):
         return self
@@ -78,20 +100,15 @@ class IndexBasedExtractor(TransformerMixin):
         if self.columns is None:
             # Numerical columns: col_0, col_1, ..., col_{max_events-1}
             num_col_names = [
-                f'{col}_{i}'
-                for col in self.num_cols
-                for i in range(self.max_events)
+                f'{col}_{i}' for col in self.num_cols for i in range(self.max_events)
             ]
 
             # Categorical columns: col_0_value, col_1_value, etc.
-            cat_col_prefixes = tuple([
-                f'{col}_{i}_'
-                for col in self.cat_cols
-                for i in range(self.max_events)
-            ])
+            cat_col_prefixes = tuple(
+                [f'{col}_{i}_' for col in self.cat_cols for i in range(self.max_events)]
+            )
             cat_col_names = [
-                col for col in X.columns
-                if col.startswith(cat_col_prefixes)
+                col for col in X.columns if col.startswith(cat_col_prefixes)
             ]
 
             self.columns = cat_col_names + num_col_names
@@ -104,7 +121,7 @@ class IndexBasedExtractor(TransformerMixin):
         return X[self.columns]
 
 
-class IndexBasedTransformer(TransformerMixin):
+class IndexBasedTransformer(BaseTransformer):
     """Encodes events by position (index) within each case."""
 
     def __init__(
@@ -116,13 +133,13 @@ class IndexBasedTransformer(TransformerMixin):
         fillna=True,
         create_dummies=True,
     ):
+        super().__init__()
         self.case_id_col = case_id_col
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.max_events = max_events
         self.fillna = fillna
         self.create_dummies = create_dummies
-        self.columns = None
 
     def fit(self, X, y=None):
         return self
@@ -169,27 +186,18 @@ class IndexBasedTransformer(TransformerMixin):
             result = result.fillna(0)
 
         # Ensure consistent columns across fit/transform calls
-        if self.columns is None:
-            self.columns = result.columns
-        else:
-            # Add missing columns with zeros
-            missing_cols = [col for col in self.columns if col not in result.columns]
-            for col in missing_cols:
-                result[col] = 0
-            result = result[self.columns]
-
-        return result
+        return self._ensure_consistent_columns(result)
 
 
-class LastStateTransformer(TransformerMixin):
+class LastStateTransformer(BaseTransformer):
     """Extracts features from the last event of each case."""
 
     def __init__(self, case_id_col, cat_cols, num_cols, fillna=True):
+        super().__init__()
         self.case_id_col = case_id_col
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.fillna = fillna
-        self.columns = None
 
     def fit(self, X, y=None):
         return self
@@ -211,26 +219,18 @@ class LastStateTransformer(TransformerMixin):
             result = result.fillna(0)
 
         # Ensure consistent columns across fit/transform calls
-        if self.columns is not None:
-            missing_cols = [col for col in self.columns if col not in result.columns]
-            for col in missing_cols:
-                result[col] = 0
-            result = result[self.columns]
-        else:
-            self.columns = result.columns
-
-        return result
+        return self._ensure_consistent_columns(result)
 
 
-class PreviousStateTransformer(TransformerMixin):
+class PreviousStateTransformer(BaseTransformer):
     """Extracts features from the second-to-last event of each case."""
 
     def __init__(self, case_id_col, cat_cols, num_cols, fillna=True):
+        super().__init__()
         self.case_id_col = case_id_col
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.fillna = fillna
-        self.columns = None
 
     def fit(self, X, y=None):
         return self
@@ -256,26 +256,18 @@ class PreviousStateTransformer(TransformerMixin):
             result = result.fillna(0)
 
         # Ensure consistent columns across fit/transform calls
-        if self.columns is not None:
-            missing_cols = [col for col in self.columns if col not in result.columns]
-            for col in missing_cols:
-                result[col] = 0
-            result = result[self.columns]
-        else:
-            self.columns = result.columns
-
-        return result
+        return self._ensure_consistent_columns(result)
 
 
-class StaticTransformer(TransformerMixin):
+class StaticTransformer(BaseTransformer):
     """Extracts features from the first event of each case."""
 
     def __init__(self, case_id_col, cat_cols, num_cols, fillna=True):
+        super().__init__()
         self.case_id_col = case_id_col
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.fillna = fillna
-        self.columns = None
 
     def fit(self, X, y=None):
         return self
@@ -296,12 +288,4 @@ class StaticTransformer(TransformerMixin):
             result = result.fillna(0)
 
         # Ensure consistent columns across fit/transform calls
-        if self.columns is not None:
-            missing_cols = [col for col in self.columns if col not in result.columns]
-            for col in missing_cols:
-                result[col] = 0
-            result = result[self.columns]
-        else:
-            self.columns = result.columns
-
-        return result
+        return self._ensure_consistent_columns(result)

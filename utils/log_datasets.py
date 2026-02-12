@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 import pm4py
+from sklearn.preprocessing import LabelEncoder
 
 
 class BaseLogDataset(ABC):
@@ -36,26 +37,20 @@ class BaseLogDataset(ABC):
         self.resource_col = resource_col
         self.feature_names = feature_names
 
-        # Dataset stats
-        self.num_cases = None
-        self.num_events = None
-
         self.raw_df = None
 
     def load_and_preprocess(self):
         """Loads XES and extracts basic temporal features."""
         print(f'Loading {self.dataset_name}...')
-        dataset_path = f'{self.dataset_folder}/{self.dataset_name}.xes'
-        self.raw_df = pm4py.read_xes(dataset_path)
 
-        # Basic cleanup and sorting
+        dataset_path = f'{self.dataset_folder}/{self.dataset_name}.xes'
+
+        self.raw_df = pm4py.read_xes(dataset_path)
+        self.raw_df[self.case_id_col] = self.raw_df[self.case_id_col].astype(str)
         self.raw_df[self.time_col] = pd.to_datetime(
             self.raw_df[self.time_col], utc=True
         )
         self.raw_df = self.raw_df.sort_values([self.case_id_col, self.time_col])
-
-        self.num_cases = self.raw_df[self.case_id_col].nunique()
-        self.num_events = len(self.raw_df)
 
         return self
 
@@ -143,15 +138,73 @@ class BaseLogDataset(ABC):
 class OutcomeDataset(BaseLogDataset):
     def __init__(self, dataset_name, dataset_folder, labels_folder, **kwargs):
         super().__init__(dataset_name, dataset_folder, labels_folder, **kwargs)
+        self.label_encoder = LabelEncoder()
+        self.classes_ = None
+        self.available_case_ids = None
 
-    def prepare_labels(self, df):
+    def filter_by_labels(self):
+        """Filter dataframe to keep only cases that have labels."""
+        if self.raw_df is None:
+            raise ValueError(
+                'Must call load_and_preprocess() before filtering by labels'
+            )
+
+        labels_path = f'{self.labels_folder}/{self.dataset_name}.csv'
+        labels_df = pd.read_csv(labels_path)
+
+        # Available case IDs from labels
+        self.available_case_ids = {str(case_id) for case_id in labels_df.iloc[:, 0]}
+
+        original_cases = self.raw_df[self.case_id_col].nunique()
+        self.raw_df = self.raw_df[
+            self.raw_df[self.case_id_col].isin(self.available_case_ids)
+        ]
+        filtered_cases = self.raw_df[self.case_id_col].nunique()
+
+        dropped = original_cases - filtered_cases
+        if dropped > 0:
+            print(f'Filtered out {dropped} unlabeled cases.')
+            print(f'({original_cases} -> {filtered_cases})')
+
+        return self
+
+    def prepare_labels(self, df, encode=True):
         """Map outcome labels to dataframe using case IDs."""
         labels_path = f'{self.labels_folder}/{self.dataset_name}.csv'
         labels_df = pd.read_csv(labels_path)
 
         # Assuming CSV has columns: [case_id, outcome]
-        label_map = dict(zip(labels_df.iloc[:, 0], labels_df.iloc[:, 1], strict=True))
+        label_map = dict(
+            zip(labels_df.iloc[:, 0].astype(str), labels_df.iloc[:, 1], strict=True)
+        )
 
         labels = df[self.case_id_col].map(label_map)
 
-        return labels
+        # Check for missing labels
+        missing_mask = labels.isna()
+        if missing_mask.any():
+            n_missing = missing_mask.sum()
+            missing_cases = df.loc[missing_mask, self.case_id_col].unique()
+            print(f'{n_missing} rows from {len(missing_cases)} cases are not labeled')
+            print('Consider calling filter_by_labels() after load_and_preprocess()')
+
+            # Filter out rows with missing labels
+            df = df[~missing_mask]
+            labels = labels[~missing_mask]
+
+        if encode:
+            if self.classes_ is None:
+                labels_encoded = self.label_encoder.fit_transform(labels)
+                self.classes_ = self.label_encoder.classes_
+                print(f'Label encoding: {dict(enumerate(self.classes_))}')
+            else:
+                labels_encoded = self.label_encoder.transform(labels)
+            labels = pd.Series(labels_encoded, index=labels.index)
+
+        return labels if not encode else pd.Series(labels, index=df.index)
+
+    def decode_labels(self, encoded_labels):
+        """Decode numeric labels back to original string labels."""
+        if self.label_encoder is None or self.classes_ is None:
+            raise ValueError('Label encoder not fitted. Call prepare_labels first.')
+        return self.label_encoder.inverse_transform(encoded_labels)
