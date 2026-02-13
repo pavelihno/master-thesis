@@ -70,12 +70,32 @@ class BinaryDatasetPostLabeler(FilterPostLabeler):
         return filtered_df
 
 
-class BPIC12PostLabeler(BinaryDatasetPostLabeler):
+class BPIC12APostLabeler(BinaryDatasetPostLabeler):
+    def __init__(self, dataset_name, **kwargs):
+        super().__init__(
+            dataset_name=dataset_name,
+            positive_label='Declined',
+            # keep_labels=['Declined', 'Accepted', 'Cancelled', 'Approved'],
+            **kwargs,
+        )
+
+
+class BPIC12OPostLabeler(BinaryDatasetPostLabeler):
     def __init__(self, dataset_name, **kwargs):
         super().__init__(
             dataset_name=dataset_name,
             positive_label='Accepted',
             # keep_labels=['Accepted', 'Cancelled', 'Declined'],
+            **kwargs,
+        )
+
+
+class BPIC12WPostLabeler(BinaryDatasetPostLabeler):
+    def __init__(self, dataset_name, **kwargs):
+        super().__init__(
+            dataset_name=dataset_name,
+            positive_label='Completed',
+            # keep_labels=['Other', 'Completed'],
             **kwargs,
         )
 
@@ -182,7 +202,9 @@ class BPIC15PostLabeler(BinaryDatasetPostLabeler):
 
 if __name__ == '__main__':
     labelers = [
-        ('BPIC_12', BPIC12PostLabeler),
+        ('BPIC_12_A', BPIC12APostLabeler),
+        ('BPIC_12_O', BPIC12OPostLabeler),
+        ('BPIC_12_W', BPIC12WPostLabeler),
         ('BPIC_13_I', BPIC13IPostLabeler),
         ('BPIC_17', BPIC17PostLabeler),
         ('BPIC_20_DD', BPIC20DDPostLabeler),

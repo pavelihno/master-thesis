@@ -130,12 +130,7 @@ def process_files(directory, dataset_key):
 
 
 def download_datasets(json_path='datasets/links.json', output_dir='datasets/raw'):
-    """Main function to download all datasets.
-
-    Args:
-        json_path: Path to JSON file containing dataset links
-        output_dir: Directory where datasets will be saved
-    """
+    """Main function to download all datasets."""
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
 

@@ -28,34 +28,34 @@ def get_dataset_stats(
 
 
 def extract_stats(
-    json_path='datasets/links.json',
     input_dir='datasets/raw',
     output_path='datasets/stats.json',
 ):
-    """Extract statistics for all datasets and save to JSON.
-
-    Args:
-        json_path: Path to JSON file containing dataset links
-        input_dir: Directory where XES files are located
-        output_path: Path to save statistics JSON file
-    """
-    links = load_links(json_path)
-
+    """Extract statistics for all datasets and save to JSON."""
     all_stats = {}
 
+    # Get all .xes files in the input directory
+    if not os.path.exists(input_dir):
+        print(f'Error: Input directory {input_dir} does not exist')
+        return
+
+    xes_files = [f for f in os.listdir(input_dir) if f.endswith('.xes')]
+
+    if not xes_files:
+        print(f'Warning: No .xes files found in {input_dir}')
+        return
+
+    print(f'Found {len(xes_files)} XES files to process\n')
+
     # Process each dataset
-    for dataset_key in links.keys():
+    for xes_file in sorted(xes_files):
+        dataset_key = os.path.splitext(xes_file)[0]
+
         print(f'\n{"=" * 60}')
         print(f'Processing: {dataset_key}')
         print(f'{"=" * 60}')
 
-        # Construct path to XES file
-        xes_path = os.path.join(input_dir, f'{dataset_key}.xes')
-
-        # Check if file exists
-        if not os.path.exists(xes_path):
-            print(f'Warning: {xes_path} not found, skipping...')
-            continue
+        xes_path = os.path.join(input_dir, xes_file)
 
         try:
             log_df = pm4py.read_xes(xes_path)

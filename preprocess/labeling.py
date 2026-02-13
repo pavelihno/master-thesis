@@ -25,9 +25,10 @@ class DatasetLabeler:
         log = log_converter.apply(log_df)
         labels = self.apply_labeling_rules(log)
 
-        print_class_balance(labels, dataset_names=[self.dataset_name, 'Labeled'])
+        labels_df = pd.DataFrame(labels)
+        print_class_balance(labels_df, dataset_names=[self.dataset_name, 'Labeled'])
 
-        return self._save_labels(labels)
+        return self._save_labels(labels_df)
 
     @abstractmethod
     def apply_labeling_rules(self, log):
@@ -37,37 +38,85 @@ class DatasetLabeler:
         """
         pass
 
-    def _save_labels(self, labels):
-        labels_df = pd.DataFrame(labels)
+    def _save_labels(self, labels_df):
         labels_df.to_csv(self.label_path, index=False)
         print(f'Successfully saved {len(labels_df)} labels to {self.label_path}\n')
         return labels_df
 
 
-class BPIC12Labeler(DatasetLabeler):
+class BPIC12ALabeler(DatasetLabeler):
     def apply_labeling_rules(self, log):
         labels = []
 
         for trace in log:
             case_id = trace.attributes.get('concept:name')
 
-            # Only 'Offer' events (starting with O)
-            offer_events = [
-                ev['concept:name'] for ev in trace if ev['concept:name'].startswith('O')
-            ]
+            a_events = [ev['concept:name'] for ev in trace]
 
-            # Last offer event
-            if offer_events:
-                last_o_event = offer_events[-1]
+            if a_events:
+                last_event = a_events[-1]
             else:
-                last_o_event = 'NO_OFFER_FOUND'
+                last_event = 'NO_EVENT_FOUND'
 
-            if last_o_event == 'O_CANCELLED':
-                outcome = 'Cancelled'
-            elif last_o_event == 'O_ACCEPTED':
-                outcome = 'Accepted'
-            elif last_o_event == 'O_DECLINED':
+            if last_event == 'A_DECLINED':
                 outcome = 'Declined'
+            elif last_event == 'A_ACCEPTED':
+                outcome = 'Accepted'
+            elif last_event == 'A_CANCELLED':
+                outcome = 'Cancelled'
+            elif last_event == 'A_APPROVED':
+                outcome = 'Approved'
+            else:
+                outcome = 'Other'
+
+            labels.append({'case_id': case_id, 'outcome': outcome})
+
+        return labels
+
+
+class BPIC12OLabeler(DatasetLabeler):
+    def apply_labeling_rules(self, log):
+        labels = []
+
+        for trace in log:
+            case_id = trace.attributes.get('concept:name')
+
+            o_events = [ev['concept:name'] for ev in trace]
+
+            if o_events:
+                last_event = o_events[-1]
+            else:
+                last_event = 'NO_EVENT_FOUND'
+
+            if last_event == 'O_CANCELLED':
+                outcome = 'Cancelled'
+            elif last_event == 'O_ACCEPTED':
+                outcome = 'Accepted'
+            elif last_event == 'O_DECLINED':
+                outcome = 'Declined'
+            else:
+                outcome = 'Other'
+
+            labels.append({'case_id': case_id, 'outcome': outcome})
+        return labels
+
+
+class BPIC12WLabeler(DatasetLabeler):
+    def apply_labeling_rules(self, log):
+        labels = []
+
+        for trace in log:
+            case_id = trace.attributes.get('concept:name')
+
+            w_events = [ev['concept:name'] for ev in trace]
+
+            if w_events:
+                last_event = w_events[-1]
+            else:
+                last_event = 'NO_EVENT_FOUND'
+
+            if 'W_Completeren aanvraag' in w_events:
+                outcome = 'Completed'
             else:
                 outcome = 'Other'
 
@@ -331,7 +380,9 @@ class TrafficFinesLabeler(DatasetLabeler):
 
 if __name__ == '__main__':
     labelers = [
-        ('BPIC_12', BPIC12Labeler),
+        ('BPIC_12_A', BPIC12ALabeler),
+        ('BPIC_12_O', BPIC12OLabeler),
+        ('BPIC_12_W', BPIC12WLabeler),
         ('BPIC_13_I', BPIC13ILabeler),
         ('BPIC_17', BPIC17Labeler),
         ('BPIC_20_DD', BPIC20DDLabeler),
