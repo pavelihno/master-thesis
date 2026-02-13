@@ -14,6 +14,11 @@ def get_dataset_stats(
     log_df, case_id_col='case:concept:name', time_col='time:timestamp'
 ):
     """Calculate statistics for a dataset."""
+    # Number of cases, events, and activities
+    num_cases = log_df[case_id_col].nunique()
+    num_events = len(log_df)
+    num_activities = log_df['concept:name'].nunique()
+
     # Case durations in days
     case_durations = log_df.groupby(case_id_col)[time_col].agg(
         lambda x: (x.max() - x.min()).total_seconds() / 86400
@@ -22,6 +27,9 @@ def get_dataset_stats(
     normalization_factor = case_durations.max()
 
     return {
+        'num_cases': int(num_cases),
+        'num_events': int(num_events),
+        'num_activities': int(num_activities),
         'mean_cycle': float(mean_cycle),
         'normalization_factor': float(normalization_factor),
     }
@@ -63,6 +71,9 @@ def extract_stats(
             stats = get_dataset_stats(log_df)
             all_stats[dataset_key] = stats
 
+            print(f'Cases: {stats["num_cases"]}')
+            print(f'Events: {stats["num_events"]}')
+            print(f'Activities: {stats["num_activities"]}')
             print(f'Mean cycle time: {stats["mean_cycle"]:.2f} days')
             print(f'Normalization factor: {stats["normalization_factor"]:.2f} days')
 

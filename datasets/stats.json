@@ -1,94 +1,184 @@
 {
     "BPIC_12": {
+        "num_cases": 13087,
+        "num_events": 262200,
+        "num_activities": 24,
         "mean_cycle": 8.623843703364981,
         "normalization_factor": 137.22148162037038
     },
+    "BPIC_12_A": {
+        "num_cases": 13087,
+        "num_events": 60849,
+        "num_activities": 10,
+        "mean_cycle": 8.080033109372744,
+        "normalization_factor": 91.4552796412037
+    },
+    "BPIC_12_O": {
+        "num_cases": 5015,
+        "num_events": 31244,
+        "num_activities": 7,
+        "mean_cycle": 17.180843126700914,
+        "normalization_factor": 89.5486824537037
+    },
+    "BPIC_12_W": {
+        "num_cases": 9658,
+        "num_events": 170107,
+        "num_activities": 7,
+        "mean_cycle": 11.685088426811538,
+        "normalization_factor": 137.22098274305554
+    },
     "BPIC_13_C": {
+        "num_cases": 1487,
+        "num_events": 6660,
+        "num_activities": 4,
         "mean_cycle": 178.8848765535879,
         "normalization_factor": 2254.8485069444446
     },
     "BPIC_13_I": {
+        "num_cases": 7554,
+        "num_events": 65533,
+        "num_activities": 4,
         "mean_cycle": 12.079344325792565,
         "normalization_factor": 771.3517708333334
     },
     "BPIC_15_1": {
+        "num_cases": 1199,
+        "num_events": 52217,
+        "num_activities": 398,
         "mean_cycle": 95.71857049084113,
         "normalization_factor": 1486.0
     },
     "BPIC_15_2": {
+        "num_cases": 832,
+        "num_events": 44354,
+        "num_activities": 410,
         "mean_cycle": 160.1060730641248,
         "normalization_factor": 1325.9583333333333
     },
     "BPIC_15_3": {
+        "num_cases": 1409,
+        "num_events": 59681,
+        "num_activities": 383,
         "mean_cycle": 62.23151074113503,
         "normalization_factor": 1512.0
     },
     "BPIC_15_4": {
+        "num_cases": 1053,
+        "num_events": 47293,
+        "num_activities": 356,
         "mean_cycle": 116.80170310356654,
         "normalization_factor": 926.9583333333334
     },
     "BPIC_15_5": {
+        "num_cases": 1156,
+        "num_events": 59083,
+        "num_activities": 389,
         "mean_cycle": 98.34008178945598,
         "normalization_factor": 1343.9583333333333
     },
     "BPIC_17": {
+        "num_cases": 31509,
+        "num_events": 1202267,
+        "num_activities": 26,
         "mean_cycle": 21.899605591087365,
         "normalization_factor": 286.07243812499996
     },
     "BPIC_20_DD": {
+        "num_cases": 10500,
+        "num_events": 56437,
+        "num_activities": 17,
         "mean_cycle": 11.525721979717813,
         "normalization_factor": 469.23631944444446
     },
     "BPIC_20_ID": {
+        "num_cases": 6449,
+        "num_events": 72151,
+        "num_activities": 34,
         "mean_cycle": 86.4517285535943,
         "normalization_factor": 742.0
     },
     "BPIC_20_PTC": {
+        "num_cases": 2099,
+        "num_events": 18246,
+        "num_activities": 29,
         "mean_cycle": 36.79117383388033,
         "normalization_factor": 324.97599537037036
     },
     "BPIC_20_RFP": {
+        "num_cases": 6886,
+        "num_events": 36796,
+        "num_activities": 19,
         "mean_cycle": 12.007786312943061,
         "normalization_factor": 405.99306712962965
     },
     "BPIC_20_TPD": {
+        "num_cases": 7065,
+        "num_events": 86581,
+        "num_activities": 51,
         "mean_cycle": 87.39003753014339,
         "normalization_factor": 1190.3287152777777
     },
-    "Traffic_Fines": {
-        "mean_cycle": 341.67626299572163,
-        "normalization_factor": 4372.0
-    },
-    "Sepsis": {
-        "mean_cycle": 28.469142824074073,
-        "normalization_factor": 422.3239467592593
-    },
-    "Hospital_Billing": {
-        "mean_cycle": 127.36268815405093,
-        "normalization_factor": 1035.4212037037037
-    },
-    "Helpdesk": {
-        "mean_cycle": 40.85840765000809,
-        "normalization_factor": 59.99496527777778
-    },
     "Env_Permits_1": {
+        "num_cases": 937,
+        "num_events": 38944,
+        "num_activities": 381,
         "mean_cycle": 89.91153347217282,
         "normalization_factor": 882.0
     },
     "Env_Permits_2": {
+        "num_cases": 645,
+        "num_events": 33373,
+        "num_activities": 376,
         "mean_cycle": 148.81727564240597,
         "normalization_factor": 789.0
     },
     "Env_Permits_3": {
+        "num_cases": 1087,
+        "num_events": 44801,
+        "num_activities": 369,
         "mean_cycle": 59.82070820130158,
         "normalization_factor": 1512.0
     },
     "Env_Permits_4": {
+        "num_cases": 787,
+        "num_events": 34848,
+        "num_activities": 331,
         "mean_cycle": 120.28849419384443,
         "normalization_factor": 926.9583333333334
     },
     "Env_Permits_5": {
+        "num_cases": 892,
+        "num_events": 43896,
+        "num_activities": 350,
         "mean_cycle": 89.92117792154542,
         "normalization_factor": 779.5949768518518
+    },
+    "Helpdesk": {
+        "num_cases": 4580,
+        "num_events": 21348,
+        "num_activities": 14,
+        "mean_cycle": 40.85840765000809,
+        "normalization_factor": 59.99496527777778
+    },
+    "Hospital_Billing": {
+        "num_cases": 100000,
+        "num_events": 451359,
+        "num_activities": 18,
+        "mean_cycle": 127.36268815405093,
+        "normalization_factor": 1035.4212037037037
+    },
+    "Sepsis": {
+        "num_cases": 1050,
+        "num_events": 15214,
+        "num_activities": 16,
+        "mean_cycle": 28.469142824074073,
+        "normalization_factor": 422.3239467592593
+    },
+    "Traffic_Fines": {
+        "num_cases": 150370,
+        "num_events": 561470,
+        "num_activities": 11,
+        "mean_cycle": 341.67626299572163,
+        "normalization_factor": 4372.0
     }
 }
