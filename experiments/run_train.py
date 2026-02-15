@@ -113,6 +113,15 @@ def run_experiment(config_path, experiment_name=None):
 
     print(f'\nResults saved to: {output_file}')
 
+    # Save model if configured
+    if config.get('output', {}).get('save_model', False):
+        model_dir = Path(config.get('output', {}).get('model_folder', 'models'))
+        model_save_path = model_dir / f'{experiment_name}_{timestamp}'
+
+        print('\nSaving model...')
+        pipeline.save(model_save_path)
+        print(f'Model saved to: {model_save_path}')
+
     return {
         'experiment_name': experiment_name,
         'config_path': config_path,

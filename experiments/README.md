@@ -61,7 +61,9 @@ model:
         learning_rate: 0.1
 
 output:
-    folder: outputs
+    folder: experiments/outputs
+    save_model: true
+    model_folder: experiments/models
 ```
 
 ### 2. Run the Experiment
@@ -85,15 +87,39 @@ python run_batch_experiments.py --dataset Traffic_Fines
 
 ### 3. View Results
 
-Results are saved to **`outputs/{experiment_name}_{timestamp}.txt`**
+Results are saved to **`experiments/outputs/{experiment_name}_{timestamp}.txt`**
 
 Example output files:
 
-- `outputs/xgb_traffic_fines_baseline_2026-02-12_14-30-45.txt`
-- `outputs/rf_helpdesk_baseline_2026-02-12_15-22-10.txt`
+- `experiments/outputs/xgb_traffic_fines_baseline_2026-02-12_14-30-45.txt`
+- `experiments/outputs/rf_helpdesk_baseline_2026-02-12_15-22-10.txt`
 
 Each file contains:
 
 - Configuration used
 - Classification report (precision, recall, f1-score)
 - Summary metrics (accuracy, macro/weighted F1)
+
+### 4. Save Models
+
+If `save_model: true` in config, trained models are saved to **`experiments/models/{experiment_name}_{timestamp}/`**
+
+Model structure:
+
+```
+experiments/models/xgb_traffic_fines_baseline_2026-02-12_14-30-45/
+├── metadata.json         # Model metadata and configuration
+├── bucketer.pkl          # Trained bucketer
+└── bucket_*/             # Separate model for each bucket
+    ├── model.pkl         # Trained model (XGBoost, RF, etc.)
+    └── transformer.pkl   # Fitted transformer
+```
+
+**Load model in code:**
+
+```python
+from utils.pipelines import ProcessPredictorPipeline
+
+# Load saved pipeline
+pipeline = ProcessPredictorPipeline.load('experiments/models/xgb_traffic_fines_baseline_2026-02-12_14-30-45')
+```

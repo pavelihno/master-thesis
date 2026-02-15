@@ -1,8 +1,8 @@
-experiment_name: xgb_traffic_fines
+experiment_name: lr_bpic12o
 
 dataset:
   type: outcome
-  dataset_name: Traffic_Fines
+  dataset_name: BPIC_12_O
   dataset_folder: datasets/raw
   labels_folder: datasets/labels/binary
   train_ratio: 0.8
@@ -23,11 +23,10 @@ transformer:
     - time_since_start
 
 model:
-  type: xgboost
+  type: logistic_regression
   params:
-    n_estimators: 100
-    max_depth: 5
-    learning_rate: 0.1
+    C: 1.0
+    max_iter: 1000
     random_state: 42
 
 output:

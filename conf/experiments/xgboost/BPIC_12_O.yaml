@@ -1,8 +1,8 @@
-experiment_name: xgb_traffic_fines
+experiment_name: xgb_bpic12o
 
 dataset:
   type: outcome
-  dataset_name: Traffic_Fines
+  dataset_name: BPIC_12_O
   dataset_folder: datasets/raw
   labels_folder: datasets/labels/binary
   train_ratio: 0.8

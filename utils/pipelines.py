@@ -1,3 +1,7 @@
+import json
+import pickle
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from sklearn.base import clone
@@ -118,3 +122,84 @@ class ProcessPredictorPipeline:
         )
 
         return predictions
+
+    def save(self, save_dir):
+        """Save pipeline models and metadata to directory."""
+        save_path = Path(save_dir)
+        save_path.mkdir(parents=True, exist_ok=True)
+
+        metadata = {
+            'n_classes': self.n_classes,
+            'trained_buckets': [int(b) for b in self.trained_buckets],
+            'bucketer_type': type(self.bucketer).__name__,
+            'transformer_type': type(self.transformer).__name__,
+            'estimator_type': type(self.estimator).__name__,
+        }
+
+        with open(save_path / 'metadata.json', 'w') as f:
+            json.dump(metadata, f, indent=2)
+
+        # Save bucketer
+        with open(save_path / 'bucketer.pkl', 'wb') as f:
+            pickle.dump(self.bucketer, f)
+
+        # Save each bucket's model and transformer
+        for bucket_id in self.trained_buckets:
+            bucket_dir = save_path / f'bucket_{bucket_id}'
+            bucket_dir.mkdir(exist_ok=True)
+
+            if bucket_id in self.bucket_models:
+                with open(bucket_dir / 'model.pkl', 'wb') as f:
+                    pickle.dump(self.bucket_models[bucket_id], f)
+
+            if bucket_id in self.bucket_transformers:
+                with open(bucket_dir / 'transformer.pkl', 'wb') as f:
+                    pickle.dump(self.bucket_transformers[bucket_id], f)
+
+        print(f'Pipeline saved to: {save_path}')
+        print(f'  - Bucketer: {metadata["bucketer_type"]}')
+        print(f'  - Transformer: {metadata["transformer_type"]}')
+        print(f'  - Estimator: {metadata["estimator_type"]}')
+        print(f'  - Trained buckets: {len(self.trained_buckets)}')
+
+    @classmethod
+    def load(cls, load_dir):
+        """Load pipeline from saved directory."""
+        load_path = Path(load_dir)
+
+        if not load_path.exists():
+            raise ValueError(f'Directory not found: {load_path}')
+
+        # Load metadata
+        with open(load_path / 'metadata.json') as f:
+            metadata = json.load(f)
+
+        # Load bucketer
+        with open(load_path / 'bucketer.pkl', 'rb') as f:
+            bucketer = pickle.load(f)
+
+        # Create pipeline instance with loaded bucketer
+        # Note: transformer and estimator will be loaded per bucket
+        pipeline = cls(bucketer, None, None)
+        pipeline.n_classes = metadata['n_classes']
+        pipeline.trained_buckets = np.array(metadata['trained_buckets'])
+
+        # Load each bucket's model and transformer
+        for bucket_id in pipeline.trained_buckets:
+            bucket_dir = load_path / f'bucket_{bucket_id}'
+
+            if (bucket_dir / 'model.pkl').exists():
+                with open(bucket_dir / 'model.pkl', 'rb') as f:
+                    pipeline.bucket_models[bucket_id] = pickle.load(f)
+
+            if (bucket_dir / 'transformer.pkl').exists():
+                with open(bucket_dir / 'transformer.pkl', 'rb') as f:
+                    pipeline.bucket_transformers[bucket_id] = pickle.load(f)
+
+        print(f'Pipeline loaded from: {load_path}')
+        print(f'  - Bucketer: {metadata["bucketer_type"]}')
+        print(f'  - Transformer: {metadata["transformer_type"]}')
+        print(f'  - Estimator: {metadata["estimator_type"]}')
+        print(f'  - Trained buckets: {len(pipeline.trained_buckets)}')
+
+        return pipeline

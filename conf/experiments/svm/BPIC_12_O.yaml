@@ -1,8 +1,8 @@
-experiment_name: xgb_traffic_fines
+experiment_name: svm_bpic12o
 
 dataset:
   type: outcome
-  dataset_name: Traffic_Fines
+  dataset_name: BPIC_12_O
   dataset_folder: datasets/raw
   labels_folder: datasets/labels/binary
   train_ratio: 0.8
@@ -14,21 +14,22 @@ bucketer:
   case_id_col: prefix_id
 
 transformer:
-  type: aggregate
+  type: last_state
   case_id_col: prefix_id
   cat_cols:
     - concept:name
   num_cols:
     - time_since_last_event
     - time_since_start
+    - event_index
 
 model:
-  type: xgboost
+  type: svm
   params:
-    n_estimators: 100
-    max_depth: 5
-    learning_rate: 0.1
+    C: 1.0
+    kernel: rbf
     random_state: 42
+    probability: true
 
 output:
   folder: experiments/outputs
