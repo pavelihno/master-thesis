@@ -53,19 +53,43 @@ class BaseLogDataset(ABC):
         return self
 
     def _extract_features(self, df):
-        """Extract temporal and calendar features."""
+        """Extract temporal, calendar, and process context features."""
         # Avoid modifying the original
         df = df.copy()
 
         grouped = df.groupby(self.case_id_col)[self.time_col]
 
-        df['time_since_start'] = (
+        # Temporal features (in days)
+        df['elapsed_time'] = (
             grouped.transform(lambda x: x - x.min()).dt.total_seconds() / 86400
         )
         df['time_since_last_event'] = (
             grouped.diff().dt.total_seconds() / 86400
         ).fillna(0)
-        df['event_index'] = df.groupby(self.case_id_col).cumcount() + 1
+
+        # Trace duration and remaining time
+        trace_durations = (
+            grouped.transform(lambda x: x.max() - x.min()).dt.total_seconds() / 86400
+        )
+        df['trace_duration'] = trace_durations
+        df['remaining_time'] = trace_durations - df['elapsed_time']
+
+        # Event position in trace
+        df['event_position'] = df.groupby(self.case_id_col).cumcount() + 1
+
+        # Process context features
+        df['executed_events_count'] = df.groupby(self.time_col)[
+            self.case_id_col
+        ].transform('count')
+        df['new_traces_count'] = df.groupby(
+            df.groupby(self.case_id_col)[self.time_col].transform('min')
+        )[self.case_id_col].transform('count')
+
+        # Resources used at each timestamp
+        if self.resource_col in df.columns:
+            df['resources_used_count'] = df.groupby(self.time_col)[
+                self.resource_col
+            ].transform('nunique')
 
         # Calendar Features
         df['day_of_week'] = df[self.time_col].dt.dayofweek

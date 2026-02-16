@@ -99,6 +99,7 @@ Each file contains:
 - Configuration used
 - Classification report (precision, recall, f1-score)
 - Summary metrics (accuracy, macro/weighted F1)
+- Per-bucket statistics (performance metrics for each prefix length)
 
 ### 4. Save Models
 
@@ -123,3 +124,72 @@ from utils.pipelines import ProcessPredictorPipeline
 # Load saved pipeline
 pipeline = ProcessPredictorPipeline.load('experiments/models/xgb_traffic_fines_baseline_2026-02-12_14-30-45')
 ```
+
+---
+
+## Hyperparameter Search
+
+The framework includes a hyperparameter search tool that efficiently searches over parameter grids without re-processing data.
+
+### 1. Create Hyperparameter Search Config
+
+Create a YAML config with `param_grid` instead of `params`:
+
+```yaml
+experiment_name: xgb_hypersearch
+
+dataset:
+    type: outcome
+    dataset_name: BPIC_12_O
+    dataset_folder: datasets/raw
+    labels_folder: datasets/labels/binary
+    train_ratio: 0.8
+    min_prefix: 3
+    max_prefix: 10
+
+bucketer:
+    type: prefix_length
+    case_id_col: prefix_id
+
+transformer:
+    type: aggregate
+    case_id_col: prefix_id
+    cat_cols:
+        - concept:name
+    num_cols:
+        - time_since_last_event
+        - time_since_start
+
+model:
+    type: xgboost
+
+    # Use param_grid instead of params
+    # Specify lists for parameters to search over
+    # Specify single values for fixed parameters
+    param_grid:
+        n_estimators: [100, 200, 300]
+        max_depth: [3, 5, 7]
+        learning_rate: [0.01, 0.1, 0.2]
+        subsample: [0.8, 1.0]
+        colsample_bytree: 1.0 # Fixed
+        random_state: 42 # Fixed
+
+output:
+    folder: experiments/outputs
+    save_best_model: true # Save best model after search
+    model_folder: experiments/models
+```
+
+### 2. Run Hyperparameter Search
+
+```bash
+# Run hyperparameter search
+python experiments/run_hyperparam_search.py conf/experiments/xgboost/BPIC_12_O_hypersearch.yaml
+
+# With custom name
+python experiments/run_hyperparam_search.py conf/experiments/xgboost/BPIC_12_O_hypersearch.yaml --name my_search
+```
+
+### 3. View Search Results
+
+Results are saved to **`experiments/outputs/{experiment_name}_hypersearch_{timestamp}.txt`**

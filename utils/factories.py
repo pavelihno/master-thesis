@@ -93,18 +93,6 @@ def create_transformer(config):
             num_cols=config.get('num_cols', []),
             max_len=config.get('max_len'),
         )
-    elif transformer_type == 'complex':
-        # Placeholder for future implementation
-        raise NotImplementedError(
-            'ComplexTransformer not implemented yet. '
-            'Will combine multiple encoding strategies.'
-        )
-    elif transformer_type == 'bow':
-        # Placeholder for future implementation
-        raise NotImplementedError(
-            'BagOfWordsTransformer not implemented yet. '
-            'Will encode activity sequences as bag-of-words.'
-        )
     else:
         raise ValueError(f'Unknown transformer type: {transformer_type}')
 
