@@ -20,6 +20,15 @@ def download_file(url, output_path):
     print(f'Downloaded: {output_path}')
 
 
+def is_zip_file(file_path):
+    """Check if a file is a valid zip archive."""
+    try:
+        with zipfile.ZipFile(file_path, 'r') as _:
+            return True
+    except zipfile.BadZipFile:
+        return False
+
+
 def unzip_file(zip_path, extract_dir):
     """Extract contents of a zip file."""
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
@@ -77,11 +86,7 @@ def convert_csv_to_xes(csv_path, dataset_key):
             'activity_key': 'activity',
             'timestamp_key': 'timestamp',
         },
-        {
-            'case_id': 'CaseID',
-            'activity_key': 'Activity',
-            'timestamp_key': 'Timestamp'
-        },
+        {'case_id': 'CaseID', 'activity_key': 'Activity', 'timestamp_key': 'Timestamp'},
     ]
 
     # Try each mapping until one works
@@ -143,16 +148,23 @@ def download_datasets(json_path='datasets/links.json', output_dir='datasets/raw'
         print(f'{dataset_key}')
         print(f'{"=" * 60}')
 
-        # Download zip file
-        zip_path = os.path.join(output_dir, f'{dataset_key}.zip')
-        download_file(url, zip_path)
+        # Download file (zip or xes)
+        download_path = os.path.join(output_dir, f'{dataset_key}.zip')
+        download_file(url, download_path)
 
-        # Extract zip file
-        unzip_file(zip_path, output_dir)
+        if is_zip_file(download_path):
+            # Extract zip file
+            unzip_file(download_path, output_dir)
+        else:
+            # Rename plain XES file
+            xes_path = os.path.join(output_dir, f'{dataset_key}.xes')
+            os.replace(download_path, xes_path)
+            print(f'Renamed to: {xes_path}')
 
-        # Remove zip file
-        os.remove(zip_path)
-        print(f'Removed zip: {zip_path}')
+        # Remove original downloaded file if it still exists
+        if os.path.exists(download_path):
+            os.remove(download_path)
+            print(f'Removed original download: {download_path}')
 
         # Filter files (keep only relevant formats)
         filter_files(output_dir, dataset_key)

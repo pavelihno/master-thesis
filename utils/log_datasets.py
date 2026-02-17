@@ -12,6 +12,7 @@ class BaseLogDataset(ABC):
         dataset_name,
         dataset_folder,
         labels_folder=None,
+        label_filename=None,
         train_ratio=0.8,
         min_prefix=3,
         max_prefix=None,
@@ -25,6 +26,7 @@ class BaseLogDataset(ABC):
         self.labels_folder = labels_folder
 
         self.dataset_name = dataset_name
+        self.label_filename = label_filename if label_filename else dataset_name
         self.train_ratio = train_ratio
         self.min_prefix = min_prefix
         self.max_prefix = max_prefix
@@ -161,7 +163,7 @@ class OutcomeDataset(BaseLogDataset):
                 'Must call load_and_preprocess() before filtering by labels'
             )
 
-        labels_path = f'{self.labels_folder}/{self.dataset_name}.csv'
+        labels_path = f'{self.labels_folder}/{self.label_filename}.csv'
         labels_df = pd.read_csv(labels_path)
 
         # Available case IDs from labels
@@ -182,7 +184,7 @@ class OutcomeDataset(BaseLogDataset):
 
     def prepare_labels(self, df, encode=True):
         """Map outcome labels to dataframe using case IDs."""
-        labels_path = f'{self.labels_folder}/{self.dataset_name}.csv'
+        labels_path = f'{self.labels_folder}/{self.label_filename}.csv'
         labels_df = pd.read_csv(labels_path)
 
         # Assuming CSV has columns: [case_id, outcome]

@@ -13,10 +13,12 @@ class DatasetLabeler:
         dataset_name,
         dataset_folder='datasets/raw',
         label_folder='datasets/labels',
+        label_filename=None,
     ):
         self.dataset_name = dataset_name
         self.dataset_path = f'{dataset_folder}/{dataset_name}.xes'
-        self.label_path = f'{label_folder}/{dataset_name}.csv'
+        self.label_filename = label_filename if label_filename else dataset_name
+        self.label_path = f'{label_folder}/{self.label_filename}.csv'
 
     def run(self):
         print(f'\n=== Labeling {self.dataset_name} ===')
@@ -213,6 +215,36 @@ class BPIC17Labeler(DatasetLabeler):
         return labels
 
 
+class BPIC19Labeler(DatasetLabeler):
+    def apply_labeling_rules(self, log):
+        labels = []
+
+        for trace in log:
+            case_id = trace.attributes.get('concept:name')
+            activities = [ev.get('concept:name', '') for ev in trace]
+
+            # Check if invoice was cleared (payment completed)
+            has_invoice_cleared = any(
+                'Clear Invoice' in act or 'Record Invoice Receipt' in act
+                for act in activities
+            )
+
+            # Check if there are rejection/deletion activities
+            has_rejection = any(
+                'Delete' in act or 'Reject' in act for act in activities
+            )
+
+            if has_rejection:
+                outcome = 'Rejected'
+            elif has_invoice_cleared:
+                outcome = 'Cleared'
+            else:
+                outcome = 'Incomplete'
+
+            labels.append({'case_id': case_id, 'outcome': outcome})
+        return labels
+
+
 class BPIC20DDLabeler(DatasetLabeler):
     def apply_labeling_rules(self, log):
         labels = []
@@ -385,6 +417,7 @@ if __name__ == '__main__':
         ('BPIC_12_W', BPIC12WLabeler),
         ('BPIC_13_I', BPIC13ILabeler),
         ('BPIC_17', BPIC17Labeler),
+        ('BPIC_19', BPIC19Labeler),
         ('BPIC_20_DD', BPIC20DDLabeler),
         ('BPIC_20_PTC', BPIC20PTCLabeler),
         ('BPIC_20_RFP', BPIC20RFPLabeler),

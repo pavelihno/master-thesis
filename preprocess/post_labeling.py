@@ -10,10 +10,20 @@ class DatasetPostLabeler(DatasetLabeler):
         dataset_name,
         label_folder,
         original_label_folder='datasets/labels',
+        label_filename=None,
+        original_label_filename=None,
     ):
         self.dataset_name = dataset_name
-        self.original_label_path = f'{original_label_folder}/{dataset_name}.csv'
-        self.label_path = f'{label_folder}/{dataset_name}.csv'
+
+        original_label_filename = (
+            original_label_filename if original_label_filename else dataset_name
+        )
+        label_filename = label_filename if label_filename else dataset_name
+
+        self.original_label_path = (
+            f'{original_label_folder}/{original_label_filename}.csv'
+        )
+        self.label_path = f'{label_folder}/{label_filename}.csv'
 
     def run(self):
         print(f'\n=== Post labeling {self.dataset_name} ===')
@@ -120,6 +130,16 @@ class BPIC17PostLabeler(BinaryDatasetPostLabeler):
         )
 
 
+class BPIC19PostLabeler(BinaryDatasetPostLabeler):
+    def __init__(self, dataset_name, **kwargs):
+        super().__init__(
+            dataset_name=dataset_name,
+            positive_label='Cleared',
+            # keep_labels=['Cleared', 'Incomplete', 'Rejected'],
+            **kwargs,
+        )
+
+
 class BPIC20DDPostLabeler(BinaryDatasetPostLabeler):
     def __init__(self, dataset_name, **kwargs):
         super().__init__(
@@ -207,6 +227,7 @@ if __name__ == '__main__':
         ('BPIC_12_W', BPIC12WPostLabeler),
         ('BPIC_13_I', BPIC13IPostLabeler),
         ('BPIC_17', BPIC17PostLabeler),
+        ('BPIC_19', BPIC19PostLabeler),
         ('BPIC_20_DD', BPIC20DDPostLabeler),
         ('BPIC_20_PTC', BPIC20PTCPostLabeler),
         ('BPIC_20_RFP', BPIC20RFPPostLabeler),
