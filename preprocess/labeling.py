@@ -50,26 +50,47 @@ class BPIC12ALabeler(DatasetLabeler):
     def apply_labeling_rules(self, log):
         labels = []
 
+        # Keywords with lifecycle transitions (matching Weytjens methodology)
+        keywords_dict = {
+            'approved': [
+                'A_REGISTERED_COMPLETE',
+                'A_APPROVED_COMPLETE',
+                'O_ACCEPTED_COMPLETE',
+                'A_ACTIVATED_COMPLETE',
+            ],
+            'declined': ['A_DECLINED_COMPLETE', 'O_DECLINED_COMPLETE'],
+            'canceled': ['A_CANCELLED_COMPLETE', 'O_CANCELLED_COMPLETE'],
+        }
+
+        # Priority: declined > approved > canceled
+        priority_order = ['declined', 'approved', 'canceled']
+        outcome_labels = {
+            'declined': 'Declined',
+            'approved': 'Approved',
+            'canceled': 'Cancelled',
+        }
+
         for trace in log:
             case_id = trace.attributes.get('concept:name')
 
-            a_events = [ev['concept:name'] for ev in trace]
+            # Create activity+lifecycle column
+            activities = set()
+            for ev in trace:
+                concept = ev.get('concept:name', '')
+                lifecycle = ev.get('lifecycle:transition', '')
+                if lifecycle:
+                    activities.add(f'{concept}_{lifecycle}')
+                else:
+                    activities.add(concept)
 
-            if a_events:
-                last_event = a_events[-1]
-            else:
-                last_event = 'NO_EVENT_FOUND'
-
-            if last_event == 'A_DECLINED':
-                outcome = 'Declined'
-            elif last_event == 'A_ACCEPTED':
-                outcome = 'Accepted'
-            elif last_event == 'A_CANCELLED':
-                outcome = 'Cancelled'
-            elif last_event == 'A_APPROVED':
-                outcome = 'Approved'
-            else:
-                outcome = 'Other'
+            # Determine outcome by priority
+            outcome = 'Other'
+            for outcome_type in priority_order:
+                if any(kw in activities for kw in keywords_dict.get(outcome_type, [])):
+                    outcome = outcome_labels.get(
+                        outcome_type, outcome_type.capitalize()
+                    )
+                    break
 
             labels.append({'case_id': case_id, 'outcome': outcome})
 
@@ -80,26 +101,50 @@ class BPIC12OLabeler(DatasetLabeler):
     def apply_labeling_rules(self, log):
         labels = []
 
+        # Keywords with lifecycle transitions (matching Weytjens methodology)
+        keywords_dict = {
+            'approved': [
+                'A_REGISTERED_COMPLETE',
+                'A_APPROVED_COMPLETE',
+                'O_ACCEPTED_COMPLETE',
+                'A_ACTIVATED_COMPLETE',
+            ],
+            'declined': ['A_DECLINED_COMPLETE', 'O_DECLINED_COMPLETE'],
+            'canceled': ['A_CANCELLED_COMPLETE', 'O_CANCELLED_COMPLETE'],
+        }
+
+        # Priority: canceled > approved > declined
+        priority_order = ['canceled', 'approved', 'declined']
+        outcome_labels = {
+            'canceled': 'Cancelled',
+            'approved': 'Accepted',
+            'declined': 'Declined',
+        }
+
         for trace in log:
             case_id = trace.attributes.get('concept:name')
 
-            o_events = [ev['concept:name'] for ev in trace]
+            # Create activity+lifecycle column
+            activities = set()
+            for ev in trace:
+                concept = ev.get('concept:name', '')
+                lifecycle = ev.get('lifecycle:transition', '')
+                if lifecycle:
+                    activities.add(f'{concept}_{lifecycle}')
+                else:
+                    activities.add(concept)
 
-            if o_events:
-                last_event = o_events[-1]
-            else:
-                last_event = 'NO_EVENT_FOUND'
-
-            if last_event == 'O_CANCELLED':
-                outcome = 'Cancelled'
-            elif last_event == 'O_ACCEPTED':
-                outcome = 'Accepted'
-            elif last_event == 'O_DECLINED':
-                outcome = 'Declined'
-            else:
-                outcome = 'Other'
+            # Determine outcome by priority
+            outcome = 'Other'
+            for outcome_type in priority_order:
+                if any(kw in activities for kw in keywords_dict.get(outcome_type, [])):
+                    outcome = outcome_labels.get(
+                        outcome_type, outcome_type.capitalize()
+                    )
+                    break
 
             labels.append({'case_id': case_id, 'outcome': outcome})
+
         return labels
 
 
@@ -107,22 +152,49 @@ class BPIC12WLabeler(DatasetLabeler):
     def apply_labeling_rules(self, log):
         labels = []
 
+        keywords_dict = {
+            'approved': [
+                'W_Completeren aanvraag_COMPLETE',  # Complete application
+                'W_Valideren aanvraag_COMPLETE',  # Validate application
+            ],
+            'declined': [],
+            'canceled': [
+                'W_Nabellen offertes_COMPLETE',  # Call about offers (follow-up)
+            ],
+        }
+
+        # Priority: declined > approved > canceled (same as A variant)
+        priority_order = ['declined', 'approved', 'canceled']
+        outcome_labels = {
+            'declined': 'Declined',
+            'approved': 'Approved',
+            'canceled': 'Cancelled',
+        }
+
         for trace in log:
             case_id = trace.attributes.get('concept:name')
 
-            w_events = [ev['concept:name'] for ev in trace]
+            # Create activity+lifecycle column
+            activities = set()
+            for ev in trace:
+                concept = ev.get('concept:name', '')
+                lifecycle = ev.get('lifecycle:transition', '')
+                if lifecycle:
+                    activities.add(f'{concept}_{lifecycle}')
+                else:
+                    activities.add(concept)
 
-            if w_events:
-                last_event = w_events[-1]
-            else:
-                last_event = 'NO_EVENT_FOUND'
-
-            if 'W_Completeren aanvraag' in w_events:
-                outcome = 'Completed'
-            else:
-                outcome = 'Other'
+            # Determine outcome by priority
+            outcome = 'Other'
+            for outcome_type in priority_order:
+                if any(kw in activities for kw in keywords_dict.get(outcome_type, [])):
+                    outcome = outcome_labels.get(
+                        outcome_type, outcome_type.capitalize()
+                    )
+                    break
 
             labels.append({'case_id': case_id, 'outcome': outcome})
+
         return labels
 
 
@@ -190,28 +262,38 @@ class BPIC17Labeler(DatasetLabeler):
     def apply_labeling_rules(self, log):
         labels = []
 
+        # Keywords for classification targets (matching Weytjens methodology)
+        keywords_dict = {
+            'approved': ['O_Accepted'],
+            'declined': ['O_Refused'],
+            'canceled': ['O_Cancelled'],
+        }
+
+        # Priority: canceled > declined > approved
+        priority_order = ['canceled', 'declined', 'approved']
+        outcome_labels = {
+            'canceled': 'Cancelled',
+            'declined': 'Declined',
+            'approved': 'Accepted',
+        }
+
         for trace in log:
             case_id = trace.attributes.get('concept:name')
 
-            offer_events = [
-                ev['concept:name'] for ev in trace if ev.get('EventOrigin') == 'Offer'
-            ]
+            # Get all activity names (no lifecycle for BPIC17)
+            activities = {ev.get('concept:name', '') for ev in trace}
 
-            if offer_events:
-                last_o_event = offer_events[-1]
-            else:
-                last_o_event = 'NO_OFFER_FOUND'
-
-            if last_o_event == 'O_Cancelled':
-                outcome = 'Cancelled'
-            elif last_o_event == 'O_Accepted':
-                outcome = 'Accepted'
-            elif last_o_event == 'O_Refused':
-                outcome = 'Refused'
-            else:
-                outcome = 'Other'
+            # Determine outcome by priority
+            outcome = 'Other'
+            for outcome_type in priority_order:
+                if any(kw in activities for kw in keywords_dict.get(outcome_type, [])):
+                    outcome = outcome_labels.get(
+                        outcome_type, outcome_type.capitalize()
+                    )
+                    break
 
             labels.append({'case_id': case_id, 'outcome': outcome})
+
         return labels
 
 

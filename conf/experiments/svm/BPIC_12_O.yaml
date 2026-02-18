@@ -4,7 +4,8 @@ dataset:
   type: outcome
   dataset_name: BPIC_12_O
   dataset_folder: datasets/raw
-  labels_folder: datasets/labels/binary
+  labels_folder: datasets/labels/benchmarks/Weytjens_2021
+  label_filename: BPIC_12_O
   train_ratio: 0.8
   min_prefix: 3
   max_prefix: 10

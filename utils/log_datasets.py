@@ -5,6 +5,8 @@ import pandas as pd
 import pm4py
 from sklearn.preprocessing import LabelEncoder
 
+from utils.temporal_splitting import create_unbiased_temporal_split, print_split_summary
+
 
 class BaseLogDataset(ABC):
     def __init__(
@@ -141,6 +143,46 @@ class BaseLogDataset(ABC):
         test_df = self._extract_features(test_df)
 
         print(f'Train cases: {len(train_ids)}, Test cases: {len(test_ids)}')
+        return train_df, test_df
+
+    def unbiased_train_test_split(
+        self,
+        start_date=None,
+        end_date=None,
+        max_days=None,
+        test_len_share=0.2,
+        verbose=True,
+    ):
+        """
+        Create train/test split with temporal debiasing (Weytjens methodology).
+
+        Addresses data leakage and bias in standard chronological splits by:
+        - Ensuring strict temporal separation (train cases end before test cases start)
+        - Debiasing test set by limiting maximum case duration
+        - Removing chronological outliers
+        """
+        if self.raw_df is None:
+            raise ValueError('Dataset not loaded. Call load_and_preprocess() first.')
+
+        # Apply temporal split with debiasing
+        train_df, test_df, split_info = create_unbiased_temporal_split(
+            self.raw_df,
+            start_date=start_date,
+            end_date=end_date,
+            max_days=max_days,
+            test_len_share=test_len_share,
+            time_col=self.time_col,
+            case_id_col=self.case_id_col,
+        )
+
+        # Extract features for both sets
+        train_df = self._extract_features(train_df)
+        test_df = self._extract_features(test_df)
+
+        # Print summary if verbose
+        if verbose:
+            print_split_summary(split_info)
+
         return train_df, test_df
 
     @abstractmethod

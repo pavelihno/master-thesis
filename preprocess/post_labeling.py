@@ -85,7 +85,7 @@ class BPIC12APostLabeler(BinaryDatasetPostLabeler):
         super().__init__(
             dataset_name=dataset_name,
             positive_label='Declined',
-            # keep_labels=['Declined', 'Accepted', 'Cancelled', 'Approved'],
+            # keep_labels=['Approved', 'Declined', 'Cancelled'],
             **kwargs,
         )
 
@@ -104,8 +104,8 @@ class BPIC12WPostLabeler(BinaryDatasetPostLabeler):
     def __init__(self, dataset_name, **kwargs):
         super().__init__(
             dataset_name=dataset_name,
-            positive_label='Completed',
-            # keep_labels=['Other', 'Completed'],
+            positive_label='Approved',
+            # keep_labels=['Approved', 'Cancelled', 'Other'],
             **kwargs,
         )
 

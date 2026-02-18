@@ -21,6 +21,7 @@ def create_dataset(config):
             dataset_name=config['dataset_name'],
             dataset_folder=config['dataset_folder'],
             labels_folder=config['labels_folder'],
+            label_filename=config.get('label_filename', None),
             train_ratio=config.get('train_ratio', 0.8),
             min_prefix=config.get('min_prefix', 3),
             max_prefix=config.get('max_prefix', None),

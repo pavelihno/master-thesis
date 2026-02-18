@@ -1,7 +1,7 @@
 case_id,outcome
 Application_652823628,Accepted
 Application_1691306052,Other
-Application_428409768,Accepted
+Application_428409768,Other
 Application_1746793196,Other
 Application_828200680,Other
 Application_1085880569,Other
@@ -31,7 +31,7 @@ Application_1197857445,Other
 Application_931862671,Other
 Application_2012588584,Other
 Application_1825972191,Other
-Application_1059184025,Accepted
+Application_1059184025,Other
 Application_1395142997,Accepted
 Application_2015287405,Other
 Application_1193723578,Other
@@ -78,7 +78,7 @@ Application_1765204099,Other
 Application_1624825294,Other
 Application_1448214642,Other
 Application_987262285,Other
-Application_1845547664,Accepted
+Application_1845547664,Other
 Application_1947648225,Other
 Application_1130101747,Accepted
 Application_798605556,Other
@@ -110,7 +110,7 @@ Application_93597308,Other
 Application_774787486,Other
 Application_1660185664,Accepted
 Application_2105878744,Accepted
-Application_1446096185,Accepted
+Application_1446096185,Other
 Application_675073178,Accepted
 Application_952532843,Other
 Application_914660918,Other
@@ -135,7 +135,7 @@ Application_2108937169,Accepted
 Application_895241174,Other
 Application_1290239114,Accepted
 Application_1787371920,Accepted
-Application_1471099537,Accepted
+Application_1471099537,Other
 Application_37839400,Accepted
 Application_1128910355,Other
 Application_54405635,Other
@@ -179,10 +179,10 @@ Application_1616009132,Accepted
 Application_53530491,Accepted
 Application_1953406738,Other
 Application_1413308979,Other
-Application_1308403282,Accepted
+Application_1308403282,Other
 Application_212010049,Accepted
 Application_1946680177,Accepted
-Application_948316229,Accepted
+Application_948316229,Other
 Application_1138826038,Accepted
 Application_369105792,Other
 Application_1998350808,Other
@@ -192,7 +192,7 @@ Application_223366470,Other
 Application_1130151790,Other
 Application_1791187926,Other
 Application_421364849,Accepted
-Application_1268592022,Accepted
+Application_1268592022,Other
 Application_1955353500,Accepted
 Application_485131054,Other
 Application_1979402314,Other
@@ -231,7 +231,7 @@ Application_368205428,Other
 Application_923808413,Accepted
 Application_1933550065,Other
 Application_854409161,Other
-Application_346636726,Accepted
+Application_346636726,Other
 Application_1420077883,Other
 Application_236257423,Other
 Application_1892186837,Other
@@ -240,7 +240,7 @@ Application_788421650,Other
 Application_1447851462,Other
 Application_664267418,Other
 Application_2118101879,Accepted
-Application_1259601023,Accepted
+Application_1259601023,Other
 Application_969058358,Other
 Application_29490720,Accepted
 Application_193978070,Accepted
@@ -337,7 +337,7 @@ Application_1313879847,Other
 Application_162342266,Accepted
 Application_2039499576,Accepted
 Application_1326688469,Other
-Application_1549864001,Accepted
+Application_1549864001,Other
 Application_466958327,Accepted
 Application_232465255,Accepted
 Application_664361440,Other
@@ -366,7 +366,7 @@ Application_1764180224,Other
 Application_1898813636,Other
 Application_681276588,Other
 Application_365416480,Other
-Application_1312956122,Accepted
+Application_1312956122,Other
 Application_1403474196,Accepted
 Application_1195697898,Other
 Application_1014301064,Other
@@ -419,7 +419,7 @@ Application_335096189,Accepted
 Application_111540759,Other
 Application_524429786,Other
 Application_1355798622,Other
-Application_854402455,Accepted
+Application_854402455,Other
 Application_1077411737,Accepted
 Application_1283783929,Other
 Application_854178970,Other
@@ -470,7 +470,7 @@ Application_1719978147,Accepted
 Application_637491144,Other
 Application_768179563,Other
 Application_316292435,Other
-Application_1833979489,Accepted
+Application_1833979489,Other
 Application_1386615618,Other
 Application_224343695,Accepted
 Application_1072003198,Other
@@ -568,7 +568,7 @@ Application_1746503349,Accepted
 Application_1121433929,Other
 Application_559113386,Accepted
 Application_1334307261,Other
-Application_515209816,Accepted
+Application_515209816,Other
 Application_519973903,Other
 Application_877723240,Accepted
 Application_1251233599,Other
@@ -589,7 +589,7 @@ Application_1955133403,Other
 Application_238073987,Other
 Application_1106513315,Accepted
 Application_1596259876,Other
-Application_92091920,Accepted
+Application_92091920,Other
 Application_587745142,Accepted
 Application_801698526,Accepted
 Application_1465521095,Other
@@ -608,7 +608,7 @@ Application_1733714116,Accepted
 Application_257274630,Other
 Application_1885772834,Accepted
 Application_1545993826,Accepted
-Application_296383634,Accepted
+Application_296383634,Other
 Application_588083897,Other
 Application_1134992016,Accepted
 Application_1884385405,Accepted
@@ -878,8 +878,8 @@ Application_382124711,Accepted
 Application_1333957806,Accepted
 Application_702401717,Other
 Application_984488973,Other
-Application_947660940,Accepted
-Application_823693253,Accepted
+Application_947660940,Other
+Application_823693253,Other
 Application_1952122293,Other
 Application_1762711881,Other
 Application_2088193617,Other
@@ -893,7 +893,7 @@ Application_37288045,Other
 Application_723119311,Other
 Application_1519229956,Accepted
 Application_589207492,Other
-Application_374263140,Accepted
+Application_374263140,Other
 Application_2056535850,Other
 Application_1875938883,Accepted
 Application_954522576,Accepted
@@ -965,7 +965,7 @@ Application_1550105314,Accepted
 Application_1777521893,Accepted
 Application_688388804,Other
 Application_1575122096,Other
-Application_1191639983,Accepted
+Application_1191639983,Other
 Application_1691541069,Accepted
 Application_71758051,Other
 Application_875834446,Accepted
@@ -977,7 +977,7 @@ Application_1794275041,Other
 Application_54116737,Accepted
 Application_936809026,Other
 Application_14401241,Other
-Application_1421234379,Accepted
+Application_1421234379,Other
 Application_710744547,Accepted
 Application_1713826686,Accepted
 Application_1498877057,Other
@@ -1025,7 +1025,7 @@ Application_625208621,Accepted
 Application_1486099425,Other
 Application_1364058057,Accepted
 Application_610614421,Other
-Application_282633375,Accepted
+Application_282633375,Other
 Application_589333774,Other
 Application_266262290,Other
 Application_1195564156,Other
@@ -1064,7 +1064,7 @@ Application_2016133951,Accepted
 Application_798154047,Accepted
 Application_1114296087,Accepted
 Application_1598894275,Accepted
-Application_789888813,Accepted
+Application_789888813,Other
 Application_1961881671,Accepted
 Application_69300339,Other
 Application_1004943461,Accepted
@@ -1072,14 +1072,14 @@ Application_1428995636,Accepted
 Application_796925887,Accepted
 Application_700146618,Other
 Application_1428685815,Other
-Application_1503474590,Accepted
+Application_1503474590,Other
 Application_1709293384,Other
 Application_1152136689,Other
 Application_440220247,Other
 Application_642567542,Accepted
 Application_140895599,Other
 Application_789526868,Other
-Application_1867648545,Accepted
+Application_1867648545,Other
 Application_279835618,Other
 Application_1227771244,Other
 Application_1670143620,Other
@@ -1138,7 +1138,7 @@ Application_1150278126,Accepted
 Application_357999520,Accepted
 Application_1870524050,Other
 Application_706900638,Other
-Application_872830008,Accepted
+Application_872830008,Other
 Application_1620828737,Accepted
 Application_1296362396,Accepted
 Application_1397601234,Other
@@ -1210,7 +1210,7 @@ Application_864359285,Other
 Application_1164128745,Accepted
 Application_1054650915,Accepted
 Application_477108792,Other
-Application_208670900,Accepted
+Application_208670900,Other
 Application_901692229,Other
 Application_712156236,Other
 Application_1440936696,Accepted
@@ -1231,7 +1231,7 @@ Application_1729322307,Other
 Application_792000013,Accepted
 Application_971306755,Other
 Application_1354753416,Other
-Application_1865699548,Accepted
+Application_1865699548,Other
 Application_1409118214,Other
 Application_2104262208,Other
 Application_1029819018,Other
@@ -1257,10 +1257,10 @@ Application_1443667725,Accepted
 Application_1777080449,Accepted
 Application_1447778468,Other
 Application_1393839820,Other
-Application_1582681407,Accepted
+Application_1582681407,Other
 Application_1203742645,Other
 Application_1772525219,Accepted
-Application_1254852969,Accepted
+Application_1254852969,Other
 Application_2121564307,Other
 Application_22627898,Other
 Application_882516770,Accepted
@@ -1280,7 +1280,7 @@ Application_675223420,Other
 Application_316271248,Other
 Application_1831236396,Other
 Application_1232820241,Accepted
-Application_2107433255,Accepted
+Application_2107433255,Other
 Application_1043541344,Other
 Application_1106209536,Other
 Application_1419186456,Other
@@ -1304,7 +1304,7 @@ Application_1473369507,Other
 Application_47573314,Other
 Application_1709057207,Other
 Application_497612234,Other
-Application_1884913104,Accepted
+Application_1884913104,Other
 Application_1122311675,Other
 Application_2142123728,Other
 Application_425716591,Other
@@ -1386,13 +1386,13 @@ Application_1028636694,Other
 Application_1370354556,Other
 Application_1475582405,Accepted
 Application_1251867792,Accepted
-Application_169347982,Accepted
+Application_169347982,Other
 Application_1577840586,Accepted
 Application_1670011597,Other
 Application_1893449548,Other
 Application_858669578,Other
 Application_1174593044,Other
-Application_721068860,Accepted
+Application_721068860,Other
 Application_1610536940,Other
 Application_1632603053,Accepted
 Application_1985161782,Other
@@ -1423,7 +1423,7 @@ Application_2068499313,Other
 Application_254293856,Other
 Application_986145091,Accepted
 Application_1887496153,Accepted
-Application_1578519766,Accepted
+Application_1578519766,Other
 Application_2000400044,Other
 Application_1303088153,Accepted
 Application_496615464,Accepted
@@ -1516,7 +1516,7 @@ Application_855823740,Accepted
 Application_1213984554,Other
 Application_218621102,Other
 Application_246715140,Accepted
-Application_1380269741,Accepted
+Application_1380269741,Other
 Application_80740465,Other
 Application_1289903575,Other
 Application_1976397876,Other
@@ -1543,14 +1543,14 @@ Application_2002434573,Other
 Application_1305062269,Other
 Application_926295021,Other
 Application_75438737,Accepted
-Application_923895936,Accepted
+Application_923895936,Other
 Application_482211839,Other
 Application_873908407,Other
 Application_907055851,Other
 Application_659438407,Other
 Application_533609691,Other
 Application_149418612,Other
-Application_2057487388,Accepted
+Application_2057487388,Other
 Application_680456830,Accepted
 Application_1312247440,Other
 Application_268737670,Other
@@ -1765,7 +1765,7 @@ Application_190380041,Accepted
 Application_559666212,Other
 Application_640428791,Other
 Application_434032773,Accepted
-Application_1902291900,Accepted
+Application_1902291900,Other
 Application_2034443967,Other
 Application_884156117,Accepted
 Application_1107406431,Other
@@ -1807,7 +1807,7 @@ Application_1395988794,Other
 Application_1501922618,Other
 Application_1691560307,Other
 Application_6328980,Other
-Application_773107692,Accepted
+Application_773107692,Other
 Application_428362155,Accepted
 Application_1214558658,Other
 Application_1003639640,Accepted
@@ -1823,9 +1823,9 @@ Application_615376232,Other
 Application_1689244854,Other
 Application_833171339,Other
 Application_2047144310,Other
-Application_525880617,Accepted
+Application_525880617,Other
 Application_228788134,Other
-Application_402680717,Accepted
+Application_402680717,Other
 Application_1350747714,Accepted
 Application_1708781666,Accepted
 Application_1809939891,Other
@@ -1887,7 +1887,7 @@ Application_1852652595,Other
 Application_28092819,Accepted
 Application_766272624,Other
 Application_48645513,Other
-Application_271836707,Accepted
+Application_271836707,Other
 Application_2102088707,Other
 Application_1452159527,Other
 Application_740139616,Other
@@ -1908,7 +1908,7 @@ Application_1072131214,Other
 Application_132859811,Accepted
 Application_277098104,Other
 Application_1096343994,Other
-Application_2141543573,Accepted
+Application_2141543573,Other
 Application_1643015710,Other
 Application_313803657,Accepted
 Application_55766939,Accepted
@@ -2042,7 +2042,7 @@ Application_812426601,Other
 Application_763648038,Other
 Application_1129494804,Accepted
 Application_1707690902,Accepted
-Application_1956890072,Accepted
+Application_1956890072,Other
 Application_1082791049,Other
 Application_8606801,Other
 Application_1910509289,Other
@@ -2054,7 +2054,7 @@ Application_1130348546,Other
 Application_1062630788,Other
 Application_1442140625,Accepted
 Application_1884073003,Other
-Application_700898434,Accepted
+Application_700898434,Other
 Application_798560603,Accepted
 Application_1857968763,Other
 Application_1657554694,Other
@@ -2199,7 +2199,7 @@ Application_348076099,Accepted
 Application_1430641340,Accepted
 Application_1793705869,Other
 Application_68456270,Other
-Application_741749509,Accepted
+Application_741749509,Other
 Application_366077993,Accepted
 Application_1941145131,Other
 Application_1730282408,Other
@@ -2307,7 +2307,7 @@ Application_257596602,Other
 Application_1618264715,Accepted
 Application_686900647,Other
 Application_1660734224,Accepted
-Application_173446847,Accepted
+Application_173446847,Other
 Application_531311601,Other
 Application_754663727,Other
 Application_1972226928,Accepted
@@ -2335,8 +2335,8 @@ Application_1748330152,Other
 Application_474554653,Other
 Application_44711236,Accepted
 Application_1300598260,Other
-Application_1694715372,Accepted
-Application_453418974,Accepted
+Application_1694715372,Other
+Application_453418974,Other
 Application_763017273,Accepted
 Application_1443994940,Other
 Application_1577301082,Accepted
@@ -2423,7 +2423,7 @@ Application_352895702,Accepted
 Application_1300381096,Accepted
 Application_1540837872,Other
 Application_344094810,Other
-Application_317319031,Accepted
+Application_317319031,Other
 Application_26621383,Accepted
 Application_2007398669,Other
 Application_1676601181,Other
@@ -2474,7 +2474,7 @@ Application_1794583297,Accepted
 Application_519995731,Accepted
 Application_305052605,Other
 Application_394119601,Other
-Application_1306249905,Accepted
+Application_1306249905,Other
 Application_362583184,Accepted
 Application_1306765211,Accepted
 Application_1125452989,Other
@@ -2553,7 +2553,7 @@ Application_1229897222,Other
 Application_1857502008,Other
 Application_1991350312,Other
 Application_1600450105,Other
-Application_703326167,Accepted
+Application_703326167,Other
 Application_1920818884,Other
 Application_1611522764,Accepted
 Application_1426972073,Other
@@ -2640,7 +2640,7 @@ Application_1562591338,Accepted
 Application_804002977,Other
 Application_976703684,Other
 Application_1734546674,Other
-Application_914199527,Accepted
+Application_914199527,Other
 Application_471753482,Accepted
 Application_610725851,Accepted
 Application_286239527,Other
@@ -2661,7 +2661,7 @@ Application_326714383,Accepted
 Application_996520734,Accepted
 Application_1693958878,Other
 Application_2107908034,Accepted
-Application_1169382593,Accepted
+Application_1169382593,Other
 Application_1526964881,Other
 Application_452976509,Accepted
 Application_1608509920,Other
@@ -2711,11 +2711,11 @@ Application_1798805965,Accepted
 Application_400714146,Accepted
 Application_1498465982,Other
 Application_331874214,Accepted
-Application_744504106,Accepted
+Application_744504106,Other
 Application_1637771529,Accepted
 Application_1173842508,Accepted
 Application_428031152,Accepted
-Application_235766102,Accepted
+Application_235766102,Other
 Application_1226073966,Accepted
 Application_1568163255,Other
 Application_1138536788,Other
@@ -2724,7 +2724,7 @@ Application_700727122,Accepted
 Application_566810422,Other
 Application_1927668866,Other
 Application_379062460,Other
-Application_1497610628,Accepted
+Application_1497610628,Other
 Application_1640897778,Accepted
 Application_665516246,Other
 Application_1149858992,Accepted
@@ -2868,7 +2868,7 @@ Application_1237464569,Other
 Application_1780816335,Accepted
 Application_522532156,Accepted
 Application_1217731716,Other
-Application_87913262,Accepted
+Application_87913262,Other
 Application_1706544324,Other
 Application_2070526377,Other
 Application_1625212778,Accepted
@@ -2909,7 +2909,7 @@ Application_1561493056,Accepted
 Application_1941008954,Other
 Application_1205404110,Accepted
 Application_553578355,Accepted
-Application_1163540696,Accepted
+Application_1163540696,Other
 Application_1358960430,Other
 Application_985631534,Other
 Application_1165374687,Accepted
@@ -2959,7 +2959,7 @@ Application_291930684,Accepted
 Application_110600230,Other
 Application_340687616,Other
 Application_1365677392,Other
-Application_1319320930,Accepted
+Application_1319320930,Other
 Application_1855489393,Accepted
 Application_2077194593,Accepted
 Application_307198667,Accepted
@@ -3356,7 +3356,7 @@ Application_1638071691,Accepted
 Application_1195543683,Other
 Application_1574359134,Accepted
 Application_492588902,Other
-Application_581391519,Accepted
+Application_581391519,Other
 Application_2061894299,Other
 Application_129452254,Other
 Application_1079354715,Other
@@ -3439,13 +3439,13 @@ Application_1749959518,Accepted
 Application_1849778934,Other
 Application_2112516828,Other
 Application_966841012,Accepted
-Application_1379635634,Accepted
+Application_1379635634,Other
 Application_1249521286,Other
 Application_462696075,Accepted
 Application_2042662448,Accepted
 Application_1548436767,Other
 Application_1763400279,Other
-Application_293789625,Accepted
+Application_293789625,Other
 Application_136457112,Other
 Application_494347751,Other
 Application_1909308694,Accepted
@@ -3576,7 +3576,7 @@ Application_1366996307,Other
 Application_1162940619,Other
 Application_1217897060,Accepted
 Application_1862076158,Other
-Application_1369440812,Accepted
+Application_1369440812,Other
 Application_1719069496,Other
 Application_1468274126,Accepted
 Application_2083089702,Accepted
@@ -3672,14 +3672,14 @@ Application_1964849819,Other
 Application_2098449770,Accepted
 Application_43024906,Accepted
 Application_266173808,Other
-Application_1532843552,Accepted
+Application_1532843552,Other
 Application_1174984538,Other
 Application_816974758,Accepted
 Application_110900801,Accepted
 Application_2133960776,Accepted
 Application_1854406278,Other
 Application_1089160582,Other
-Application_899496804,Accepted
+Application_899496804,Other
 Application_1420822500,Other
 Application_2127289160,Accepted
 Application_1818872049,Other
@@ -3696,7 +3696,7 @@ Application_1055909090,Other
 Application_558901961,Accepted
 Application_1090605487,Other
 Application_1002664914,Other
-Application_319356132,Accepted
+Application_319356132,Other
 Application_127129153,Other
 Application_1583444574,Other
 Application_2038630680,Accepted
@@ -3757,7 +3757,7 @@ Application_801793652,Accepted
 Application_1884461713,Other
 Application_2093919067,Other
 Application_879020593,Accepted
-Application_19378391,Accepted
+Application_19378391,Other
 Application_1700533919,Other
 Application_1447276373,Accepted
 Application_81301298,Accepted
@@ -3779,7 +3779,7 @@ Application_1698689539,Other
 Application_1450268698,Other
 Application_1689747747,Other
 Application_986699520,Accepted
-Application_770788144,Accepted
+Application_770788144,Other
 Application_391820085,Accepted
 Application_131088156,Other
 Application_517366421,Other
@@ -3795,11 +3795,11 @@ Application_926109030,Other
 Application_129006948,Accepted
 Application_245999450,Accepted
 Application_513980010,Accepted
-Application_1766664020,Accepted
-Application_1626579845,Accepted
+Application_1766664020,Other
+Application_1626579845,Other
 Application_1436892213,Other
 Application_738477280,Other
-Application_75636589,Accepted
+Application_75636589,Other
 Application_374811499,Other
 Application_725209798,Accepted
 Application_1159017818,Other
@@ -3857,7 +3857,7 @@ Application_1382387296,Accepted
 Application_947351284,Other
 Application_287352488,Other
 Application_395892061,Other
-Application_678149634,Accepted
+Application_678149634,Other
 Application_867632887,Accepted
 Application_2076987955,Other
 Application_711166264,Other
@@ -3872,7 +3872,7 @@ Application_1323847324,Other
 Application_1957857019,Other
 Application_120531207,Other
 Application_187078617,Other
-Application_548704458,Accepted
+Application_548704458,Other
 Application_1824525898,Other
 Application_2140321814,Other
 Application_1072060993,Accepted
@@ -3883,7 +3883,7 @@ Application_1255141681,Other
 Application_1014284368,Other
 Application_514398902,Other
 Application_879460986,Accepted
-Application_114590483,Accepted
+Application_114590483,Other
 Application_1241925732,Accepted
 Application_1510666268,Other
 Application_570788107,Accepted
@@ -3988,7 +3988,7 @@ Application_6428383,Accepted
 Application_1454926128,Accepted
 Application_1380333449,Accepted
 Application_1763917951,Other
-Application_2113251818,Accepted
+Application_2113251818,Other
 Application_1832175451,Accepted
 Application_1099068056,Other
 Application_1374389411,Other
@@ -4008,7 +4008,7 @@ Application_280471845,Other
 Application_1558784668,Other
 Application_1434600647,Other
 Application_1797182802,Other
-Application_772137605,Accepted
+Application_772137605,Other
 Application_953130593,Other
 Application_56084769,Other
 Application_78623924,Accepted
@@ -4061,7 +4061,7 @@ Application_2055899498,Other
 Application_545561346,Other
 Application_482732330,Accepted
 Application_1245103529,Other
-Application_163474573,Accepted
+Application_163474573,Other
 Application_1377777625,Accepted
 Application_1154552424,Other
 Application_946870406,Other
@@ -4085,7 +4085,7 @@ Application_2053396630,Accepted
 Application_1554939217,Other
 Application_303318311,Accepted
 Application_872008599,Other
-Application_779484065,Accepted
+Application_779484065,Other
 Application_1919196790,Accepted
 Application_1291035764,Other
 Application_1303904568,Accepted
@@ -4093,7 +4093,7 @@ Application_239378569,Accepted
 Application_67409350,Other
 Application_1322330087,Other
 Application_1884456971,Other
-Application_2061014025,Accepted
+Application_2061014025,Other
 Application_1652812549,Other
 Application_1335697551,Accepted
 Application_395000811,Other
@@ -4115,7 +4115,7 @@ Application_48706362,Other
 Application_492153271,Other
 Application_2079120121,Other
 Application_1840582475,Accepted
-Application_502630978,Accepted
+Application_502630978,Other
 Application_1157141528,Accepted
 Application_1988724493,Other
 Application_1859839427,Accepted
@@ -4160,7 +4160,7 @@ Application_1918667425,Accepted
 Application_1420358309,Other
 Application_1135401738,Other
 Application_583750826,Accepted
-Application_1928993602,Accepted
+Application_1928993602,Other
 Application_942651878,Accepted
 Application_2014961806,Other
 Application_1204483638,Other
@@ -4343,7 +4343,7 @@ Application_1120398796,Accepted
 Application_1377147319,Other
 Application_2009027856,Accepted
 Application_1230849390,Accepted
-Application_872779974,Accepted
+Application_872779974,Other
 Application_1593014034,Accepted
 Application_1711981639,Other
 Application_1396135024,Accepted
@@ -4363,7 +4363,7 @@ Application_787148081,Other
 Application_518558399,Other
 Application_718673327,Other
 Application_1801266094,Other
-Application_1249015228,Accepted
+Application_1249015228,Other
 Application_1216638171,Accepted
 Application_998406439,Accepted
 Application_648638072,Accepted
@@ -4374,7 +4374,7 @@ Application_1941189962,Other
 Application_1211936720,Accepted
 Application_1791257668,Other
 Application_2115815413,Accepted
-Application_1668845635,Accepted
+Application_1668845635,Other
 Application_1035073401,Accepted
 Application_281616579,Accepted
 Application_782569631,Other
@@ -4418,7 +4418,7 @@ Application_1175565050,Other
 Application_564583132,Accepted
 Application_1646032104,Other
 Application_1781705604,Other
-Application_1566904286,Accepted
+Application_1566904286,Other
 Application_1536489049,Accepted
 Application_2100776308,Other
 Application_1440023142,Other
@@ -4505,7 +4505,7 @@ Application_1041940949,Other
 Application_717625860,Accepted
 Application_1417790078,Other
 Application_351150613,Other
-Application_1240839960,Accepted
+Application_1240839960,Other
 Application_2071061031,Accepted
 Application_1754884969,Other
 Application_1285076752,Accepted
@@ -4553,11 +4553,11 @@ Application_1801717653,Other
 Application_1452039492,Other
 Application_754074677,Other
 Application_678159212,Accepted
-Application_1842624116,Accepted
+Application_1842624116,Other
 Application_1251334091,Accepted
 Application_1693585514,Other
 Application_327211842,Accepted
-Application_321443956,Accepted
+Application_321443956,Other
 Application_1886598173,Accepted
 Application_812472044,Other
 Application_1405029485,Other
@@ -4569,7 +4569,7 @@ Application_1820421113,Other
 Application_1251582652,Accepted
 Application_320644542,Other
 Application_615901201,Accepted
-Application_1806365340,Accepted
+Application_1806365340,Other
 Application_1591668010,Other
 Application_2042185584,Other
 Application_1903311847,Accepted
@@ -4721,7 +4721,7 @@ Application_341208154,Accepted
 Application_126092533,Other
 Application_571832554,Other
 Application_748257601,Other
-Application_1397387478,Accepted
+Application_1397387478,Other
 Application_1844843408,Other
 Application_770279826,Accepted
 Application_292258503,Other
@@ -4742,7 +4742,7 @@ Application_30821353,Other
 Application_907809060,Accepted
 Application_421059645,Other
 Application_1291896185,Other
-Application_654593000,Accepted
+Application_654593000,Other
 Application_65498038,Other
 Application_1441755826,Other
 Application_1096539433,Accepted
@@ -4770,7 +4770,7 @@ Application_1829577615,Other
 Application_1182241099,Accepted
 Application_1072849897,Accepted
 Application_234076589,Other
-Application_423283692,Accepted
+Application_423283692,Other
 Application_1348975728,Other
 Application_1786953423,Other
 Application_2145345254,Other
@@ -4807,7 +4807,7 @@ Application_1694532607,Accepted
 Application_17667841,Other
 Application_1100902083,Other
 Application_15047007,Other
-Application_741445346,Accepted
+Application_741445346,Other
 Application_1862339519,Other
 Application_1016463575,Accepted
 Application_1429848056,Other
@@ -4815,7 +4815,7 @@ Application_853133658,Other
 Application_494772907,Other
 Application_2005590265,Other
 Application_1571626886,Accepted
-Application_1618462543,Accepted
+Application_1618462543,Other
 Application_219463138,Other
 Application_1360228584,Accepted
 Application_998310056,Other
@@ -4863,7 +4863,7 @@ Application_1827075885,Other
 Application_1084297583,Accepted
 Application_1549194898,Other
 Application_177868383,Other
-Application_501172822,Accepted
+Application_501172822,Other
 Application_1575735019,Other
 Application_1855447466,Other
 Application_1955042515,Other
@@ -4909,7 +4909,7 @@ Application_105548609,Other
 Application_859398704,Other
 Application_349128032,Other
 Application_2044299099,Other
-Application_960750666,Accepted
+Application_960750666,Other
 Application_1288559505,Other
 Application_584942744,Other
 Application_779969860,Accepted
@@ -4942,7 +4942,7 @@ Application_1061426019,Other
 Application_13089110,Accepted
 Application_922597124,Accepted
 Application_1086697007,Other
-Application_382146273,Accepted
+Application_382146273,Other
 Application_56127067,Other
 Application_1957256393,Accepted
 Application_191204128,Accepted
@@ -4960,7 +4960,7 @@ Application_1378425516,Other
 Application_447178454,Accepted
 Application_1424078082,Other
 Application_1714523120,Other
-Application_1079881305,Accepted
+Application_1079881305,Other
 Application_1376437010,Accepted
 Application_668835464,Other
 Application_69375381,Other
@@ -5139,7 +5139,7 @@ Application_1600799981,Accepted
 Application_1411379682,Accepted
 Application_2102515464,Accepted
 Application_737117547,Other
-Application_1456077197,Accepted
+Application_1456077197,Other
 Application_1639709656,Accepted
 Application_939104505,Accepted
 Application_1128601253,Accepted
@@ -5266,8 +5266,8 @@ Application_1658763257,Accepted
 Application_1296253491,Other
 Application_395262977,Other
 Application_376167129,Other
-Application_557764012,Accepted
-Application_1767074054,Accepted
+Application_557764012,Other
+Application_1767074054,Other
 Application_952740547,Other
 Application_1841520354,Accepted
 Application_45987461,Other
@@ -5293,7 +5293,7 @@ Application_2131053606,Other
 Application_1982922523,Other
 Application_1482065813,Other
 Application_1172470662,Accepted
-Application_571008226,Accepted
+Application_571008226,Other
 Application_415617411,Accepted
 Application_503954743,Accepted
 Application_910430727,Other
@@ -5357,7 +5357,7 @@ Application_1568793899,Other
 Application_1758736880,Accepted
 Application_2076688465,Other
 Application_1000557783,Accepted
-Application_1323255143,Accepted
+Application_1323255143,Other
 Application_762463507,Accepted
 Application_1287576684,Other
 Application_938255668,Other
@@ -5410,7 +5410,7 @@ Application_1674997921,Other
 Application_815617184,Other
 Application_493845140,Other
 Application_616621453,Other
-Application_1584890418,Accepted
+Application_1584890418,Other
 Application_816309757,Accepted
 Application_117082133,Accepted
 Application_266238113,Accepted
@@ -5466,7 +5466,7 @@ Application_1077855459,Accepted
 Application_648442257,Other
 Application_16903638,Other
 Application_1731468030,Accepted
-Application_1373169839,Accepted
+Application_1373169839,Other
 Application_1065678246,Other
 Application_1284173961,Other
 Application_959900535,Other
@@ -5549,7 +5549,7 @@ Application_1641372345,Accepted
 Application_1957067639,Other
 Application_1514719904,Accepted
 Application_1587285313,Other
-Application_1949926859,Accepted
+Application_1949926859,Other
 Application_504546453,Other
 Application_1908615777,Other
 Application_1590166055,Accepted
@@ -5581,7 +5581,7 @@ Application_140129725,Other
 Application_1193700991,Other
 Application_1543259185,Accepted
 Application_1679870829,Accepted
-Application_1726163143,Accepted
+Application_1726163143,Other
 Application_935359785,Other
 Application_1651588063,Other
 Application_1301927722,Other
@@ -5612,11 +5612,11 @@ Application_230369089,Other
 Application_211828202,Accepted
 Application_618390668,Accepted
 Application_980527052,Accepted
-Application_1690708840,Accepted
+Application_1690708840,Other
 Application_1051399444,Accepted
 Application_1881349265,Other
 Application_1331629354,Other
-Application_189626436,Accepted
+Application_189626436,Other
 Application_256466383,Accepted
 Application_992509096,Other
 Application_816280383,Accepted
@@ -5694,7 +5694,7 @@ Application_1144168806,Other
 Application_786302718,Accepted
 Application_287983853,Accepted
 Application_504178376,Other
-Application_1160764593,Accepted
+Application_1160764593,Other
 Application_793916637,Other
 Application_1017437265,Other
 Application_162497967,Other
@@ -5753,7 +5753,7 @@ Application_1860744009,Accepted
 Application_1350660062,Other
 Application_64286790,Other
 Application_467208011,Accepted
-Application_1045214635,Accepted
+Application_1045214635,Other
 Application_1361029032,Other
 Application_931240033,Other
 Application_1711758713,Accepted
@@ -5795,7 +5795,7 @@ Application_1101941744,Accepted
 Application_786482604,Accepted
 Application_1565316268,Other
 Application_380985404,Accepted
-Application_722305811,Accepted
+Application_722305811,Other
 Application_1065478710,Other
 Application_850474011,Other
 Application_1428136517,Other
@@ -5955,7 +5955,7 @@ Application_177974649,Other
 Application_1842852252,Accepted
 Application_1391917606,Other
 Application_755627867,Accepted
-Application_1732336378,Accepted
+Application_1732336378,Other
 Application_969943163,Other
 Application_2346788,Other
 Application_460918643,Accepted
@@ -5993,7 +5993,7 @@ Application_1861569735,Accepted
 Application_1177661137,Accepted
 Application_276563463,Other
 Application_1665479630,Accepted
-Application_338303396,Accepted
+Application_338303396,Other
 Application_1357597381,Other
 Application_1366149620,Other
 Application_152231879,Other
@@ -6014,7 +6014,7 @@ Application_577445376,Other
 Application_431076549,Other
 Application_1651193107,Accepted
 Application_1301610617,Other
-Application_1718053150,Accepted
+Application_1718053150,Other
 Application_6918840,Other
 Application_571712791,Accepted
 Application_1332408814,Accepted
@@ -6041,7 +6041,7 @@ Application_1366259743,Other
 Application_870944279,Other
 Application_633579793,Other
 Application_619220322,Accepted
-Application_356722191,Accepted
+Application_356722191,Other
 Application_141678468,Accepted
 Application_1055557026,Other
 Application_2091435755,Other
@@ -6098,7 +6098,7 @@ Application_1853502124,Other
 Application_1413325385,Other
 Application_1221766967,Other
 Application_1979422650,Other
-Application_2126080314,Accepted
+Application_2126080314,Other
 Application_331401841,Other
 Application_1232628960,Other
 Application_102018713,Other
@@ -6111,7 +6111,7 @@ Application_212064997,Other
 Application_11770950,Other
 Application_1382461423,Accepted
 Application_1644338098,Other
-Application_1662789749,Accepted
+Application_1662789749,Other
 Application_287881628,Accepted
 Application_47655916,Other
 Application_811820529,Other
@@ -6152,7 +6152,7 @@ Application_480049,Other
 Application_2146513747,Other
 Application_711817090,Other
 Application_1786352555,Accepted
-Application_620461250,Accepted
+Application_620461250,Other
 Application_1454134365,Other
 Application_1229987314,Other
 Application_153953477,Accepted
@@ -6263,7 +6263,7 @@ Application_978243781,Accepted
 Application_1424943878,Other
 Application_476572835,Accepted
 Application_1233772162,Accepted
-Application_883995052,Accepted
+Application_883995052,Other
 Application_739151315,Other
 Application_1015358885,Other
 Application_1651538679,Accepted
@@ -6303,7 +6303,7 @@ Application_647570318,Other
 Application_1131988050,Accepted
 Application_77186115,Accepted
 Application_1191799323,Accepted
-Application_2131402595,Accepted
+Application_2131402595,Other
 Application_1700634082,Accepted
 Application_968212711,Other
 Application_466430983,Other
@@ -6324,7 +6324,7 @@ Application_1184623933,Other
 Application_1863226004,Accepted
 Application_1213374018,Accepted
 Application_1377054287,Accepted
-Application_2103731286,Accepted
+Application_2103731286,Other
 Application_1674129566,Accepted
 Application_1833180628,Other
 Application_1244497545,Other
@@ -6340,7 +6340,7 @@ Application_6945668,Accepted
 Application_343046757,Other
 Application_92185315,Other
 Application_1041971803,Other
-Application_1256941676,Accepted
+Application_1256941676,Other
 Application_1416454203,Accepted
 Application_350395873,Accepted
 Application_93565791,Accepted
@@ -6383,7 +6383,7 @@ Application_1778463340,Other
 Application_1720162704,Other
 Application_1079238571,Accepted
 Application_588494517,Other
-Application_374131697,Accepted
+Application_374131697,Other
 Application_1061421842,Other
 Application_1540321754,Other
 Application_1301282602,Accepted
@@ -6423,7 +6423,7 @@ Application_1529828729,Other
 Application_1710543601,Other
 Application_666087690,Other
 Application_349957809,Other
-Application_59605709,Accepted
+Application_59605709,Other
 Application_417673245,Accepted
 Application_1500268050,Other
 Application_510716211,Other
@@ -6440,7 +6440,7 @@ Application_778156059,Accepted
 Application_147352520,Other
 Application_336824591,Accepted
 Application_1383004327,Accepted
-Application_1345147006,Accepted
+Application_1345147006,Other
 Application_1829215276,Other
 Application_206773874,Other
 Application_145978763,Other
@@ -6461,11 +6461,11 @@ Application_66988012,Other
 Application_413326304,Accepted
 Application_912331348,Other
 Application_1261837054,Accepted
-Application_1373703121,Accepted
+Application_1373703121,Other
 Application_1174228992,Other
 Application_755352664,Other
 Application_123210264,Other
-Application_1052307551,Accepted
+Application_1052307551,Other
 Application_1224778258,Other
 Application_1984985896,Other
 Application_1407878698,Accepted
@@ -6505,12 +6505,12 @@ Application_128062281,Other
 Application_1625466749,Other
 Application_1460743918,Other
 Application_1262887348,Other
-Application_2113754461,Accepted
+Application_2113754461,Other
 Application_1107161047,Accepted
 Application_791087537,Accepted
 Application_883923338,Other
 Application_506131561,Accepted
-Application_1459578299,Accepted
+Application_1459578299,Other
 Application_1263968654,Accepted
 Application_2091743840,Other
 Application_566975169,Other
@@ -6524,7 +6524,7 @@ Application_678815696,Accepted
 Application_1403426126,Other
 Application_1549646306,Other
 Application_703387842,Accepted
-Application_2101886140,Accepted
+Application_2101886140,Other
 Application_1723112038,Accepted
 Application_939691189,Other
 Application_1735983369,Accepted
@@ -6546,7 +6546,7 @@ Application_1127641283,Other
 Application_1174523261,Accepted
 Application_118888889,Other
 Application_256646791,Other
-Application_955832121,Accepted
+Application_955832121,Other
 Application_1331271629,Other
 Application_486579620,Other
 Application_345385668,Accepted
@@ -6583,15 +6583,15 @@ Application_1306986704,Other
 Application_1757157140,Accepted
 Application_1886662655,Other
 Application_1105541270,Other
-Application_722160616,Accepted
+Application_722160616,Other
 Application_24165930,Accepted
 Application_100589233,Other
 Application_749762188,Other
 Application_1364991012,Accepted
 Application_1175333399,Accepted
-Application_2010903496,Accepted
+Application_2010903496,Other
 Application_1399243797,Other
-Application_1209324898,Accepted
+Application_1209324898,Other
 Application_1280349654,Other
 Application_867564228,Accepted
 Application_1358916253,Other
@@ -6637,9 +6637,9 @@ Application_1955842713,Accepted
 Application_1335910328,Accepted
 Application_406851742,Accepted
 Application_1175724023,Accepted
-Application_22436749,Accepted
+Application_22436749,Other
 Application_630592655,Other
-Application_810238752,Accepted
+Application_810238752,Other
 Application_1240719777,Accepted
 Application_1969242080,Accepted
 Application_886774383,Accepted
@@ -6693,7 +6693,7 @@ Application_1052886976,Other
 Application_334331917,Accepted
 Application_48611577,Other
 Application_871554107,Accepted
-Application_1788210643,Accepted
+Application_1788210643,Other
 Application_713006338,Accepted
 Application_1361693889,Accepted
 Application_1037620910,Other
@@ -6706,12 +6706,12 @@ Application_1631338431,Accepted
 Application_475801708,Other
 Application_1745346635,Other
 Application_929673650,Accepted
-Application_195023059,Accepted
+Application_195023059,Other
 Application_647726871,Other
 Application_281233449,Accepted
 Application_1218287826,Other
 Application_1715530824,Accepted
-Application_1500544719,Accepted
+Application_1500544719,Other
 Application_1862395679,Other
 Application_1116225001,Accepted
 Application_33872120,Other
@@ -6736,7 +6736,7 @@ Application_1543346933,Accepted
 Application_1463775883,Other
 Application_1032645340,Other
 Application_1542444551,Accepted
-Application_1348682800,Accepted
+Application_1348682800,Other
 Application_1355308417,Accepted
 Application_271407289,Accepted
 Application_305708618,Other
@@ -6858,7 +6858,7 @@ Application_448008528,Other
 Application_929029293,Accepted
 Application_1907738962,Other
 Application_1086603594,Other
-Application_2045284368,Accepted
+Application_2045284368,Other
 Application_987810444,Accepted
 Application_500418152,Other
 Application_868521109,Other
@@ -6872,7 +6872,7 @@ Application_1988526324,Other
 Application_2125316323,Accepted
 Application_233856489,Other
 Application_622062031,Accepted
-Application_718817304,Accepted
+Application_718817304,Other
 Application_1908739952,Accepted
 Application_1264080714,Accepted
 Application_1694785563,Accepted
@@ -6920,7 +6920,7 @@ Application_1394462506,Accepted
 Application_611054481,Accepted
 Application_1525520496,Other
 Application_261639082,Other
-Application_1163374622,Accepted
+Application_1163374622,Other
 Application_839176751,Accepted
 Application_1800705163,Other
 Application_855452482,Accepted
@@ -6957,7 +6957,7 @@ Application_513602305,Accepted
 Application_1812343832,Other
 Application_1174431343,Accepted
 Application_540477087,Accepted
-Application_782705224,Accepted
+Application_782705224,Other
 Application_215823677,Other
 Application_1618627539,Accepted
 Application_1951682560,Other
@@ -6992,7 +6992,7 @@ Application_212902333,Other
 Application_149050884,Other
 Application_1762246904,Other
 Application_131156250,Other
-Application_952743183,Accepted
+Application_952743183,Other
 Application_320464805,Other
 Application_762886734,Accepted
 Application_1450039644,Accepted
@@ -7006,7 +7006,7 @@ Application_565003104,Other
 Application_995343315,Accepted
 Application_1278440150,Accepted
 Application_829884939,Accepted
-Application_629807553,Accepted
+Application_629807553,Other
 Application_929687551,Other
 Application_145761512,Other
 Application_1599304156,Accepted
@@ -7084,7 +7084,7 @@ Application_773870683,Other
 Application_173342167,Other
 Application_666400249,Accepted
 Application_49910506,Accepted
-Application_1391564443,Accepted
+Application_1391564443,Other
 Application_577491572,Other
 Application_1959836412,Other
 Application_253735434,Other
@@ -7092,7 +7092,7 @@ Application_1645687233,Accepted
 Application_389538257,Accepted
 Application_1116505965,Other
 Application_751895767,Accepted
-Application_1319304473,Accepted
+Application_1319304473,Other
 Application_1681429941,Accepted
 Application_387229422,Other
 Application_949814648,Other
@@ -7145,7 +7145,7 @@ Application_1716989043,Accepted
 Application_1090386869,Other
 Application_1878043372,Other
 Application_795330920,Accepted
-Application_143569287,Accepted
+Application_143569287,Other
 Application_1074154612,Accepted
 Application_1832794147,Accepted
 Application_1453548976,Other
@@ -7259,7 +7259,7 @@ Application_1940358661,Other
 Application_1717313323,Accepted
 Application_653628882,Accepted
 Application_1374343559,Other
-Application_112954315,Accepted
+Application_112954315,Other
 Application_742143883,Accepted
 Application_991081217,Other
 Application_809541276,Other
@@ -7279,7 +7279,7 @@ Application_32569371,Other
 Application_70575133,Other
 Application_394950850,Accepted
 Application_1365534420,Other
-Application_2109616341,Accepted
+Application_2109616341,Other
 Application_2056189065,Accepted
 Application_846115536,Other
 Application_1038409529,Accepted
@@ -7405,7 +7405,7 @@ Application_347109788,Accepted
 Application_90538758,Accepted
 Application_102322853,Accepted
 Application_179996959,Other
-Application_1317075789,Accepted
+Application_1317075789,Other
 Application_2045604126,Other
 Application_1398350535,Accepted
 Application_516863999,Accepted
@@ -7420,7 +7420,7 @@ Application_907265894,Accepted
 Application_110099600,Other
 Application_820140800,Other
 Application_2118822299,Other
-Application_1325976894,Accepted
+Application_1325976894,Other
 Application_1633539404,Other
 Application_1802029012,Other
 Application_108378127,Other
@@ -7507,7 +7507,7 @@ Application_1771246864,Accepted
 Application_1446933219,Accepted
 Application_1826451403,Other
 Application_51423639,Accepted
-Application_1774322346,Accepted
+Application_1774322346,Other
 Application_1807354177,Other
 Application_1348043183,Other
 Application_373972684,Accepted
@@ -7537,13 +7537,13 @@ Application_1838525925,Other
 Application_1741490576,Accepted
 Application_391977558,Other
 Application_1859851567,Other
-Application_980696491,Accepted
-Application_1696739091,Accepted
+Application_980696491,Other
+Application_1696739091,Other
 Application_942760177,Other
 Application_282848465,Other
 Application_433252294,Other
 Application_622835802,Other
-Application_757550982,Accepted
+Application_757550982,Other
 Application_906030362,Accepted
 Application_46849437,Other
 Application_1791786801,Accepted
@@ -7559,9 +7559,9 @@ Application_542995348,Other
 Application_896689174,Accepted
 Application_449824511,Other
 Application_1347115818,Other
-Application_50811788,Accepted
+Application_50811788,Other
 Application_669398392,Accepted
-Application_1751934282,Accepted
+Application_1751934282,Other
 Application_1948926595,Other
 Application_1528488516,Accepted
 Application_1468017749,Accepted
@@ -7598,12 +7598,12 @@ Application_1085330541,Accepted
 Application_396842766,Other
 Application_1583772656,Other
 Application_829940711,Accepted
-Application_1908787367,Accepted
+Application_1908787367,Other
 Application_1280967656,Other
 Application_362875716,Accepted
 Application_1440890838,Other
 Application_1784530182,Accepted
-Application_1226323060,Accepted
+Application_1226323060,Other
 Application_1781098340,Other
 Application_575924036,Accepted
 Application_889149007,Other
@@ -7620,7 +7620,7 @@ Application_781776606,Accepted
 Application_292635471,Other
 Application_515109573,Other
 Application_1434508717,Other
-Application_2096021197,Accepted
+Application_2096021197,Other
 Application_712286089,Other
 Application_51568568,Other
 Application_1599504425,Other
@@ -7653,7 +7653,7 @@ Application_426315526,Other
 Application_1794134763,Accepted
 Application_1478134225,Other
 Application_1925569099,Accepted
-Application_25364929,Accepted
+Application_25364929,Other
 Application_425468865,Other
 Application_657638630,Other
 Application_852426263,Accepted
@@ -7697,7 +7697,7 @@ Application_258320562,Other
 Application_986570206,Accepted
 Application_2057580453,Accepted
 Application_287904563,Other
-Application_1533384397,Accepted
+Application_1533384397,Other
 Application_450545784,Other
 Application_1944774763,Accepted
 Application_711065151,Accepted
@@ -7721,7 +7721,7 @@ Application_1990955384,Other
 Application_1540056890,Other
 Application_589126653,Accepted
 Application_209639057,Other
-Application_275058201,Accepted
+Application_275058201,Other
 Application_1358114237,Other
 Application_974745269,Other
 Application_1015944019,Accepted
@@ -7787,7 +7787,7 @@ Application_375100276,Accepted
 Application_2123207704,Accepted
 Application_1043518306,Other
 Application_776628255,Other
-Application_444033179,Accepted
+Application_444033179,Other
 Application_1460436329,Accepted
 Application_1670183961,Other
 Application_59935809,Accepted
@@ -7834,7 +7834,7 @@ Application_379899798,Accepted
 Application_1138798640,Accepted
 Application_570251114,Other
 Application_1192098372,Accepted
-Application_1533233352,Accepted
+Application_1533233352,Other
 Application_1638550847,Other
 Application_1971112661,Other
 Application_1241512752,Other
@@ -7844,7 +7844,7 @@ Application_837134806,Other
 Application_1355385561,Other
 Application_426600703,Other
 Application_775027494,Other
-Application_1238006466,Accepted
+Application_1238006466,Other
 Application_593488117,Other
 Application_1658225452,Accepted
 Application_339198916,Accepted
@@ -7930,7 +7930,7 @@ Application_1033756531,Other
 Application_810356080,Other
 Application_595629255,Accepted
 Application_1804080842,Other
-Application_333578134,Accepted
+Application_333578134,Other
 Application_548424602,Other
 Application_1623591917,Accepted
 Application_1981687019,Other
@@ -8001,8 +8001,8 @@ Application_430791598,Accepted
 Application_49284861,Accepted
 Application_1290264566,Other
 Application_1577285889,Accepted
-Application_81754957,Accepted
-Application_1000671285,Accepted
+Application_81754957,Other
+Application_1000671285,Other
 Application_1785308,Other
 Application_1893399634,Other
 Application_499011781,Other
@@ -8047,7 +8047,7 @@ Application_2054007266,Other
 Application_702536045,Other
 Application_1421987807,Other
 Application_924932150,Other
-Application_2123842224,Accepted
+Application_2123842224,Other
 Application_495312306,Accepted
 Application_1281100423,Other
 Application_1980469566,Other
@@ -8095,15 +8095,15 @@ Application_216019835,Other
 Application_1290940341,Other
 Application_941405419,Other
 Application_1179724572,Accepted
-Application_677195292,Accepted
-Application_24862267,Accepted
+Application_677195292,Other
+Application_24862267,Other
 Application_1070992899,Other
 Application_519215632,Other
 Application_2006270298,Other
 Application_1078177342,Other
 Application_1536025676,Accepted
 Application_1211809081,Accepted
-Application_2009238928,Accepted
+Application_2009238928,Other
 Application_1525138702,Accepted
 Application_604369010,Accepted
 Application_798894229,Other
@@ -8198,14 +8198,14 @@ Application_1112965894,Accepted
 Application_733973796,Accepted
 Application_39557309,Other
 Application_339732743,Accepted
-Application_461433493,Accepted
+Application_461433493,Other
 Application_145296005,Other
 Application_2112558697,Accepted
 Application_1219757665,Other
 Application_971189992,Accepted
 Application_1858734311,Other
 Application_1682343473,Accepted
-Application_2006679388,Accepted
+Application_2006679388,Other
 Application_926053153,Accepted
 Application_1174477922,Other
 Application_1184508004,Other
@@ -8282,11 +8282,11 @@ Application_1161456272,Other
 Application_2140388661,Accepted
 Application_2043291307,Other
 Application_968309729,Other
-Application_1183157329,Accepted
+Application_1183157329,Other
 Application_286126823,Other
 Application_602769573,Other
 Application_795534853,Accepted
-Application_832038276,Accepted
+Application_832038276,Other
 Application_1586046404,Accepted
 Application_1157012064,Accepted
 Application_187384136,Accepted
@@ -8309,7 +8309,7 @@ Application_1279393962,Other
 Application_2113358372,Other
 Application_1959110535,Other
 Application_1643137872,Other
-Application_1293544696,Accepted
+Application_1293544696,Other
 Application_931073033,Other
 Application_1305315187,Other
 Application_543876854,Other
@@ -8384,7 +8384,7 @@ Application_2052670486,Other
 Application_400176211,Other
 Application_298469665,Other
 Application_1004667877,Accepted
-Application_1541539359,Accepted
+Application_1541539359,Other
 Application_660516532,Other
 Application_1868990454,Other
 Application_984757556,Accepted
@@ -8398,7 +8398,7 @@ Application_1939512267,Other
 Application_1606544626,Other
 Application_1702878962,Other
 Application_1176638275,Other
-Application_209668210,Accepted
+Application_209668210,Other
 Application_854436852,Other
 Application_1938519387,Other
 Application_1053676106,Other
@@ -8419,7 +8419,7 @@ Application_1154815190,Other
 Application_2092883533,Other
 Application_965163179,Other
 Application_1200551817,Other
-Application_294803851,Accepted
+Application_294803851,Other
 Application_1376818993,Other
 Application_520825110,Other
 Application_2135909273,Accepted
@@ -8529,7 +8529,7 @@ Application_1637645328,Other
 Application_641451451,Accepted
 Application_990969583,Accepted
 Application_492898986,Other
-Application_1434743485,Accepted
+Application_1434743485,Other
 Application_1771397473,Other
 Application_1580664920,Accepted
 Application_1505581087,Other
@@ -8557,7 +8557,7 @@ Application_1354673237,Accepted
 Application_1764334223,Other
 Application_622290812,Other
 Application_2084464663,Other
-Application_1576040509,Accepted
+Application_1576040509,Other
 Application_1208437635,Other
 Application_1541112355,Accepted
 Application_1824816815,Other
@@ -8575,7 +8575,7 @@ Application_1946062291,Other
 Application_1322352973,Other
 Application_181500436,Other
 Application_1465213009,Other
-Application_579746230,Accepted
+Application_579746230,Other
 Application_1845151636,Other
 Application_750189157,Accepted
 Application_324825693,Accepted
@@ -8628,7 +8628,7 @@ Application_535625534,Other
 Application_2081580354,Accepted
 Application_326560085,Other
 Application_1767480349,Accepted
-Application_1885542916,Accepted
+Application_1885542916,Other
 Application_2093424318,Other
 Application_1118744495,Other
 Application_1978317827,Other
@@ -8639,7 +8639,7 @@ Application_277574167,Accepted
 Application_1020070367,Other
 Application_1513225011,Other
 Application_439116232,Other
-Application_1864371228,Accepted
+Application_1864371228,Other
 Application_1961238104,Accepted
 Application_686543746,Other
 Application_1132338600,Other
@@ -8648,7 +8648,7 @@ Application_1963573946,Other
 Application_87408313,Accepted
 Application_1129714601,Accepted
 Application_1437146886,Accepted
-Application_74288959,Accepted
+Application_74288959,Other
 Application_1978395445,Accepted
 Application_656995606,Accepted
 Application_1157864970,Accepted
@@ -8776,7 +8776,7 @@ Application_1417957596,Other
 Application_1367795146,Accepted
 Application_1789439843,Other
 Application_462319432,Other
-Application_2000122332,Accepted
+Application_2000122332,Other
 Application_611642907,Accepted
 Application_430467161,Accepted
 Application_1115465093,Accepted
@@ -8797,7 +8797,7 @@ Application_745096992,Other
 Application_1557848417,Accepted
 Application_1444082489,Accepted
 Application_334959919,Accepted
-Application_364247106,Accepted
+Application_364247106,Other
 Application_201313048,Accepted
 Application_738269628,Accepted
 Application_447520078,Accepted
@@ -8841,7 +8841,7 @@ Application_1619878986,Other
 Application_1801013120,Other
 Application_611550510,Other
 Application_455042408,Accepted
-Application_974914570,Accepted
+Application_974914570,Other
 Application_615601924,Accepted
 Application_1838736165,Other
 Application_1484267658,Other
@@ -8872,7 +8872,7 @@ Application_181846130,Other
 Application_1442043587,Accepted
 Application_329140052,Accepted
 Application_753771575,Accepted
-Application_37796637,Accepted
+Application_37796637,Other
 Application_870719305,Accepted
 Application_175766876,Other
 Application_1519625708,Accepted
@@ -8936,7 +8936,7 @@ Application_256908432,Other
 Application_545863146,Accepted
 Application_2115135884,Other
 Application_1294994633,Other
-Application_535577633,Accepted
+Application_535577633,Other
 Application_871306835,Accepted
 Application_2030977794,Other
 Application_1540717335,Accepted
@@ -8979,7 +8979,7 @@ Application_1006347888,Other
 Application_1136568641,Other
 Application_1853613492,Accepted
 Application_295287733,Accepted
-Application_387843893,Accepted
+Application_387843893,Other
 Application_1852628062,Other
 Application_2118146765,Accepted
 Application_28307391,Other
@@ -8999,7 +8999,7 @@ Application_763074343,Other
 Application_1112876368,Other
 Application_766131246,Other
 Application_2102734993,Accepted
-Application_319759095,Accepted
+Application_319759095,Other
 Application_1020232709,Accepted
 Application_1867535836,Accepted
 Application_545180735,Accepted
@@ -9028,7 +9028,7 @@ Application_575581585,Other
 Application_1571551830,Other
 Application_1314908281,Other
 Application_1413732914,Accepted
-Application_1895894636,Accepted
+Application_1895894636,Other
 Application_1572053346,Accepted
 Application_875040064,Other
 Application_1064627620,Other
@@ -9131,7 +9131,7 @@ Application_647370493,Accepted
 Application_1876989319,Other
 Application_1369825234,Other
 Application_104534633,Accepted
-Application_713940205,Accepted
+Application_713940205,Other
 Application_524545559,Other
 Application_417956700,Other
 Application_281167528,Accepted
@@ -9182,7 +9182,7 @@ Application_96860334,Other
 Application_1609576953,Other
 Application_989951800,Accepted
 Application_1406423932,Other
-Application_1956578360,Accepted
+Application_1956578360,Other
 Application_23155824,Other
 Application_174302253,Other
 Application_599737805,Other
@@ -9211,7 +9211,7 @@ Application_1673553736,Accepted
 Application_974274445,Accepted
 Application_455642845,Accepted
 Application_615854922,Other
-Application_1125253534,Accepted
+Application_1125253534,Other
 Application_1242530719,Accepted
 Application_2047928651,Other
 Application_1672307859,Accepted
@@ -9335,12 +9335,12 @@ Application_531666181,Other
 Application_1650971510,Accepted
 Application_686427596,Accepted
 Application_1262548993,Other
-Application_1798048539,Accepted
+Application_1798048539,Other
 Application_2003909019,Accepted
 Application_1426066854,Other
 Application_797374635,Accepted
 Application_574190208,Other
-Application_351201589,Accepted
+Application_351201589,Other
 Application_1880444445,Other
 Application_1797152318,Accepted
 Application_356026670,Other
@@ -9364,7 +9364,7 @@ Application_896152572,Accepted
 Application_1141711101,Other
 Application_1634388406,Accepted
 Application_1857619478,Other
-Application_162537000,Accepted
+Application_162537000,Other
 Application_153423780,Other
 Application_559754013,Accepted
 Application_1352740155,Accepted
@@ -9448,7 +9448,7 @@ Application_182869519,Accepted
 Application_532540039,Other
 Application_699037232,Other
 Application_273495805,Accepted
-Application_2077685632,Accepted
+Application_2077685632,Other
 Application_1536004894,Accepted
 Application_629548635,Other
 Application_1513926839,Accepted
@@ -9568,7 +9568,7 @@ Application_87660035,Other
 Application_1649995897,Other
 Application_1135892793,Accepted
 Application_200571610,Other
-Application_1696948651,Accepted
+Application_1696948651,Other
 Application_1774753524,Other
 Application_119020510,Accepted
 Application_670941831,Other
@@ -9600,7 +9600,7 @@ Application_424713760,Accepted
 Application_2145603515,Other
 Application_2035507329,Accepted
 Application_1070374401,Accepted
-Application_630979281,Accepted
+Application_630979281,Other
 Application_1081695790,Other
 Application_1176412755,Accepted
 Application_1829767138,Other
@@ -9658,7 +9658,7 @@ Application_776906675,Other
 Application_662953436,Other
 Application_300537283,Other
 Application_2068346638,Other
-Application_1750478258,Accepted
+Application_1750478258,Other
 Application_625399553,Other
 Application_90844538,Other
 Application_457191831,Other
@@ -9762,12 +9762,12 @@ Application_1679886800,Accepted
 Application_1355440066,Accepted
 Application_41729009,Accepted
 Application_960259355,Accepted
-Application_1117631679,Accepted
+Application_1117631679,Other
 Application_1828353170,Accepted
 Application_166432391,Accepted
 Application_348027827,Accepted
 Application_1168708378,Other
-Application_1392142030,Accepted
+Application_1392142030,Other
 Application_1239904274,Accepted
 Application_537089874,Other
 Application_1864387636,Accepted
@@ -9792,7 +9792,7 @@ Application_1100173647,Other
 Application_1121005474,Other
 Application_1806593507,Other
 Application_1039785139,Accepted
-Application_1433932097,Accepted
+Application_1433932097,Other
 Application_360196526,Accepted
 Application_886797748,Other
 Application_2106682825,Other
@@ -9808,7 +9808,7 @@ Application_1515669954,Accepted
 Application_2113962470,Accepted
 Application_1750826338,Other
 Application_458203569,Accepted
-Application_1182795681,Accepted
+Application_1182795681,Other
 Application_1538131961,Other
 Application_2118577628,Accepted
 Application_1979406575,Other
@@ -9889,7 +9889,7 @@ Application_2086489211,Other
 Application_1009342776,Other
 Application_1122892866,Other
 Application_1497423600,Other
-Application_1435049314,Accepted
+Application_1435049314,Other
 Application_2083086671,Accepted
 Application_876207556,Accepted
 Application_1866234402,Other
@@ -9909,7 +9909,7 @@ Application_796034306,Accepted
 Application_1246438973,Accepted
 Application_453288452,Accepted
 Application_95006764,Other
-Application_1169725538,Accepted
+Application_1169725538,Other
 Application_1245036233,Accepted
 Application_1333231607,Accepted
 Application_1691337772,Other
@@ -9936,7 +9936,7 @@ Application_829091481,Accepted
 Application_914518259,Accepted
 Application_733314763,Other
 Application_1460077602,Other
-Application_956215142,Accepted
+Application_956215142,Other
 Application_33685427,Accepted
 Application_1681112710,Accepted
 Application_1904410758,Accepted
@@ -9984,7 +9984,7 @@ Application_1356400822,Accepted
 Application_1706081580,Other
 Application_224813522,Accepted
 Application_1626768496,Other
-Application_1935023228,Accepted
+Application_1935023228,Other
 Application_859907815,Other
 Application_1225687747,Other
 Application_2114750715,Other
@@ -9995,7 +9995,7 @@ Application_303989070,Other
 Application_629209168,Accepted
 Application_1387439149,Other
 Application_2019039986,Other
-Application_1878767958,Accepted
+Application_1878767958,Other
 Application_1807084551,Other
 Application_1344635275,Accepted
 Application_1567894569,Other
@@ -10136,7 +10136,7 @@ Application_403880003,Other
 Application_296421707,Accepted
 Application_1653948637,Other
 Application_741191887,Other
-Application_914728011,Accepted
+Application_914728011,Other
 Application_1171666859,Other
 Application_914156614,Accepted
 Application_1996626176,Other
@@ -10178,7 +10178,7 @@ Application_1742003314,Accepted
 Application_2130079799,Other
 Application_1805587238,Accepted
 Application_1366846671,Other
-Application_1756176011,Accepted
+Application_1756176011,Other
 Application_797691856,Accepted
 Application_1555229754,Accepted
 Application_386532778,Other
@@ -10205,7 +10205,7 @@ Application_1400830743,Other
 Application_444408080,Other
 Application_1822677055,Other
 Application_926837469,Accepted
-Application_987215821,Accepted
+Application_987215821,Other
 Application_1398445330,Other
 Application_668971390,Accepted
 Application_1366595744,Other
@@ -10265,7 +10265,7 @@ Application_75790454,Other
 Application_248502899,Other
 Application_498298032,Other
 Application_2071290500,Accepted
-Application_931151304,Accepted
+Application_931151304,Other
 Application_151062598,Accepted
 Application_1568283697,Other
 Application_1302622905,Other
@@ -10316,14 +10316,14 @@ Application_1475131206,Other
 Application_556726345,Other
 Application_1241842894,Accepted
 Application_257501952,Other
-Application_525601378,Accepted
+Application_525601378,Other
 Application_673440746,Accepted
 Application_2107470141,Other
 Application_1782329980,Accepted
 Application_905212721,Other
 Application_555705661,Other
 Application_1556045942,Other
-Application_85372842,Accepted
+Application_85372842,Other
 Application_28650741,Other
 Application_1993554545,Accepted
 Application_1774860195,Other
@@ -10612,7 +10612,7 @@ Application_261369076,Other
 Application_1053061342,Other
 Application_1813836988,Other
 Application_740525078,Other
-Application_845264414,Accepted
+Application_845264414,Other
 Application_42363018,Other
 Application_1300146313,Accepted
 Application_2144122462,Other
@@ -10677,7 +10677,7 @@ Application_2132280763,Other
 Application_1766691152,Accepted
 Application_746909032,Other
 Application_1445624231,Accepted
-Application_681572147,Accepted
+Application_681572147,Other
 Application_1597571599,Other
 Application_1765317682,Other
 Application_747766514,Other
@@ -10786,7 +10786,7 @@ Application_736898730,Other
 Application_256910374,Other
 Application_2042250346,Other
 Application_609549109,Other
-Application_1442707430,Accepted
+Application_1442707430,Other
 Application_2085485499,Other
 Application_42358012,Other
 Application_1488933214,Other
@@ -10822,7 +10822,7 @@ Application_566579030,Accepted
 Application_1865277109,Accepted
 Application_1227690400,Other
 Application_1485872413,Other
-Application_326755186,Accepted
+Application_326755186,Other
 Application_107006704,Other
 Application_568657523,Other
 Application_975545550,Accepted
@@ -10998,7 +10998,7 @@ Application_657686177,Other
 Application_1858289567,Other
 Application_86065332,Accepted
 Application_1133030829,Other
-Application_776408003,Accepted
+Application_776408003,Other
 Application_1029418789,Other
 Application_1548755079,Other
 Application_1708061774,Accepted
@@ -11098,7 +11098,7 @@ Application_1948857084,Other
 Application_957889872,Other
 Application_295969827,Other
 Application_196729550,Accepted
-Application_1188769353,Accepted
+Application_1188769353,Other
 Application_1235233550,Other
 Application_1408004513,Other
 Application_1427357387,Other
@@ -11131,7 +11131,7 @@ Application_1968129303,Accepted
 Application_2103717541,Other
 Application_1880367762,Accepted
 Application_824090037,Other
-Application_642752908,Accepted
+Application_642752908,Other
 Application_248389348,Other
 Application_606991677,Accepted
 Application_964799660,Accepted
@@ -11160,7 +11160,7 @@ Application_888638591,Other
 Application_1508783586,Other
 Application_1332069287,Other
 Application_623633224,Accepted
-Application_736449039,Accepted
+Application_736449039,Other
 Application_969699413,Other
 Application_1410553493,Other
 Application_1810035522,Accepted
@@ -11178,7 +11178,7 @@ Application_349261388,Accepted
 Application_883552034,Other
 Application_761060432,Other
 Application_1459681375,Other
-Application_1118371002,Accepted
+Application_1118371002,Other
 Application_569478541,Other
 Application_1402152809,Other
 Application_2101854749,Other
@@ -11221,7 +11221,7 @@ Application_2022864702,Other
 Application_2099297268,Other
 Application_763803693,Accepted
 Application_1382081055,Accepted
-Application_1954462316,Accepted
+Application_1954462316,Other
 Application_274957325,Other
 Application_974129121,Other
 Application_1349416998,Other
@@ -11251,7 +11251,7 @@ Application_1452739482,Accepted
 Application_2026246587,Other
 Application_423856798,Accepted
 Application_855349687,Other
-Application_1554722104,Accepted
+Application_1554722104,Other
 Application_170555253,Accepted
 Application_1924874657,Other
 Application_1886874833,Other
@@ -11282,7 +11282,7 @@ Application_900869983,Other
 Application_71172761,Accepted
 Application_1064691897,Accepted
 Application_116762281,Accepted
-Application_91279548,Accepted
+Application_91279548,Other
 Application_2030605346,Other
 Application_1579703336,Other
 Application_384719366,Accepted
@@ -11400,7 +11400,7 @@ Application_1964386117,Accepted
 Application_386696956,Other
 Application_182600029,Other
 Application_141582005,Accepted
-Application_2000696976,Accepted
+Application_2000696976,Other
 Application_1003568418,Other
 Application_797165485,Other
 Application_1224874439,Other
@@ -11443,10 +11443,10 @@ Application_1109152833,Other
 Application_1407057817,Accepted
 Application_1867625411,Other
 Application_1623821275,Accepted
-Application_809628503,Accepted
+Application_809628503,Other
 Application_1763856781,Accepted
 Application_809876730,Other
-Application_620349713,Accepted
+Application_620349713,Other
 Application_1442193843,Accepted
 Application_1039537740,Other
 Application_690014758,Other
@@ -11485,7 +11485,7 @@ Application_710573029,Other
 Application_533726298,Accepted
 Application_372327336,Accepted
 Application_1745455000,Accepted
-Application_889353724,Accepted
+Application_889353724,Other
 Application_1491142305,Accepted
 Application_669719234,Other
 Application_371905855,Other
@@ -11521,7 +11521,7 @@ Application_2127935931,Accepted
 Application_70463787,Other
 Application_1786516463,Accepted
 Application_250858232,Other
-Application_575181172,Accepted
+Application_575181172,Other
 Application_1647096554,Other
 Application_1432308773,Accepted
 Application_1270529077,Other
@@ -11595,7 +11595,7 @@ Application_383949616,Other
 Application_1195146886,Accepted
 Application_980170204,Accepted
 Application_600703648,Other
-Application_1066477731,Accepted
+Application_1066477731,Other
 Application_1644292441,Accepted
 Application_1286145922,Accepted
 Application_1035934047,Other
@@ -11620,7 +11620,7 @@ Application_219333502,Accepted
 Application_186782886,Accepted
 Application_192268999,Accepted
 Application_926542342,Accepted
-Application_998261970,Accepted
+Application_998261970,Other
 Application_1943685492,Accepted
 Application_1378979200,Accepted
 Application_1645989394,Other
@@ -11634,7 +11634,7 @@ Application_645828402,Other
 Application_1383932860,Accepted
 Application_1058627207,Other
 Application_1519949994,Accepted
-Application_1237747961,Accepted
+Application_1237747961,Other
 Application_1140598576,Other
 Application_858335158,Other
 Application_1362261083,Accepted
@@ -11674,7 +11674,7 @@ Application_2051973158,Accepted
 Application_1884948653,Accepted
 Application_108777253,Other
 Application_740999060,Other
-Application_391361598,Accepted
+Application_391361598,Other
 Application_388984788,Other
 Application_1506645585,Other
 Application_1333883378,Accepted
@@ -11745,9 +11745,9 @@ Application_1307008167,Other
 Application_1364130944,Other
 Application_738653118,Other
 Application_548905989,Other
-Application_359299422,Accepted
+Application_359299422,Other
 Application_169744009,Other
-Application_1137627493,Accepted
+Application_1137627493,Other
 Application_606167855,Other
 Application_311225091,Other
 Application_256493525,Other
@@ -11760,7 +11760,7 @@ Application_1857636845,Other
 Application_705632157,Accepted
 Application_305386990,Other
 Application_250245996,Accepted
-Application_943951356,Accepted
+Application_943951356,Other
 Application_778477049,Other
 Application_959506520,Other
 Application_957786035,Accepted
@@ -11826,7 +11826,7 @@ Application_2132368419,Accepted
 Application_1167485975,Accepted
 Application_1645053333,Other
 Application_1935391283,Accepted
-Application_1710800824,Accepted
+Application_1710800824,Other
 Application_1858388938,Accepted
 Application_2112209240,Other
 Application_269531667,Accepted
@@ -11862,7 +11862,7 @@ Application_1025043783,Other
 Application_526485295,Other
 Application_994219306,Other
 Application_1243127537,Accepted
-Application_548101808,Accepted
+Application_548101808,Other
 Application_925557082,Other
 Application_410746821,Other
 Application_1789944376,Other
@@ -11870,7 +11870,7 @@ Application_1937509854,Other
 Application_2125785584,Other
 Application_1118164446,Other
 Application_418424393,Accepted
-Application_306052151,Accepted
+Application_306052151,Other
 Application_954036515,Other
 Application_1422228567,Other
 Application_1852065096,Accepted
@@ -11894,7 +11894,7 @@ Application_1749397697,Other
 Application_335494466,Accepted
 Application_1172965688,Accepted
 Application_2080736087,Other
-Application_3108939,Accepted
+Application_3108939,Other
 Application_318734377,Accepted
 Application_221956549,Other
 Application_633324439,Accepted
@@ -11960,7 +11960,7 @@ Application_1381247356,Accepted
 Application_669516093,Other
 Application_450508016,Other
 Application_413885694,Other
-Application_850472645,Accepted
+Application_850472645,Other
 Application_1797569512,Other
 Application_2067823240,Other
 Application_2014598371,Other
@@ -12064,7 +12064,7 @@ Application_593445386,Accepted
 Application_2034400394,Accepted
 Application_1853176146,Other
 Application_1402383222,Accepted
-Application_1694540313,Accepted
+Application_1694540313,Other
 Application_1702985007,Accepted
 Application_480843466,Other
 Application_927358627,Other
@@ -12145,7 +12145,7 @@ Application_824611621,Accepted
 Application_1231776894,Other
 Application_2069986377,Other
 Application_439170487,Accepted
-Application_818188918,Accepted
+Application_818188918,Other
 Application_1612660408,Accepted
 Application_420278289,Other
 Application_756132538,Other
@@ -12171,7 +12171,7 @@ Application_1149573274,Other
 Application_343350519,Other
 Application_132650914,Accepted
 Application_998502130,Other
-Application_1314440029,Accepted
+Application_1314440029,Other
 Application_469158302,Other
 Application_1909395512,Other
 Application_431345557,Other
@@ -12258,7 +12258,7 @@ Application_1459697686,Accepted
 Application_1830575003,Other
 Application_1422952731,Accepted
 Application_1960089660,Other
-Application_127251227,Accepted
+Application_127251227,Other
 Application_298428517,Accepted
 Application_204143979,Other
 Application_14355833,Other
@@ -12291,7 +12291,7 @@ Application_1446593900,Accepted
 Application_1937316374,Accepted
 Application_1755362266,Accepted
 Application_1927756034,Accepted
-Application_827229578,Accepted
+Application_827229578,Other
 Application_2017087363,Accepted
 Application_1979153917,Other
 Application_246845710,Accepted
@@ -12316,7 +12316,7 @@ Application_1739760813,Other
 Application_1776866263,Other
 Application_2125659715,Other
 Application_1061384177,Other
-Application_1412518591,Accepted
+Application_1412518591,Other
 Application_519742675,Accepted
 Application_1737200946,Other
 Application_779084482,Accepted
@@ -12335,13 +12335,13 @@ Application_1767816093,Accepted
 Application_597785331,Other
 Application_63617627,Other
 Application_414675194,Other
-Application_1101061206,Accepted
+Application_1101061206,Other
 Application_1812144083,Other
 Application_1630970905,Accepted
 Application_1545682185,Other
 Application_1666755661,Other
 Application_280877222,Accepted
-Application_1768359513,Accepted
+Application_1768359513,Other
 Application_150713663,Other
 Application_1502825467,Other
 Application_374386538,Other
@@ -12355,7 +12355,7 @@ Application_84875143,Accepted
 Application_1781727689,Other
 Application_1351821505,Other
 Application_2076753439,Other
-Application_415455384,Accepted
+Application_415455384,Other
 Application_790331021,Other
 Application_1432079056,Accepted
 Application_65365017,Other
@@ -12392,7 +12392,7 @@ Application_373617428,Other
 Application_483018339,Other
 Application_1708892800,Other
 Application_1594453771,Accepted
-Application_1238761534,Accepted
+Application_1238761534,Other
 Application_158033742,Other
 Application_1347321204,Accepted
 Application_310821774,Other
@@ -12415,7 +12415,7 @@ Application_1040829431,Accepted
 Application_1230305364,Accepted
 Application_977223897,Other
 Application_42362416,Other
-Application_105083574,Accepted
+Application_105083574,Other
 Application_74750542,Accepted
 Application_2051806128,Other
 Application_1792257623,Accepted
@@ -12424,12 +12424,12 @@ Application_2134761513,Other
 Application_284027138,Other
 Application_1006372947,Other
 Application_680154315,Other
-Application_1809020881,Accepted
+Application_1809020881,Other
 Application_396471385,Other
 Application_1983370318,Other
 Application_30210514,Other
 Application_456598233,Accepted
-Application_44274096,Accepted
+Application_44274096,Other
 Application_1755984417,Accepted
 Application_1473785444,Accepted
 Application_713358786,Other
@@ -12445,7 +12445,7 @@ Application_1786225462,Accepted
 Application_1967126699,Other
 Application_253438961,Accepted
 Application_1388833616,Other
-Application_1010778247,Accepted
+Application_1010778247,Other
 Application_405852655,Accepted
 Application_1828103318,Accepted
 Application_2042900155,Other
@@ -12609,7 +12609,7 @@ Application_1777778139,Other
 Application_1779281635,Accepted
 Application_1879326807,Accepted
 Application_1529719459,Other
-Application_518506652,Accepted
+Application_518506652,Other
 Application_328165702,Other
 Application_1019277788,Other
 Application_333772102,Other
@@ -12644,7 +12644,7 @@ Application_1625886684,Other
 Application_1178098808,Accepted
 Application_1170308994,Accepted
 Application_1351522670,Other
-Application_1353165587,Accepted
+Application_1353165587,Other
 Application_303168428,Other
 Application_1674575946,Other
 Application_454134221,Other
@@ -12708,7 +12708,7 @@ Application_1821302981,Other
 Application_514710340,Other
 Application_807492404,Accepted
 Application_1022503261,Other
-Application_1671157833,Accepted
+Application_1671157833,Other
 Application_1908714490,Other
 Application_1705192087,Accepted
 Application_960854023,Other
@@ -12752,7 +12752,7 @@ Application_1308836124,Other
 Application_1138349499,Accepted
 Application_1008980114,Accepted
 Application_73903421,Other
-Application_1085653141,Accepted
+Application_1085653141,Other
 Application_1481814821,Accepted
 Application_1549689072,Other
 Application_1483862094,Accepted
@@ -12763,7 +12763,7 @@ Application_217687957,Other
 Application_584503835,Other
 Application_1888925235,Other
 Application_942374112,Other
-Application_2056332275,Accepted
+Application_2056332275,Other
 Application_840588512,Accepted
 Application_758513444,Other
 Application_215910058,Other
@@ -12783,7 +12783,7 @@ Application_1085521488,Accepted
 Application_190845383,Accepted
 Application_1972082022,Other
 Application_514346137,Other
-Application_1256672128,Accepted
+Application_1256672128,Other
 Application_1273370214,Accepted
 Application_827856022,Accepted
 Application_1395998500,Other
@@ -12840,10 +12840,10 @@ Application_12929420,Other
 Application_1375408580,Other
 Application_2072661253,Accepted
 Application_1415755722,Accepted
-Application_1288691478,Accepted
+Application_1288691478,Other
 Application_2069682328,Other
 Application_1648156250,Other
-Application_478218443,Accepted
+Application_478218443,Other
 Application_1000474975,Accepted
 Application_296975163,Accepted
 Application_770399614,Accepted
@@ -12880,7 +12880,7 @@ Application_948410077,Accepted
 Application_271562196,Other
 Application_1972643738,Accepted
 Application_854516653,Accepted
-Application_1143118993,Accepted
+Application_1143118993,Other
 Application_1877678550,Other
 Application_1650591203,Other
 Application_1212477492,Other
@@ -12938,7 +12938,7 @@ Application_2076770285,Other
 Application_642741462,Other
 Application_1487459545,Other
 Application_1725225067,Other
-Application_573250707,Accepted
+Application_573250707,Other
 Application_2125282331,Accepted
 Application_354580507,Accepted
 Application_317156013,Accepted
@@ -13009,7 +13009,7 @@ Application_555165047,Other
 Application_375764386,Accepted
 Application_362822167,Other
 Application_2039201296,Accepted
-Application_2041093105,Accepted
+Application_2041093105,Other
 Application_1092722834,Accepted
 Application_877849791,Other
 Application_1593705186,Accepted
@@ -13018,13 +13018,13 @@ Application_746910209,Other
 Application_204675397,Other
 Application_1371447312,Other
 Application_549994705,Other
-Application_909623507,Accepted
+Application_909623507,Other
 Application_1801326085,Accepted
-Application_1047649064,Accepted
+Application_1047649064,Other
 Application_1262510221,Accepted
 Application_1949570249,Accepted
 Application_521369658,Other
-Application_524025552,Accepted
+Application_524025552,Other
 Application_1686765196,Accepted
 Application_1910083778,Accepted
 Application_176445556,Other
@@ -13049,7 +13049,7 @@ Application_1663257357,Other
 Application_1628993099,Other
 Application_80681735,Other
 Application_16251299,Other
-Application_913040234,Accepted
+Application_913040234,Other
 Application_1944555010,Other
 Application_1275269713,Other
 Application_561657860,Accepted
@@ -13100,14 +13100,14 @@ Application_1639271434,Other
 Application_1618133940,Other
 Application_1458945384,Other
 Application_758636411,Accepted
-Application_1100130155,Accepted
+Application_1100130155,Other
 Application_1457811809,Other
 Application_316925460,Accepted
 Application_639141458,Other
 Application_1460455963,Accepted
 Application_674937485,Other
 Application_62036840,Accepted
-Application_384716984,Accepted
+Application_384716984,Other
 Application_1903573956,Accepted
 Application_1902597416,Other
 Application_2048746515,Accepted
@@ -13131,7 +13131,7 @@ Application_663551062,Accepted
 Application_2125168706,Other
 Application_1295337736,Other
 Application_74504168,Other
-Application_286617228,Accepted
+Application_286617228,Other
 Application_253435738,Other
 Application_181705871,Accepted
 Application_2042406121,Other
@@ -13471,7 +13471,7 @@ Application_1325467032,Accepted
 Application_1979249244,Other
 Application_1822666886,Other
 Application_106321275,Other
-Application_391271566,Accepted
+Application_391271566,Other
 Application_707571220,Other
 Application_1503789213,Other
 Application_871878965,Other
@@ -13632,7 +13632,7 @@ Application_1996798357,Other
 Application_375448405,Accepted
 Application_382205830,Other
 Application_1486456838,Accepted
-Application_1896717763,Accepted
+Application_1896717763,Other
 Application_523249246,Other
 Application_1138732156,Other
 Application_1511867591,Accepted
@@ -13734,7 +13734,7 @@ Application_843563066,Other
 Application_1088902101,Other
 Application_1702924168,Other
 Application_1736925056,Accepted
-Application_1303093144,Accepted
+Application_1303093144,Other
 Application_1121796531,Other
 Application_2088076896,Other
 Application_1770693603,Other
@@ -13820,7 +13820,7 @@ Application_1525401981,Other
 Application_1822666753,Other
 Application_869697161,Other
 Application_620897639,Other
-Application_306565625,Accepted
+Application_306565625,Other
 Application_57016949,Other
 Application_1386064016,Other
 Application_1431899834,Other
@@ -13840,7 +13840,7 @@ Application_356942916,Other
 Application_579527305,Other
 Application_356297666,Other
 Application_69404178,Accepted
-Application_1468176445,Accepted
+Application_1468176445,Other
 Application_1941321524,Other
 Application_503771129,Accepted
 Application_222696232,Accepted
@@ -13864,7 +13864,7 @@ Application_1786795333,Accepted
 Application_1160291548,Other
 Application_1790831680,Other
 Application_1181926320,Other
-Application_1943698050,Accepted
+Application_1943698050,Other
 Application_298767760,Other
 Application_656783891,Other
 Application_8361795,Accepted
@@ -13976,7 +13976,7 @@ Application_669297917,Accepted
 Application_993665282,Accepted
 Application_868274783,Accepted
 Application_1406920404,Other
-Application_1296278146,Accepted
+Application_1296278146,Other
 Application_1806274805,Other
 Application_1995597967,Accepted
 Application_90149211,Other
@@ -14016,7 +14016,7 @@ Application_871753289,Accepted
 Application_1229796467,Other
 Application_1258519746,Other
 Application_899507598,Accepted
-Application_1855733856,Accepted
+Application_1855733856,Other
 Application_1565002550,Accepted
 Application_565138093,Other
 Application_1528488858,Other
@@ -14114,10 +14114,10 @@ Application_210847484,Other
 Application_477462450,Other
 Application_1422740695,Accepted
 Application_1064673261,Other
-Application_1551330688,Accepted
+Application_1551330688,Other
 Application_1370367843,Accepted
 Application_145097704,Other
-Application_975055026,Accepted
+Application_975055026,Other
 Application_1154011667,Other
 Application_1507254300,Accepted
 Application_971975107,Other
@@ -14127,7 +14127,7 @@ Application_1789198734,Other
 Application_71237400,Other
 Application_1423784718,Other
 Application_1611838399,Other
-Application_69918939,Accepted
+Application_69918939,Other
 Application_1733797232,Accepted
 Application_2058158228,Other
 Application_1154476104,Other
@@ -14148,7 +14148,7 @@ Application_691830598,Other
 Application_853835651,Accepted
 Application_1584306755,Other
 Application_1711544690,Other
-Application_56580038,Accepted
+Application_56580038,Other
 Application_635402835,Other
 Application_197433594,Other
 Application_723100031,Accepted
@@ -14200,7 +14200,7 @@ Application_600773420,Other
 Application_309042709,Other
 Application_815098623,Accepted
 Application_1837589687,Accepted
-Application_1390969231,Accepted
+Application_1390969231,Other
 Application_948481390,Accepted
 Application_1564389694,Other
 Application_1198161746,Accepted
@@ -14367,7 +14367,7 @@ Application_49035945,Other
 Application_172327988,Other
 Application_233189168,Other
 Application_136986393,Other
-Application_1704446276,Accepted
+Application_1704446276,Other
 Application_1137735607,Other
 Application_1187776886,Accepted
 Application_1048967634,Other
@@ -14396,7 +14396,7 @@ Application_882510521,Other
 Application_183143684,Accepted
 Application_1073884448,Accepted
 Application_374530407,Accepted
-Application_151057328,Accepted
+Application_151057328,Other
 Application_615680994,Accepted
 Application_1772694162,Other
 Application_45877425,Other
@@ -14418,7 +14418,7 @@ Application_115605523,Other
 Application_728771029,Accepted
 Application_1919447067,Other
 Application_853614468,Accepted
-Application_1793305435,Accepted
+Application_1793305435,Other
 Application_385677625,Accepted
 Application_94818585,Other
 Application_1169100815,Other
@@ -14453,7 +14453,7 @@ Application_1303118372,Other
 Application_1344709581,Accepted
 Application_915073564,Other
 Application_1135785992,Other
-Application_705989577,Accepted
+Application_705989577,Other
 Application_1875600933,Other
 Application_1500804774,Other
 Application_1433657952,Accepted
@@ -14569,7 +14569,7 @@ Application_532411192,Other
 Application_1432762873,Other
 Application_2146016025,Other
 Application_707558755,Other
-Application_1272342844,Accepted
+Application_1272342844,Other
 Application_965181506,Other
 Application_1248564607,Other
 Application_200850510,Other
@@ -14593,15 +14593,15 @@ Application_1792600203,Accepted
 Application_1836690227,Other
 Application_1653926728,Accepted
 Application_1025650501,Other
-Application_8755596,Accepted
+Application_8755596,Other
 Application_45386818,Accepted
 Application_306791898,Other
 Application_761438606,Other
 Application_1141616388,Other
-Application_790322789,Accepted
+Application_790322789,Other
 Application_1283264254,Other
-Application_208829283,Accepted
-Application_32370388,Accepted
+Application_208829283,Other
+Application_32370388,Other
 Application_780675030,Other
 Application_1259857117,Other
 Application_539936825,Other
@@ -14687,14 +14687,14 @@ Application_1229771603,Other
 Application_72327225,Other
 Application_885659109,Accepted
 Application_1767761933,Other
-Application_2124420671,Accepted
+Application_2124420671,Other
 Application_2116081318,Other
 Application_1250272203,Other
 Application_1669653980,Other
 Application_942726811,Accepted
 Application_592820539,Other
 Application_817774483,Other
-Application_391064347,Accepted
+Application_391064347,Other
 Application_757906667,Other
 Application_1107373313,Other
 Application_1070030033,Other
@@ -14882,8 +14882,8 @@ Application_1159586223,Other
 Application_670682830,Other
 Application_617510232,Other
 Application_672219365,Other
-Application_256705596,Accepted
-Application_2051267685,Accepted
+Application_256705596,Other
+Application_2051267685,Other
 Application_1260848760,Other
 Application_1046067288,Other
 Application_2100519070,Accepted
@@ -14946,7 +14946,7 @@ Application_1944463667,Other
 Application_2125760464,Other
 Application_1143583416,Other
 Application_436649857,Accepted
-Application_255635649,Accepted
+Application_255635649,Other
 Application_2909260,Other
 Application_245583154,Other
 Application_1085313302,Other
@@ -15115,7 +15115,7 @@ Application_349476845,Other
 Application_214938001,Accepted
 Application_250077480,Other
 Application_1206316951,Accepted
-Application_1107336753,Accepted
+Application_1107336753,Other
 Application_1312744154,Other
 Application_958724983,Accepted
 Application_238988223,Other
@@ -15138,7 +15138,7 @@ Application_1814010387,Accepted
 Application_1127559708,Other
 Application_601862065,Other
 Application_816531730,Other
-Application_623268834,Accepted
+Application_623268834,Other
 Application_273628767,Other
 Application_27646111,Accepted
 Application_781287190,Other
@@ -15173,7 +15173,7 @@ Application_619587123,Other
 Application_279099840,Accepted
 Application_414438383,Other
 Application_248337955,Other
-Application_463579484,Accepted
+Application_463579484,Other
 Application_1546433537,Other
 Application_1671609597,Accepted
 Application_2113590248,Accepted
@@ -15223,9 +15223,9 @@ Application_2037422805,Accepted
 Application_1420519230,Other
 Application_575893657,Accepted
 Application_925907733,Other
-Application_1236495379,Accepted
+Application_1236495379,Other
 Application_1236309124,Other
-Application_1598913755,Accepted
+Application_1598913755,Other
 Application_1451652837,Other
 Application_657899666,Other
 Application_659691842,Other
@@ -15299,7 +15299,7 @@ Application_772173989,Other
 Application_768135375,Other
 Application_1715743158,Accepted
 Application_1083450906,Accepted
-Application_441860911,Accepted
+Application_441860911,Other
 Application_31588368,Other
 Application_1258227511,Other
 Application_321053657,Accepted
@@ -15308,7 +15308,7 @@ Application_630942454,Other
 Application_453605354,Accepted
 Application_1536384462,Other
 Application_1844455564,Accepted
-Application_1751063655,Accepted
+Application_1751063655,Other
 Application_1403661167,Other
 Application_1755610300,Other
 Application_1405848861,Accepted
@@ -15318,7 +15318,7 @@ Application_330149635,Accepted
 Application_1258327544,Accepted
 Application_689552512,Other
 Application_1069252664,Accepted
-Application_2142581054,Accepted
+Application_2142581054,Other
 Application_1835222765,Accepted
 Application_2051427659,Accepted
 Application_1249077241,Accepted
@@ -15413,7 +15413,7 @@ Application_1962298226,Accepted
 Application_92397272,Accepted
 Application_681844152,Other
 Application_1452943382,Accepted
-Application_168649007,Accepted
+Application_168649007,Other
 Application_307181501,Accepted
 Application_882662504,Other
 Application_1839529029,Other
@@ -15553,7 +15553,7 @@ Application_1233972633,Other
 Application_1596070205,Accepted
 Application_20183531,Accepted
 Application_453692151,Other
-Application_199352898,Accepted
+Application_199352898,Other
 Application_95957590,Accepted
 Application_417542734,Other
 Application_236584990,Other
@@ -15737,7 +15737,7 @@ Application_2052349775,Other
 Application_1327373442,Accepted
 Application_1006164631,Other
 Application_1456994037,Accepted
-Application_239310187,Accepted
+Application_239310187,Other
 Application_123601440,Accepted
 Application_77477304,Accepted
 Application_1160055548,Accepted
@@ -15799,7 +15799,7 @@ Application_756770333,Accepted
 Application_953999753,Other
 Application_2140295223,Other
 Application_1456350468,Accepted
-Application_1791368518,Accepted
+Application_1791368518,Other
 Application_1140915686,Accepted
 Application_1861352527,Other
 Application_930378949,Accepted
@@ -15995,7 +15995,7 @@ Application_1955513014,Other
 Application_258438517,Accepted
 Application_1326001377,Other
 Application_167432172,Other
-Application_536060119,Accepted
+Application_536060119,Other
 Application_2024529302,Other
 Application_907233746,Accepted
 Application_1294454867,Accepted
@@ -16075,7 +16075,7 @@ Application_1668415369,Accepted
 Application_339910304,Other
 Application_30944115,Other
 Application_1042876170,Accepted
-Application_849331250,Accepted
+Application_849331250,Other
 Application_1846127281,Accepted
 Application_830352767,Accepted
 Application_2100496549,Other
@@ -16216,7 +16216,7 @@ Application_231581932,Other
 Application_556116806,Accepted
 Application_1225956047,Other
 Application_1970094713,Other
-Application_1934417139,Accepted
+Application_1934417139,Other
 Application_1747143468,Accepted
 Application_858397535,Other
 Application_37051141,Accepted
@@ -16243,7 +16243,7 @@ Application_1651462335,Other
 Application_1436626469,Accepted
 Application_64844054,Accepted
 Application_192111078,Other
-Application_119592148,Accepted
+Application_119592148,Other
 Application_512304073,Other
 Application_1783800564,Other
 Application_1704050255,Other
@@ -16255,7 +16255,7 @@ Application_136487592,Accepted
 Application_351324138,Accepted
 Application_1642205486,Accepted
 Application_846042277,Accepted
-Application_1556550212,Accepted
+Application_1556550212,Other
 Application_726235541,Accepted
 Application_435425588,Other
 Application_742161523,Other
@@ -16263,12 +16263,12 @@ Application_561687615,Accepted
 Application_967428854,Accepted
 Application_1919971626,Other
 Application_1659132446,Accepted
-Application_1923275788,Accepted
+Application_1923275788,Other
 Application_2013582711,Accepted
 Application_1656925411,Other
 Application_1297361336,Other
 Application_208205606,Other
-Application_1565488598,Accepted
+Application_1565488598,Other
 Application_1233939496,Other
 Application_151505824,Accepted
 Application_564258248,Other
@@ -16297,7 +16297,7 @@ Application_1352916681,Other
 Application_1677325615,Accepted
 Application_703403006,Other
 Application_1248612188,Other
-Application_667047386,Accepted
+Application_667047386,Other
 Application_793949964,Accepted
 Application_466162313,Other
 Application_1097085253,Accepted
@@ -16318,7 +16318,7 @@ Application_1100589857,Other
 Application_717442270,Accepted
 Application_1811477366,Accepted
 Application_612394758,Accepted
-Application_1535842055,Accepted
+Application_1535842055,Other
 Application_311761829,Accepted
 Application_88594001,Other
 Application_1177360098,Other
@@ -16373,10 +16373,10 @@ Application_1004618053,Accepted
 Application_1794947467,Accepted
 Application_1865235436,Accepted
 Application_1425562303,Accepted
-Application_1202414486,Accepted
+Application_1202414486,Other
 Application_840273986,Accepted
 Application_678796369,Other
-Application_296477774,Accepted
+Application_296477774,Other
 Application_36497911,Other
 Application_371936902,Other
 Application_294289967,Accepted
@@ -16393,7 +16393,7 @@ Application_381530489,Other
 Application_206405306,Accepted
 Application_994660843,Accepted
 Application_2076523505,Accepted
-Application_1400471722,Accepted
+Application_1400471722,Other
 Application_1373369508,Other
 Application_1941989391,Other
 Application_287520348,Accepted
@@ -16447,7 +16447,7 @@ Application_870644031,Other
 Application_491815396,Other
 Application_1962617043,Other
 Application_1312786789,Other
-Application_1089680079,Accepted
+Application_1089680079,Other
 Application_1206558139,Other
 Application_945953863,Accepted
 Application_1596597120,Accepted
@@ -16498,7 +16498,7 @@ Application_1055859984,Accepted
 Application_1552260266,Accepted
 Application_1202495955,Other
 Application_1381844731,Accepted
-Application_1744092101,Accepted
+Application_1744092101,Other
 Application_1723977077,Other
 Application_1938580800,Accepted
 Application_1091570681,Other
@@ -16638,7 +16638,7 @@ Application_620235186,Accepted
 Application_238970379,Other
 Application_1169406692,Other
 Application_1392762495,Other
-Application_1608788186,Accepted
+Application_1608788186,Other
 Application_1376997987,Other
 Application_410399562,Other
 Application_772063621,Other
@@ -16712,7 +16712,7 @@ Application_1387448614,Accepted
 Application_1197664398,Other
 Application_1772463113,Other
 Application_1957976550,Other
-Application_1440542670,Accepted
+Application_1440542670,Other
 Application_1225493523,Accepted
 Application_1111459260,Other
 Application_1911707775,Other
@@ -16731,7 +16731,7 @@ Application_1173167096,Other
 Application_175062798,Accepted
 Application_396911003,Accepted
 Application_683272273,Other
-Application_754963246,Accepted
+Application_754963246,Other
 Application_901006507,Accepted
 Application_1658625919,Other
 Application_1549050622,Accepted
@@ -16829,7 +16829,7 @@ Application_1865048748,Accepted
 Application_1893824534,Accepted
 Application_2005338663,Other
 Application_90739686,Accepted
-Application_1130679201,Accepted
+Application_1130679201,Other
 Application_147157588,Other
 Application_581248982,Accepted
 Application_1268089645,Other
@@ -16942,7 +16942,7 @@ Application_871511729,Other
 Application_592195351,Accepted
 Application_402530805,Other
 Application_790606738,Accepted
-Application_1658708741,Accepted
+Application_1658708741,Other
 Application_1043286395,Other
 Application_1866512161,Other
 Application_1424203917,Accepted
@@ -17009,7 +17009,7 @@ Application_1291996724,Accepted
 Application_1975575428,Other
 Application_1956026520,Accepted
 Application_1793974538,Other
-Application_2017036590,Accepted
+Application_2017036590,Other
 Application_1066268432,Other
 Application_371130749,Other
 Application_722948242,Accepted
@@ -17076,7 +17076,7 @@ Application_785797887,Other
 Application_1894941461,Accepted
 Application_504551765,Other
 Application_2083746765,Accepted
-Application_73719461,Accepted
+Application_73719461,Other
 Application_297072684,Other
 Application_652959423,Other
 Application_109968543,Other
@@ -17193,7 +17193,7 @@ Application_198974740,Accepted
 Application_422013778,Accepted
 Application_738420231,Accepted
 Application_26160493,Accepted
-Application_1724201113,Accepted
+Application_1724201113,Other
 Application_1407607460,Accepted
 Application_698381539,Other
 Application_1413297137,Other
@@ -17349,12 +17349,12 @@ Application_1181886815,Accepted
 Application_1714944401,Other
 Application_889820392,Accepted
 Application_945361250,Other
-Application_721220406,Accepted
-Application_1149650869,Accepted
-Application_1650363528,Accepted
+Application_721220406,Other
+Application_1149650869,Other
+Application_1650363528,Other
 Application_2009441535,Other
 Application_1670508693,Other
-Application_1354319745,Accepted
+Application_1354319745,Other
 Application_1715059399,Other
 Application_926759261,Other
 Application_2073663512,Other
@@ -17388,7 +17388,7 @@ Application_1065823078,Accepted
 Application_223278638,Other
 Application_1356643803,Other
 Application_1867579509,Other
-Application_1723296015,Accepted
+Application_1723296015,Other
 Application_1509254113,Other
 Application_1130298196,Other
 Application_363577329,Other
@@ -17427,7 +17427,7 @@ Application_2096375121,Accepted
 Application_1316947459,Accepted
 Application_1488569792,Other
 Application_1076621871,Other
-Application_1433577530,Accepted
+Application_1433577530,Other
 Application_883530983,Other
 Application_1573931639,Other
 Application_1496675632,Other
@@ -17487,7 +17487,7 @@ Application_41567090,Other
 Application_404809366,Other
 Application_1094185064,Other
 Application_734033930,Other
-Application_409668270,Accepted
+Application_409668270,Other
 Application_2119956964,Other
 Application_1985486996,Accepted
 Application_1492655437,Accepted
@@ -17514,13 +17514,13 @@ Application_408343929,Other
 Application_859158743,Other
 Application_1491072227,Accepted
 Application_1807238376,Other
-Application_2008338620,Accepted
+Application_2008338620,Other
 Application_1919307867,Other
 Application_952362533,Accepted
 Application_771141743,Accepted
 Application_201170519,Other
 Application_694128552,Accepted
-Application_1427997254,Accepted
+Application_1427997254,Other
 Application_2009452905,Other
 Application_1876976496,Accepted
 Application_1007507108,Other
@@ -17669,7 +17669,7 @@ Application_1139250324,Other
 Application_951823599,Other
 Application_1641037816,Other
 Application_1308505203,Accepted
-Application_2113523720,Accepted
+Application_2113523720,Other
 Application_1537004906,Accepted
 Application_454557784,Other
 Application_123696793,Accepted
@@ -17801,7 +17801,7 @@ Application_1075071428,Other
 Application_1504919057,Accepted
 Application_550930549,Accepted
 Application_1927658928,Other
-Application_1068833227,Accepted
+Application_1068833227,Other
 Application_1866869887,Other
 Application_49443279,Other
 Application_649155064,Other
@@ -17844,7 +17844,7 @@ Application_493845714,Accepted
 Application_83515745,Accepted
 Application_720331822,Accepted
 Application_88447508,Accepted
-Application_1204527218,Accepted
+Application_1204527218,Other
 Application_990080306,Accepted
 Application_881214408,Other
 Application_1429717404,Accepted
@@ -17870,7 +17870,7 @@ Application_56810676,Accepted
 Application_1139158982,Accepted
 Application_1288742895,Accepted
 Application_2013360526,Other
-Application_1417828983,Accepted
+Application_1417828983,Other
 Application_1632710315,Accepted
 Application_769473490,Accepted
 Application_1199636460,Accepted
@@ -17913,7 +17913,7 @@ Application_923788292,Accepted
 Application_1273548646,Accepted
 Application_494490774,Other
 Application_313268750,Accepted
-Application_154176152,Accepted
+Application_154176152,Other
 Application_1084438713,Other
 Application_1738146755,Other
 Application_1050689657,Accepted
@@ -17930,7 +17930,7 @@ Application_1369889662,Accepted
 Application_148806752,Other
 Application_1405598592,Accepted
 Application_501431890,Accepted
-Application_1457349776,Accepted
+Application_1457349776,Other
 Application_1225775133,Accepted
 Application_165878294,Accepted
 Application_149956027,Accepted
@@ -17943,7 +17943,7 @@ Application_160330707,Other
 Application_829791576,Other
 Application_1590083525,Other
 Application_1980412246,Accepted
-Application_1260255442,Accepted
+Application_1260255442,Other
 Application_898010884,Other
 Application_535873472,Other
 Application_1230905151,Other
@@ -17961,7 +17961,7 @@ Application_333493166,Accepted
 Application_571157956,Other
 Application_146046612,Accepted
 Application_1248715190,Accepted
-Application_1558881681,Accepted
+Application_1558881681,Other
 Application_1782149725,Other
 Application_1322168423,Accepted
 Application_122975331,Accepted
@@ -17981,7 +17981,7 @@ Application_1969448807,Accepted
 Application_1034132814,Other
 Application_136629027,Accepted
 Application_695787496,Other
-Application_910438003,Accepted
+Application_910438003,Other
 Application_1992893166,Other
 Application_1952516758,Other
 Application_1582759922,Other
@@ -17994,7 +17994,7 @@ Application_1959897699,Other
 Application_1896780882,Accepted
 Application_206120401,Accepted
 Application_1908252531,Other
-Application_834385480,Accepted
+Application_834385480,Other
 Application_1183922122,Other
 Application_571889147,Other
 Application_141976668,Other
@@ -18135,7 +18135,7 @@ Application_652156305,Other
 Application_70685965,Accepted
 Application_287210829,Other
 Application_936066506,Other
-Application_35278004,Accepted
+Application_35278004,Other
 Application_794696598,Accepted
 Application_613511520,Accepted
 Application_1714792492,Other
@@ -18224,7 +18224,7 @@ Application_838780138,Accepted
 Application_1096513757,Other
 Application_1223849909,Other
 Application_1153607864,Other
-Application_294512866,Accepted
+Application_294512866,Other
 Application_553039059,Other
 Application_330503783,Other
 Application_22906336,Accepted
@@ -18233,7 +18233,7 @@ Application_2068429697,Other
 Application_1853315636,Other
 Application_588892225,Accepted
 Application_273030385,Other
-Application_59854998,Accepted
+Application_59854998,Other
 Application_156241906,Other
 Application_514766982,Other
 Application_1385712665,Other
@@ -18264,7 +18264,7 @@ Application_1481836231,Accepted
 Application_2004606635,Accepted
 Application_1822724802,Accepted
 Application_1485962311,Other
-Application_1262773552,Accepted
+Application_1262773552,Other
 Application_856400318,Accepted
 Application_36392371,Other
 Application_405489763,Other
@@ -18432,7 +18432,7 @@ Application_416459593,Accepted
 Application_1200520255,Other
 Application_1202364035,Accepted
 Application_1478887879,Other
-Application_1862284639,Accepted
+Application_1862284639,Other
 Application_756221319,Other
 Application_1042483528,Other
 Application_1257391369,Accepted
@@ -18458,13 +18458,13 @@ Application_834969271,Accepted
 Application_100433898,Accepted
 Application_1829420678,Accepted
 Application_1251303639,Other
-Application_535468005,Accepted
+Application_535468005,Other
 Application_176985027,Other
 Application_753765096,Other
 Application_895310472,Other
 Application_1967961775,Other
 Application_178771648,Accepted
-Application_1569220812,Accepted
+Application_1569220812,Other
 Application_1278368816,Accepted
 Application_937148179,Accepted
 Application_1879538696,Accepted
@@ -18473,7 +18473,7 @@ Application_675332373,Other
 Application_19569669,Accepted
 Application_206474288,Accepted
 Application_655725302,Accepted
-Application_1224319762,Accepted
+Application_1224319762,Other
 Application_1725719107,Other
 Application_2124546896,Accepted
 Application_1281312480,Other
@@ -18495,9 +18495,9 @@ Application_1766274802,Other
 Application_1472911131,Other
 Application_1044091896,Other
 Application_409322916,Other
-Application_1104606079,Accepted
+Application_1104606079,Other
 Application_1969899977,Other
-Application_1483549846,Accepted
+Application_1483549846,Other
 Application_1356356111,Accepted
 Application_1554626521,Accepted
 Application_1364846126,Accepted
@@ -18551,7 +18551,7 @@ Application_1656557484,Other
 Application_2031591352,Other
 Application_630118498,Accepted
 Application_573813116,Other
-Application_659964690,Accepted
+Application_659964690,Other
 Application_904313133,Accepted
 Application_1547546515,Other
 Application_1938295304,Other
@@ -18568,14 +18568,14 @@ Application_361948733,Other
 Application_586870495,Other
 Application_1235375803,Other
 Application_528138564,Accepted
-Application_153522539,Accepted
+Application_153522539,Other
 Application_502856537,Other
 Application_546240296,Accepted
 Application_196405104,Other
 Application_1636306712,Other
 Application_1135076593,Accepted
 Application_1581390020,Other
-Application_345821273,Accepted
+Application_345821273,Other
 Application_1566493196,Other
 Application_593294637,Accepted
 Application_918375426,Accepted
@@ -18593,7 +18593,7 @@ Application_410077838,Accepted
 Application_195372752,Other
 Application_807092068,Other
 Application_991693522,Other
-Application_810614978,Accepted
+Application_810614978,Other
 Application_1927252012,Accepted
 Application_881556838,Other
 Application_1802428148,Accepted
@@ -18653,7 +18653,7 @@ Application_335778555,Other
 Application_1726161229,Accepted
 Application_1128002102,Accepted
 Application_1629521011,Accepted
-Application_53382655,Accepted
+Application_53382655,Other
 Application_88946052,Accepted
 Application_2035231483,Other
 Application_329000791,Other
@@ -18719,7 +18719,7 @@ Application_1972435020,Accepted
 Application_1930272371,Other
 Application_1420717238,Other
 Application_1231161788,Accepted
-Application_1931797067,Accepted
+Application_1931797067,Other
 Application_76690796,Other
 Application_279664800,Accepted
 Application_469351693,Other
@@ -18787,7 +18787,7 @@ Application_1378761613,Accepted
 Application_1741002531,Accepted
 Application_1717260520,Other
 Application_1906828923,Accepted
-Application_1165106560,Accepted
+Application_1165106560,Other
 Application_368734251,Other
 Application_1453826354,Accepted
 Application_1554105347,Accepted
@@ -18860,12 +18860,12 @@ Application_1783804141,Other
 Application_762533799,Other
 Application_404505015,Other
 Application_1301647278,Other
-Application_446548245,Accepted
+Application_446548245,Other
 Application_1674171863,Accepted
 Application_1961706576,Accepted
 Application_1571105295,Other
 Application_1641646553,Other
-Application_1460362786,Accepted
+Application_1460362786,Other
 Application_184820054,Other
 Application_747125505,Accepted
 Application_1614324377,Other
@@ -18974,7 +18974,7 @@ Application_768897257,Other
 Application_444439696,Other
 Application_1165219113,Accepted
 Application_1946405715,Accepted
-Application_1685076306,Accepted
+Application_1685076306,Other
 Application_2073557198,Other
 Application_1134053563,Other
 Application_1526018389,Other
@@ -18982,7 +18982,7 @@ Application_1202012314,Other
 Application_1054793147,Other
 Application_604287906,Other
 Application_254548341,Accepted
-Application_2035073842,Accepted
+Application_2035073842,Other
 Application_1103913514,Other
 Application_108795242,Accepted
 Application_552493017,Other
@@ -19014,7 +19014,7 @@ Application_744544314,Other
 Application_670720408,Other
 Application_205059651,Accepted
 Application_828403356,Other
-Application_532118680,Accepted
+Application_532118680,Other
 Application_85984770,Accepted
 Application_1461338549,Other
 Application_1748322188,Other
@@ -19033,7 +19033,7 @@ Application_1470400124,Accepted
 Application_258924138,Accepted
 Application_638761667,Accepted
 Application_823215688,Accepted
-Application_1037160374,Accepted
+Application_1037160374,Other
 Application_1965758198,Accepted
 Application_1899814861,Other
 Application_601463919,Other
@@ -19041,7 +19041,7 @@ Application_828334298,Accepted
 Application_1041561101,Accepted
 Application_481350942,Other
 Application_1747105194,Other
-Application_1321757094,Accepted
+Application_1321757094,Other
 Application_1931680252,Accepted
 Application_1323695134,Other
 Application_1972522268,Accepted
@@ -19100,7 +19100,7 @@ Application_230995409,Other
 Application_454527041,Other
 Application_1259972880,Other
 Application_1895378728,Other
-Application_1906590066,Accepted
+Application_1906590066,Other
 Application_695027851,Accepted
 Application_480266176,Accepted
 Application_1107931407,Accepted
@@ -19162,8 +19162,8 @@ Application_622218475,Accepted
 Application_1044113606,Accepted
 Application_1368555089,Other
 Application_2118483678,Accepted
-Application_896328675,Accepted
-Application_41053549,Accepted
+Application_896328675,Other
+Application_41053549,Other
 Application_662003793,Accepted
 Application_303387655,Accepted
 Application_1685700035,Other
@@ -19181,7 +19181,7 @@ Application_1124811295,Other
 Application_656959807,Accepted
 Application_42008506,Accepted
 Application_400174557,Other
-Application_1436493006,Accepted
+Application_1436493006,Other
 Application_1485554314,Other
 Application_1361101494,Accepted
 Application_1163091843,Other
@@ -19197,7 +19197,7 @@ Application_1373840063,Other
 Application_728760457,Accepted
 Application_988724193,Other
 Application_390596750,Accepted
-Application_765582616,Accepted
+Application_765582616,Other
 Application_32330697,Accepted
 Application_752772249,Other
 Application_849546292,Accepted
@@ -19228,7 +19228,7 @@ Application_1884111337,Accepted
 Application_1918028048,Other
 Application_1595126280,Other
 Application_1879509147,Accepted
-Application_978932694,Accepted
+Application_978932694,Other
 Application_1017105040,Other
 Application_1436577209,Accepted
 Application_1884930679,Other
@@ -19317,7 +19317,7 @@ Application_1637453084,Other
 Application_748698261,Other
 Application_1276311776,Other
 Application_1638603830,Other
-Application_71201942,Accepted
+Application_71201942,Other
 Application_1989201095,Accepted
 Application_1288476240,Other
 Application_1574312656,Other
@@ -19393,7 +19393,7 @@ Application_2042672074,Accepted
 Application_1726660043,Other
 Application_1468710626,Other
 Application_464795990,Accepted
-Application_1278957199,Accepted
+Application_1278957199,Other
 Application_1502074864,Other
 Application_296709253,Other
 Application_966040717,Other
@@ -19409,13 +19409,13 @@ Application_108884184,Accepted
 Application_724249522,Other
 Application_1348555436,Other
 Application_76447144,Accepted
-Application_352892926,Accepted
+Application_352892926,Other
 Application_816226672,Accepted
 Application_2036273868,Other
 Application_2047897708,Accepted
 Application_666102668,Other
 Application_1748806969,Accepted
-Application_1246655594,Accepted
+Application_1246655594,Other
 Application_1847299616,Accepted
 Application_1497859391,Other
 Application_35950487,Other
@@ -19448,7 +19448,7 @@ Application_454651352,Accepted
 Application_898775036,Accepted
 Application_67412078,Other
 Application_248663819,Other
-Application_446685304,Accepted
+Application_446685304,Other
 Application_1197880442,Other
 Application_536519866,Other
 Application_233920391,Accepted
@@ -19472,15 +19472,15 @@ Application_1291048951,Accepted
 Application_1186039715,Accepted
 Application_1472696186,Accepted
 Application_1249249307,Accepted
-Application_199159396,Accepted
+Application_199159396,Other
 Application_1687564315,Accepted
-Application_2045613534,Accepted
+Application_2045613534,Other
 Application_1891037414,Accepted
 Application_470246220,Accepted
 Application_1515064385,Other
 Application_1895860682,Accepted
 Application_1660718701,Accepted
-Application_2115235106,Accepted
+Application_2115235106,Other
 Application_1159531449,Other
 Application_432952688,Accepted
 Application_2104824738,Accepted
@@ -19533,7 +19533,7 @@ Application_1353821060,Accepted
 Application_1273537767,Other
 Application_2069622628,Other
 Application_1844943444,Other
-Application_1786111798,Accepted
+Application_1786111798,Other
 Application_1394691776,Accepted
 Application_1082692565,Other
 Application_325627553,Other
@@ -19575,7 +19575,7 @@ Application_1460061930,Other
 Application_1733768258,Accepted
 Application_2091798360,Other
 Application_1943497450,Other
-Application_1386986736,Accepted
+Application_1386986736,Other
 Application_301307706,Accepted
 Application_945895230,Other
 Application_1731458298,Other
@@ -19620,7 +19620,7 @@ Application_1257250417,Other
 Application_941235036,Other
 Application_1366797715,Accepted
 Application_1982074482,Accepted
-Application_1602918140,Accepted
+Application_1602918140,Other
 Application_1925308985,Accepted
 Application_493378651,Other
 Application_1932955716,Other
@@ -19725,7 +19725,7 @@ Application_1252849665,Other
 Application_1401670101,Other
 Application_702025577,Other
 Application_1051823047,Accepted
-Application_1818763604,Accepted
+Application_1818763604,Other
 Application_1776954023,Accepted
 Application_1034882659,Other
 Application_708803408,Other
@@ -19791,7 +19791,7 @@ Application_1011752493,Other
 Application_1193108149,Accepted
 Application_512143990,Accepted
 Application_10985218,Other
-Application_212416636,Accepted
+Application_212416636,Other
 Application_1545822476,Other
 Application_865163975,Accepted
 Application_2110373693,Other
@@ -19883,7 +19883,7 @@ Application_68371585,Other
 Application_365271199,Other
 Application_511847282,Other
 Application_2135984446,Accepted
-Application_322435054,Accepted
+Application_322435054,Other
 Application_1211152120,Other
 Application_137496053,Accepted
 Application_945320792,Accepted
@@ -20097,7 +20097,7 @@ Application_875888009,Accepted
 Application_1911120920,Accepted
 Application_235300,Accepted
 Application_316251328,Accepted
-Application_699163115,Accepted
+Application_699163115,Other
 Application_1270643496,Accepted
 Application_1304924988,Accepted
 Application_1774170527,Accepted
@@ -20223,7 +20223,7 @@ Application_1558313937,Accepted
 Application_331704410,Accepted
 Application_981057308,Other
 Application_833691300,Other
-Application_238528856,Accepted
+Application_238528856,Other
 Application_928710895,Accepted
 Application_1410079605,Other
 Application_976716523,Other
@@ -20274,7 +20274,7 @@ Application_468467009,Accepted
 Application_648236307,Other
 Application_237038952,Accepted
 Application_1892725165,Other
-Application_2035776208,Accepted
+Application_2035776208,Other
 Application_246692114,Accepted
 Application_893791850,Other
 Application_1286044283,Other
@@ -20288,10 +20288,10 @@ Application_1812799892,Accepted
 Application_2137050722,Accepted
 Application_550323758,Other
 Application_1397361690,Other
-Application_1207840744,Accepted
+Application_1207840744,Other
 Application_2013156737,Accepted
 Application_1259203201,Other
-Application_1958401992,Accepted
+Application_1958401992,Other
 Application_747521358,Accepted
 Application_742517136,Other
 Application_1827266221,Other
@@ -20341,7 +20341,7 @@ Application_1724183309,Other
 Application_1504715265,Other
 Application_1853703463,Other
 Application_598682136,Accepted
-Application_1038943317,Accepted
+Application_1038943317,Other
 Application_358135917,Accepted
 Application_796905040,Other
 Application_1661702442,Accepted
@@ -20439,7 +20439,7 @@ Application_50576224,Accepted
 Application_1259411948,Other
 Application_800246704,Accepted
 Application_1152749844,Other
-Application_801900394,Accepted
+Application_801900394,Other
 Application_1537912499,Accepted
 Application_202087955,Accepted
 Application_711725234,Accepted
@@ -20452,7 +20452,7 @@ Application_1410914854,Other
 Application_544502817,Accepted
 Application_1627209602,Accepted
 Application_1291035946,Accepted
-Application_2042997000,Accepted
+Application_2042997000,Other
 Application_1853485475,Other
 Application_1095186366,Accepted
 Application_1275110984,Accepted
@@ -20495,11 +20495,11 @@ Application_1926308840,Other
 Application_1732543782,Other
 Application_1300456520,Other
 Application_1920816013,Other
-Application_2058348157,Accepted
+Application_2058348157,Other
 Application_1355018748,Other
 Application_528009222,Other
 Application_885911054,Other
-Application_560224082,Accepted
+Application_560224082,Other
 Application_525478783,Other
 Application_1157425174,Other
 Application_151071258,Accepted
@@ -20533,7 +20533,7 @@ Application_740984735,Accepted
 Application_1426883688,Accepted
 Application_208022364,Accepted
 Application_718036686,Other
-Application_1650220511,Accepted
+Application_1650220511,Other
 Application_1831173886,Other
 Application_736365847,Accepted
 Application_2031121918,Accepted
@@ -20579,7 +20579,7 @@ Application_1412910283,Accepted
 Application_443891075,Other
 Application_639492793,Other
 Application_1142700960,Accepted
-Application_1019266700,Accepted
+Application_1019266700,Other
 Application_736953048,Accepted
 Application_1656790978,Other
 Application_1442063096,Other
@@ -20607,7 +20607,7 @@ Application_2068972133,Accepted
 Application_1711233931,Other
 Application_886140378,Other
 Application_1100936810,Accepted
-Application_17571183,Accepted
+Application_17571183,Other
 Application_344142106,Accepted
 Application_2066286284,Other
 Application_1975004259,Other
@@ -20839,7 +20839,7 @@ Application_2023108021,Accepted
 Application_1172109726,Accepted
 Application_1604831942,Other
 Application_1280619678,Accepted
-Application_1173877265,Accepted
+Application_1173877265,Other
 Application_525144046,Other
 Application_594779922,Other
 Application_1629792659,Accepted
@@ -20857,7 +20857,7 @@ Application_811199547,Other
 Application_1693308901,Other
 Application_622247126,Accepted
 Application_1904140209,Other
-Application_130597015,Accepted
+Application_130597015,Other
 Application_1845393547,Other
 Application_407053242,Accepted
 Application_764896752,Other
@@ -20967,7 +20967,7 @@ Application_1903023122,Other
 Application_1964585643,Other
 Application_325203803,Other
 Application_1120089248,Accepted
-Application_1723595110,Accepted
+Application_1723595110,Other
 Application_1481921967,Other
 Application_1482998387,Other
 Application_865090077,Other
@@ -20976,7 +20976,7 @@ Application_394721930,Other
 Application_46695143,Other
 Application_646249286,Accepted
 Application_162158054,Accepted
-Application_159861644,Accepted
+Application_159861644,Other
 Application_29797829,Other
 Application_1792582721,Accepted
 Application_2045136211,Accepted
@@ -21270,7 +21270,7 @@ Application_1469310005,Accepted
 Application_1107933452,Accepted
 Application_865317151,Accepted
 Application_40451019,Other
-Application_1113899604,Accepted
+Application_1113899604,Other
 Application_675898627,Other
 Application_2043645926,Other
 Application_796183815,Other
@@ -21350,7 +21350,7 @@ Application_1058149338,Other
 Application_2140491052,Accepted
 Application_611429552,Other
 Application_1002129113,Accepted
-Application_1036621789,Accepted
+Application_1036621789,Other
 Application_1054159025,Accepted
 Application_2135089873,Other
 Application_30311480,Other
@@ -21394,7 +21394,7 @@ Application_81354277,Accepted
 Application_705287164,Accepted
 Application_1592972291,Accepted
 Application_919925677,Other
-Application_1405331079,Accepted
+Application_1405331079,Other
 Application_8748931,Accepted
 Application_263818750,Accepted
 Application_1240015230,Other
@@ -21466,8 +21466,8 @@ Application_139258943,Other
 Application_946373805,Other
 Application_146029131,Other
 Application_850162220,Accepted
-Application_1221241673,Accepted
-Application_144578923,Accepted
+Application_1221241673,Other
+Application_144578923,Other
 Application_2026644529,Accepted
 Application_863187199,Accepted
 Application_1315016443,Accepted
@@ -21586,7 +21586,7 @@ Application_841781311,Other
 Application_660568043,Accepted
 Application_297744777,Accepted
 Application_570491119,Other
-Application_819869374,Accepted
+Application_819869374,Other
 Application_2048950823,Accepted
 Application_185425577,Accepted
 Application_543297758,Other
@@ -21596,7 +21596,7 @@ Application_1927239262,Other
 Application_1603090232,Other
 Application_1200224145,Accepted
 Application_1814058939,Accepted
-Application_562779064,Accepted
+Application_562779064,Other
 Application_1636388492,Accepted
 Application_970690661,Other
 Application_2095037781,Other
@@ -21674,7 +21674,7 @@ Application_1815738903,Other
 Application_1230226715,Other
 Application_1190132102,Accepted
 Application_1770795129,Other
-Application_868981332,Accepted
+Application_868981332,Other
 Application_1184861719,Other
 Application_687684055,Accepted
 Application_1904219955,Other
@@ -21914,7 +21914,7 @@ Application_1526642233,Accepted
 Application_692585281,Other
 Application_308324526,Accepted
 Application_7676765,Accepted
-Application_56167951,Accepted
+Application_56167951,Other
 Application_415073084,Other
 Application_65350051,Other
 Application_781536302,Other
@@ -22057,7 +22057,7 @@ Application_2022118906,Other
 Application_2083312302,Other
 Application_962958398,Other
 Application_1378544711,Other
-Application_2095055090,Accepted
+Application_2095055090,Other
 Application_2010386944,Other
 Application_1398759050,Accepted
 Application_2059148687,Other
@@ -22120,7 +22120,7 @@ Application_1373175446,Other
 Application_213736891,Accepted
 Application_942520788,Accepted
 Application_2016299275,Other
-Application_1367409326,Accepted
+Application_1367409326,Other
 Application_1863577085,Other
 Application_1940621799,Accepted
 Application_1144464483,Other
@@ -22157,7 +22157,7 @@ Application_302362725,Other
 Application_1951224038,Other
 Application_1491902676,Other
 Application_407420577,Other
-Application_1555216362,Accepted
+Application_1555216362,Other
 Application_1522309222,Other
 Application_1096935499,Accepted
 Application_607461585,Other
@@ -22169,7 +22169,7 @@ Application_1020410553,Other
 Application_830101215,Other
 Application_1911387790,Other
 Application_1402086483,Other
-Application_53706288,Accepted
+Application_53706288,Other
 Application_642994054,Other
 Application_1400293382,Accepted
 Application_936240090,Other
@@ -22184,8 +22184,8 @@ Application_71540484,Other
 Application_1360332664,Other
 Application_2074047705,Accepted
 Application_453427590,Accepted
-Application_918402221,Accepted
-Application_2009997839,Accepted
+Application_918402221,Other
+Application_2009997839,Other
 Application_495489073,Accepted
 Application_2076729397,Other
 Application_842227057,Other
@@ -22238,7 +22238,7 @@ Application_268099517,Other
 Application_900169893,Other
 Application_1290027081,Other
 Application_2052500677,Other
-Application_603543740,Accepted
+Application_603543740,Other
 Application_1075108328,Other
 Application_904577400,Accepted
 Application_894147543,Accepted
@@ -22295,13 +22295,13 @@ Application_1244373099,Other
 Application_1425508093,Other
 Application_956677231,Accepted
 Application_505370344,Accepted
-Application_1335792057,Accepted
+Application_1335792057,Other
 Application_179760118,Accepted
 Application_529212589,Other
 Application_1642837861,Accepted
 Application_811251555,Other
 Application_1975819852,Other
-Application_318566185,Accepted
+Application_318566185,Other
 Application_1644913907,Accepted
 Application_1979038815,Other
 Application_1605988098,Other
@@ -22423,7 +22423,7 @@ Application_1773402025,Other
 Application_1438793271,Other
 Application_727155455,Accepted
 Application_698254485,Other
-Application_323183680,Accepted
+Application_323183680,Other
 Application_1579912928,Other
 Application_60253162,Accepted
 Application_551063414,Accepted
@@ -22521,7 +22521,7 @@ Application_2139370843,Other
 Application_1088516784,Accepted
 Application_1438232150,Accepted
 Application_1073143855,Other
-Application_1011711759,Accepted
+Application_1011711759,Other
 Application_1772274434,Other
 Application_1792543928,Other
 Application_750239463,Accepted
@@ -22539,7 +22539,7 @@ Application_1386516832,Other
 Application_5291332,Other
 Application_1006457880,Other
 Application_648606653,Other
-Application_357149882,Accepted
+Application_357149882,Other
 Application_7047514,Other
 Application_2143310324,Accepted
 Application_1075443119,Accepted
@@ -22616,7 +22616,7 @@ Application_1451281752,Accepted
 Application_1227857757,Other
 Application_1506044705,Other
 Application_1020606169,Accepted
-Application_704781974,Accepted
+Application_704781974,Other
 Application_10142236,Other
 Application_352307284,Accepted
 Application_1152402914,Other
@@ -22635,7 +22635,7 @@ Application_497088642,Other
 Application_720418044,Other
 Application_2072055182,Accepted
 Application_1372628437,Other
-Application_1648615557,Accepted
+Application_1648615557,Other
 Application_1425181046,Accepted
 Application_1947247158,Accepted
 Application_2124547388,Accepted
@@ -22783,7 +22783,7 @@ Application_987038050,Other
 Application_193594092,Accepted
 Application_2062350182,Accepted
 Application_369187214,Accepted
-Application_823496063,Accepted
+Application_823496063,Other
 Application_286126166,Other
 Application_291533069,Other
 Application_923524887,Accepted
@@ -22893,7 +22893,7 @@ Application_1963884155,Other
 Application_1134126556,Other
 Application_10661478,Accepted
 Application_1331255359,Other
-Application_2059165420,Accepted
+Application_2059165420,Other
 Application_106508308,Other
 Application_1125858300,Accepted
 Application_868953340,Accepted
@@ -23083,7 +23083,7 @@ Application_1524582653,Other
 Application_1137624858,Other
 Application_1885869697,Other
 Application_2130486641,Other
-Application_1357719645,Accepted
+Application_1357719645,Other
 Application_1648376407,Other
 Application_1464650714,Other
 Application_535579384,Other
@@ -23094,7 +23094,7 @@ Application_1753625106,Other
 Application_1709163481,Accepted
 Application_1167800799,Other
 Application_1936992146,Other
-Application_1864995319,Accepted
+Application_1864995319,Other
 Application_264477800,Accepted
 Application_496755201,Other
 Application_812966780,Accepted
@@ -23328,7 +23328,7 @@ Application_380097845,Accepted
 Application_431300505,Other
 Application_423886336,Accepted
 Application_997122700,Accepted
-Application_782356169,Accepted
+Application_782356169,Other
 Application_1683062468,Other
 Application_86694325,Accepted
 Application_579075893,Other
@@ -23360,7 +23360,7 @@ Application_46968866,Accepted
 Application_1634791409,Other
 Application_1792081975,Accepted
 Application_1205477899,Accepted
-Application_1663495460,Accepted
+Application_1663495460,Other
 Application_609941821,Accepted
 Application_1366108429,Accepted
 Application_1555700605,Other
@@ -23452,7 +23452,7 @@ Application_1811993938,Other
 Application_1495831937,Accepted
 Application_1080763304,Other
 Application_1460054354,Other
-Application_1505184474,Accepted
+Application_1505184474,Other
 Application_852419476,Other
 Application_1296612543,Other
 Application_938318297,Other
@@ -23578,7 +23578,7 @@ Application_1124681080,Other
 Application_1237453984,Accepted
 Application_1275065414,Other
 Application_588758280,Other
-Application_154756601,Accepted
+Application_154756601,Other
 Application_1591765651,Other
 Application_1096869611,Accepted
 Application_1785045761,Accepted
@@ -23604,7 +23604,7 @@ Application_1106610804,Other
 Application_441890252,Other
 Application_998658106,Accepted
 Application_252272828,Other
-Application_1253225820,Accepted
+Application_1253225820,Other
 Application_1972164033,Other
 Application_652906703,Accepted
 Application_110355063,Other
@@ -23635,7 +23635,7 @@ Application_1936831272,Accepted
 Application_195857924,Other
 Application_1215926156,Other
 Application_908451479,Accepted
-Application_1595329738,Accepted
+Application_1595329738,Other
 Application_1970071842,Accepted
 Application_1626417881,Other
 Application_1379975984,Other
@@ -23696,7 +23696,7 @@ Application_209007370,Accepted
 Application_355824775,Accepted
 Application_301491472,Accepted
 Application_516418172,Accepted
-Application_1241210447,Accepted
+Application_1241210447,Other
 Application_1894219989,Accepted
 Application_892000631,Accepted
 Application_512884075,Other
@@ -23717,7 +23717,7 @@ Application_359009725,Other
 Application_143772341,Accepted
 Application_2023468525,Other
 Application_723417034,Accepted
-Application_1072700799,Accepted
+Application_1072700799,Other
 Application_1287599754,Accepted
 Application_1879115572,Other
 Application_1500096317,Accepted
@@ -23866,7 +23866,7 @@ Application_541146763,Other
 Application_461173805,Other
 Application_1615509090,Other
 Application_33198689,Other
-Application_2096669462,Accepted
+Application_2096669462,Other
 Application_691940866,Accepted
 Application_1210140571,Other
 Application_971906635,Other
@@ -23917,7 +23917,7 @@ Application_850651693,Accepted
 Application_492666721,Other
 Application_267531989,Accepted
 Application_1342451188,Accepted
-Application_1960245250,Accepted
+Application_1960245250,Other
 Application_1717256589,Other
 Application_626884278,Other
 Application_1591164230,Accepted
@@ -23968,7 +23968,7 @@ Application_563521504,Other
 Application_816597475,Accepted
 Application_1835712802,Other
 Application_209962049,Accepted
-Application_218466154,Accepted
+Application_218466154,Other
 Application_330251746,Other
 Application_2114372453,Accepted
 Application_895713530,Other
@@ -24005,7 +24005,7 @@ Application_1007846031,Other
 Application_479645384,Other
 Application_341802627,Accepted
 Application_944752099,Accepted
-Application_1392174821,Accepted
+Application_1392174821,Other
 Application_818535320,Other
 Application_2036171309,Accepted
 Application_2043967522,Other
@@ -24025,7 +24025,7 @@ Application_1446757334,Other
 Application_1611654974,Accepted
 Application_1954441543,Other
 Application_999993812,Accepted
-Application_675510479,Accepted
+Application_675510479,Other
 Application_1546275434,Accepted
 Application_1323283519,Other
 Application_1367737307,Accepted
@@ -24093,7 +24093,7 @@ Application_1226811227,Other
 Application_852183469,Other
 Application_1076592180,Accepted
 Application_718602557,Other
-Application_1506495475,Accepted
+Application_1506495475,Other
 Application_473724297,Accepted
 Application_852820937,Other
 Application_536638211,Accepted
@@ -24149,13 +24149,13 @@ Application_693955071,Other
 Application_884271564,Other
 Application_505138130,Other
 Application_1814903531,Accepted
-Application_1625258206,Accepted
+Application_1625258206,Other
 Application_1905372994,Other
 Application_987537520,Accepted
 Application_890963278,Other
 Application_1492609631,Other
 Application_1277664600,Accepted
-Application_2103188157,Accepted
+Application_2103188157,Other
 Application_1977118354,Accepted
 Application_2081468177,Other
 Application_1394896717,Other
@@ -24191,7 +24191,7 @@ Application_1923940561,Accepted
 Application_796051396,Other
 Application_580728285,Accepted
 Application_972570563,Other
-Application_939576930,Accepted
+Application_939576930,Other
 Application_1295911338,Other
 Application_28930757,Other
 Application_295260103,Accepted
@@ -24228,7 +24228,7 @@ Application_1623875695,Other
 Application_2004089393,Accepted
 Application_161673389,Accepted
 Application_1988818254,Other
-Application_1807743268,Accepted
+Application_1807743268,Other
 Application_1556585421,Accepted
 Application_1555489073,Other
 Application_927026866,Accepted
@@ -24295,7 +24295,7 @@ Application_1043782904,Other
 Application_1859431929,Other
 Application_607145558,Accepted
 Application_177572366,Other
-Application_286811417,Accepted
+Application_286811417,Other
 Application_393028659,Other
 Application_1449487653,Other
 Application_749027963,Other
@@ -24332,7 +24332,7 @@ Application_765506387,Other
 Application_215596279,Other
 Application_722212350,Other
 Application_1133826059,Other
-Application_754905940,Accepted
+Application_754905940,Other
 Application_1372277105,Other
 Application_628662805,Other
 Application_944654361,Other
@@ -24388,7 +24388,7 @@ Application_1562170126,Other
 Application_101639139,Accepted
 Application_1111029132,Other
 Application_499173053,Accepted
-Application_1303779114,Accepted
+Application_1303779114,Other
 Application_1737095579,Other
 Application_1522004111,Other
 Application_2022755119,Accepted
@@ -24498,7 +24498,7 @@ Application_1651597384,Other
 Application_1571707441,Other
 Application_1859537046,Accepted
 Application_1109943056,Accepted
-Application_1569131660,Accepted
+Application_1569131660,Other
 Application_94215,Other
 Application_211694290,Other
 Application_596435854,Accepted
@@ -24569,7 +24569,7 @@ Application_482552215,Accepted
 Application_166511158,Accepted
 Application_1917257899,Other
 Application_1038302868,Other
-Application_591963029,Accepted
+Application_591963029,Other
 Application_957266234,Accepted
 Application_641457453,Other
 Application_2039657007,Other
@@ -24639,7 +24639,7 @@ Application_180965664,Accepted
 Application_759241232,Other
 Application_1482452796,Accepted
 Application_177481333,Other
-Application_745820090,Accepted
+Application_745820090,Other
 Application_1385170315,Accepted
 Application_2046683533,Accepted
 Application_1275708382,Other
@@ -24649,7 +24649,7 @@ Application_56691092,Other
 Application_1728707744,Other
 Application_817528841,Other
 Application_1651085521,Accepted
-Application_1175418215,Accepted
+Application_1175418215,Other
 Application_1687448539,Accepted
 Application_971475658,Accepted
 Application_48606429,Accepted
@@ -24660,7 +24660,7 @@ Application_1111168705,Other
 Application_527357743,Accepted
 Application_175544437,Accepted
 Application_634521945,Accepted
-Application_2099511368,Accepted
+Application_2099511368,Other
 Application_1239060176,Other
 Application_2013830829,Other
 Application_1598268086,Other
@@ -24686,7 +24686,7 @@ Application_1518826265,Accepted
 Application_80298426,Accepted
 Application_1839234610,Accepted
 Application_951950932,Accepted
-Application_2045562795,Accepted
+Application_2045562795,Other
 Application_2026145465,Accepted
 Application_1829392718,Other
 Application_1471003921,Accepted
@@ -24711,7 +24711,7 @@ Application_528121029,Other
 Application_1450689239,Other
 Application_202572480,Accepted
 Application_315771274,Accepted
-Application_1014987100,Accepted
+Application_1014987100,Other
 Application_948081892,Accepted
 Application_631823084,Other
 Application_518047810,Other
@@ -24724,7 +24724,7 @@ Application_2063179478,Other
 Application_1275233629,Accepted
 Application_559239075,Accepted
 Application_746403636,Other
-Application_2067948719,Accepted
+Application_2067948719,Other
 Application_1226442731,Other
 Application_1851360212,Accepted
 Application_1828404203,Other
@@ -24859,7 +24859,7 @@ Application_591454326,Other
 Application_78032372,Other
 Application_1901919658,Accepted
 Application_1594305363,Other
-Application_1064102675,Accepted
+Application_1064102675,Other
 Application_1826620975,Other
 Application_297311392,Accepted
 Application_116006946,Other
@@ -24895,7 +24895,7 @@ Application_1689074281,Accepted
 Application_109628015,Other
 Application_606703204,Accepted
 Application_1391730514,Accepted
-Application_589041415,Accepted
+Application_589041415,Other
 Application_1901752708,Other
 Application_2116821761,Accepted
 Application_1676999623,Other
@@ -25056,7 +25056,7 @@ Application_1286083897,Accepted
 Application_384814296,Accepted
 Application_1037771791,Other
 Application_680044383,Other
-Application_1485546748,Accepted
+Application_1485546748,Other
 Application_963485644,Other
 Application_44859446,Accepted
 Application_389962709,Accepted
@@ -25120,14 +25120,14 @@ Application_434840997,Other
 Application_1059317915,Accepted
 Application_2007562055,Other
 Application_157851890,Accepted
-Application_427975818,Accepted
+Application_427975818,Other
 Application_1114627184,Other
 Application_518752038,Other
 Application_1839163450,Other
 Application_1411769393,Accepted
 Application_1984475855,Accepted
 Application_1498483020,Accepted
-Application_1046222107,Accepted
+Application_1046222107,Other
 Application_1235896381,Other
 Application_1985757094,Other
 Application_396092392,Other
@@ -25157,7 +25157,7 @@ Application_1334997155,Other
 Application_885372391,Other
 Application_160157720,Accepted
 Application_1012862839,Other
-Application_269862060,Accepted
+Application_269862060,Other
 Application_46540488,Other
 Application_1858211642,Accepted
 Application_453987424,Other
@@ -25173,7 +25173,7 @@ Application_597372127,Other
 Application_1386933499,Other
 Application_2023800195,Accepted
 Application_164778672,Accepted
-Application_1007340039,Accepted
+Application_1007340039,Other
 Application_1188845730,Accepted
 Application_890075702,Other
 Application_814961445,Accepted
@@ -25257,7 +25257,7 @@ Application_1151598575,Accepted
 Application_1332066828,Other
 Application_580014021,Accepted
 Application_904306212,Accepted
-Application_403304705,Accepted
+Application_403304705,Other
 Application_2069545303,Other
 Application_1778799137,Other
 Application_139141595,Accepted
@@ -25303,7 +25303,7 @@ Application_575764720,Other
 Application_1207519267,Other
 Application_498556066,Accepted
 Application_1411809915,Other
-Application_1803710713,Accepted
+Application_1803710713,Other
 Application_1930612093,Accepted
 Application_1193407725,Other
 Application_413991815,Accepted
@@ -25329,7 +25329,7 @@ Application_685452919,Other
 Application_306086229,Other
 Application_397038537,Other
 Application_1750932659,Accepted
-Application_1473464035,Accepted
+Application_1473464035,Other
 Application_1666420643,Accepted
 Application_2095793548,Accepted
 Application_448783031,Accepted
@@ -25449,7 +25449,7 @@ Application_449256078,Other
 Application_949156991,Accepted
 Application_112299550,Other
 Application_519478762,Other
-Application_894204901,Accepted
+Application_894204901,Other
 Application_327297232,Accepted
 Application_134173506,Other
 Application_697031349,Accepted
@@ -25515,7 +25515,7 @@ Application_596574084,Accepted
 Application_586969154,Accepted
 Application_2031841757,Accepted
 Application_2047886665,Other
-Application_246097895,Accepted
+Application_246097895,Other
 Application_1768409536,Other
 Application_1140214785,Accepted
 Application_1452620578,Accepted
@@ -25606,12 +25606,12 @@ Application_637748400,Other
 Application_1192817854,Other
 Application_299209464,Other
 Application_118076535,Other
-Application_1571539418,Accepted
+Application_1571539418,Other
 Application_1180779910,Other
 Application_676903448,Accepted
 Application_1292771933,Other
 Application_1281227660,Accepted
-Application_1091454310,Accepted
+Application_1091454310,Other
 Application_2067187791,Accepted
 Application_203590810,Other
 Application_350793850,Accepted
@@ -25757,7 +25757,7 @@ Application_684289625,Other
 Application_972388617,Other
 Application_227670423,Accepted
 Application_1623687781,Other
-Application_1096081779,Accepted
+Application_1096081779,Other
 Application_1801822059,Other
 Application_1444191625,Other
 Application_811825935,Accepted
@@ -25766,7 +25766,7 @@ Application_793873060,Accepted
 Application_1173289988,Other
 Application_1738270116,Other
 Application_346829278,Other
-Application_1618215402,Accepted
+Application_1618215402,Other
 Application_1706151514,Other
 Application_1084951999,Other
 Application_1108410496,Accepted
@@ -25849,7 +25849,7 @@ Application_923730558,Other
 Application_1104697616,Accepted
 Application_207339253,Other
 Application_1920062674,Accepted
-Application_1785650204,Accepted
+Application_1785650204,Other
 Application_1293120092,Other
 Application_1284230014,Accepted
 Application_926052296,Other
@@ -25954,7 +25954,7 @@ Application_763928658,Other
 Application_752373732,Accepted
 Application_760841149,Accepted
 Application_470096249,Other
-Application_292094395,Accepted
+Application_292094395,Other
 Application_339730120,Other
 Application_385045680,Other
 Application_566670119,Other
@@ -25962,7 +25962,7 @@ Application_1594317140,Accepted
 Application_1388031954,Other
 Application_978016195,Accepted
 Application_1201267547,Other
-Application_1473894342,Accepted
+Application_1473894342,Other
 Application_386657742,Other
 Application_973075457,Accepted
 Application_526257863,Accepted
@@ -25973,7 +25973,7 @@ Application_240111953,Other
 Application_548377578,Other
 Application_1880895995,Other
 Application_510096383,Other
-Application_1205291296,Accepted
+Application_1205291296,Other
 Application_1139095492,Accepted
 Application_2066939992,Other
 Application_1513197861,Accepted
@@ -26112,7 +26112,7 @@ Application_559246751,Other
 Application_197126464,Other
 Application_1544460375,Other
 Application_1761323771,Other
-Application_1976004129,Accepted
+Application_1976004129,Other
 Application_1081153991,Other
 Application_1757787329,Other
 Application_1782952770,Other
@@ -26136,7 +26136,7 @@ Application_66451278,Other
 Application_1394483322,Accepted
 Application_793038001,Accepted
 Application_1016792765,Other
-Application_1698620256,Accepted
+Application_1698620256,Other
 Application_1325360487,Accepted
 Application_2088969676,Other
 Application_177897578,Accepted
@@ -26196,7 +26196,7 @@ Application_1940707964,Accepted
 Application_162990347,Accepted
 Application_1495262961,Other
 Application_1228403719,Accepted
-Application_339327672,Accepted
+Application_339327672,Other
 Application_450250534,Accepted
 Application_994101872,Other
 Application_804273159,Accepted
@@ -26230,7 +26230,7 @@ Application_2041306952,Other
 Application_151280488,Accepted
 Application_1048834285,Other
 Application_597721884,Other
-Application_1495079062,Accepted
+Application_1495079062,Other
 Application_341875321,Accepted
 Application_1913890786,Other
 Application_1690391662,Other
@@ -26378,9 +26378,9 @@ Application_1283751278,Other
 Application_1196211316,Other
 Application_519214643,Other
 Application_1938909971,Other
-Application_87659628,Accepted
+Application_87659628,Other
 Application_864148389,Other
-Application_1527571617,Accepted
+Application_1527571617,Other
 Application_2068853058,Accepted
 Application_17002468,Accepted
 Application_315782607,Other
@@ -26389,7 +26389,7 @@ Application_1209476276,Accepted
 Application_704597830,Accepted
 Application_132038140,Other
 Application_1530321110,Other
-Application_277674975,Accepted
+Application_277674975,Other
 Application_80286962,Accepted
 Application_2004973545,Accepted
 Application_1781623698,Accepted
@@ -26434,7 +26434,7 @@ Application_542632548,Other
 Application_597486380,Other
 Application_1300870804,Accepted
 Application_597065437,Accepted
-Application_1498610522,Accepted
+Application_1498610522,Other
 Application_1606123452,Accepted
 Application_638041030,Accepted
 Application_254836121,Other
@@ -26498,10 +26498,10 @@ Application_152784845,Other
 Application_309095903,Accepted
 Application_785116695,Other
 Application_1856711010,Other
-Application_1169662405,Accepted
+Application_1169662405,Other
 Application_458048315,Other
 Application_312947543,Other
-Application_1029146502,Accepted
+Application_1029146502,Other
 Application_903877048,Other
 Application_705715651,Accepted
 Application_1242470738,Other
@@ -26587,7 +26587,7 @@ Application_386587234,Other
 Application_176915858,Other
 Application_617441643,Other
 Application_1415473117,Other
-Application_873463247,Accepted
+Application_873463247,Other
 Application_1509521523,Accepted
 Application_1352943538,Other
 Application_947366120,Other
@@ -26636,11 +26636,11 @@ Application_1822273581,Accepted
 Application_1167919196,Other
 Application_1058701252,Accepted
 Application_1376348282,Other
-Application_2079791742,Accepted
+Application_2079791742,Other
 Application_2067650595,Accepted
 Application_97275566,Accepted
 Application_642367414,Other
-Application_833798814,Accepted
+Application_833798814,Other
 Application_1197309763,Other
 Application_171960473,Other
 Application_1555010506,Other
@@ -26648,7 +26648,7 @@ Application_1342845149,Other
 Application_2037909772,Accepted
 Application_18186068,Accepted
 Application_1417487350,Accepted
-Application_714056251,Accepted
+Application_714056251,Other
 Application_88851864,Other
 Application_1768215254,Accepted
 Application_1604168929,Other
@@ -26660,7 +26660,7 @@ Application_838485586,Other
 Application_1921259299,Other
 Application_245143253,Accepted
 Application_1155915722,Other
-Application_308591889,Accepted
+Application_308591889,Other
 Application_461975173,Other
 Application_103975512,Other
 Application_1876758370,Other
@@ -26744,7 +26744,7 @@ Application_2138438586,Accepted
 Application_9293304,Accepted
 Application_325311769,Other
 Application_1216283184,Accepted
-Application_191824161,Accepted
+Application_191824161,Other
 Application_1215004066,Accepted
 Application_1034172997,Other
 Application_712514512,Other
@@ -26776,7 +26776,7 @@ Application_1480383161,Other
 Application_493778424,Other
 Application_505368867,Other
 Application_143630403,Other
-Application_998722780,Accepted
+Application_998722780,Other
 Application_2021514424,Other
 Application_793341768,Accepted
 Application_72928711,Other
@@ -26812,7 +26812,7 @@ Application_1777155847,Other
 Application_704902711,Other
 Application_2075927775,Accepted
 Application_61121501,Accepted
-Application_962796971,Accepted
+Application_962796971,Other
 Application_879185541,Accepted
 Application_125185651,Other
 Application_1663648698,Other
@@ -26877,7 +26877,7 @@ Application_1596032771,Other
 Application_1956370444,Other
 Application_1988732462,Accepted
 Application_1661353649,Accepted
-Application_873572965,Accepted
+Application_873572965,Other
 Application_213878489,Other
 Application_1237708187,Accepted
 Application_538169581,Other
@@ -26930,7 +26930,7 @@ Application_2027499518,Accepted
 Application_130653490,Other
 Application_1070807650,Accepted
 Application_1095104169,Other
-Application_837329814,Accepted
+Application_837329814,Other
 Application_1122854866,Other
 Application_2084407394,Other
 Application_1435504879,Other
@@ -27009,7 +27009,7 @@ Application_2025173856,Other
 Application_1392494853,Accepted
 Application_1182045705,Other
 Application_2012391145,Other
-Application_388623198,Accepted
+Application_388623198,Other
 Application_550590684,Other
 Application_1457230344,Other
 Application_1773437231,Other
@@ -27046,11 +27046,11 @@ Application_917933158,Accepted
 Application_1140505774,Other
 Application_365169523,Accepted
 Application_227136917,Other
-Application_828345629,Accepted
+Application_828345629,Other
 Application_1300625552,Other
 Application_1625631203,Accepted
 Application_399804336,Other
-Application_1749301905,Accepted
+Application_1749301905,Other
 Application_2058314938,Other
 Application_418355103,Other
 Application_93884526,Other
@@ -27081,7 +27081,7 @@ Application_1360556476,Other
 Application_607669715,Other
 Application_249437501,Other
 Application_1664614522,Other
-Application_1627790606,Accepted
+Application_1627790606,Other
 Application_1285342453,Other
 Application_553247416,Accepted
 Application_330153287,Accepted
@@ -27241,7 +27241,7 @@ Application_1139587159,Accepted
 Application_1202415638,Accepted
 Application_444247314,Other
 Application_309030545,Other
-Application_1610707738,Accepted
+Application_1610707738,Other
 Application_2051352129,Accepted
 Application_1929025400,Other
 Application_1865491187,Other
@@ -27388,7 +27388,7 @@ Application_507216164,Other
 Application_971318597,Accepted
 Application_801889364,Other
 Application_1816932338,Other
-Application_2099002424,Accepted
+Application_2099002424,Other
 Application_317543316,Other
 Application_1849739044,Other
 Application_1057130346,Other
@@ -27451,7 +27451,7 @@ Application_1704022308,Other
 Application_413158301,Other
 Application_585382591,Other
 Application_1003291296,Other
-Application_489550304,Accepted
+Application_489550304,Other
 Application_1488146222,Other
 Application_1703568228,Accepted
 Application_1732988770,Other
@@ -27603,7 +27603,7 @@ Application_1312537655,Other
 Application_1502105826,Accepted
 Application_1156056055,Other
 Application_964290361,Other
-Application_1417834440,Accepted
+Application_1417834440,Other
 Application_1855519591,Other
 Application_94902734,Other
 Application_944171237,Other
@@ -27687,7 +27687,7 @@ Application_629867343,Other
 Application_1895224589,Accepted
 Application_2083328557,Accepted
 Application_746672835,Other
-Application_1445597770,Accepted
+Application_1445597770,Other
 Application_1231269305,Other
 Application_397372842,Other
 Application_244920825,Other
@@ -27706,12 +27706,12 @@ Application_1692583211,Accepted
 Application_1291779828,Other
 Application_1029175063,Accepted
 Application_662896680,Other
-Application_680160715,Accepted
+Application_680160715,Other
 Application_1959429828,Other
 Application_1538422690,Other
 Application_2027799986,Accepted
 Application_1177646759,Accepted
-Application_1539704560,Accepted
+Application_1539704560,Other
 Application_1537320657,Accepted
 Application_1727057027,Accepted
 Application_1572708761,Other
@@ -27738,7 +27738,7 @@ Application_1203077095,Accepted
 Application_2070123392,Other
 Application_1847012732,Other
 Application_772868903,Other
-Application_812148864,Accepted
+Application_812148864,Other
 Application_1570046633,Other
 Application_1196260965,Accepted
 Application_1828081301,Other
@@ -27857,7 +27857,7 @@ Application_1518765385,Other
 Application_625205810,Accepted
 Application_1788428875,Accepted
 Application_181886224,Accepted
-Application_1319249477,Accepted
+Application_1319249477,Other
 Application_1129969277,Accepted
 Application_862319891,Other
 Application_512570243,Other
@@ -27904,15 +27904,15 @@ Application_1052606575,Other
 Application_2025229391,Accepted
 Application_610018749,Accepted
 Application_420214466,Other
-Application_1367490967,Accepted
+Application_1367490967,Other
 Application_952025553,Other
 Application_1275779621,Other
 Application_1667424466,Accepted
 Application_1944625042,Accepted
 Application_918932747,Other
-Application_1141108757,Accepted
+Application_1141108757,Other
 Application_1489581984,Other
-Application_1990971128,Accepted
+Application_1990971128,Other
 Application_923517455,Other
 Application_1494056730,Other
 Application_1937302912,Other
@@ -27943,7 +27943,7 @@ Application_831557107,Accepted
 Application_1761923867,Other
 Application_1985157106,Other
 Application_1232392890,Other
-Application_2028489444,Accepted
+Application_2028489444,Other
 Application_1904206333,Other
 Application_1680734516,Other
 Application_1910954034,Other
@@ -27973,7 +27973,7 @@ Application_41457718,Other
 Application_357595149,Accepted
 Application_1079252932,Other
 Application_2043769562,Other
-Application_1547985122,Accepted
+Application_1547985122,Other
 Application_1356606116,Accepted
 Application_29907847,Accepted
 Application_1049752339,Accepted
@@ -28096,7 +28096,7 @@ Application_368467703,Other
 Application_235841717,Other
 Application_46641543,Accepted
 Application_317164413,Accepted
-Application_2084447947,Accepted
+Application_2084447947,Other
 Application_1390822818,Other
 Application_1829767472,Accepted
 Application_1535972219,Accepted
@@ -28125,7 +28125,7 @@ Application_1196891456,Accepted
 Application_303581122,Accepted
 Application_1663792484,Accepted
 Application_461576889,Other
-Application_1317848716,Accepted
+Application_1317848716,Other
 Application_2054705159,Accepted
 Application_1898724773,Other
 Application_2055213669,Accepted
@@ -28171,12 +28171,12 @@ Application_450199756,Other
 Application_1398939332,Other
 Application_1238104643,Other
 Application_602455530,Accepted
-Application_825818565,Accepted
+Application_825818565,Other
 Application_1044858457,Other
 Application_97035604,Accepted
 Application_1590791050,Other
 Application_1465705504,Other
-Application_1328690304,Accepted
+Application_1328690304,Other
 Application_1910779163,Other
 Application_2026330587,Accepted
 Application_103241719,Other
@@ -28238,7 +28238,7 @@ Application_1507280418,Accepted
 Application_982782738,Accepted
 Application_2111139636,Other
 Application_351085295,Accepted
-Application_1479013620,Accepted
+Application_1479013620,Other
 Application_1925786885,Accepted
 Application_2115489972,Other
 Application_822441404,Other
@@ -28314,7 +28314,7 @@ Application_772281578,Other
 Application_329375107,Accepted
 Application_492379324,Other
 Application_139987324,Other
-Application_729141109,Accepted
+Application_729141109,Other
 Application_1051896537,Accepted
 Application_1418293533,Other
 Application_335735060,Accepted
@@ -28322,7 +28322,7 @@ Application_1847406506,Other
 Application_862120289,Other
 Application_989429368,Other
 Application_419876746,Other
-Application_1158972347,Accepted
+Application_1158972347,Other
 Application_769674466,Other
 Application_2089776619,Accepted
 Application_796471169,Accepted
@@ -28363,7 +28363,7 @@ Application_2086306319,Other
 Application_438352016,Accepted
 Application_54901363,Other
 Application_1137992645,Other
-Application_788242505,Accepted
+Application_788242505,Other
 Application_420683416,Other
 Application_1494571017,Accepted
 Application_440790291,Other
@@ -28395,7 +28395,7 @@ Application_373749624,Accepted
 Application_1646039554,Other
 Application_123583334,Other
 Application_544522022,Other
-Application_1492342444,Accepted
+Application_1492342444,Other
 Application_369962818,Accepted
 Application_155375371,Other
 Application_1479030831,Accepted
@@ -28435,7 +28435,7 @@ Application_1086862400,Accepted
 Application_1636562792,Other
 Application_871461194,Accepted
 Application_139266275,Accepted
-Application_569847015,Accepted
+Application_569847015,Other
 Application_1758175578,Other
 Application_2002111319,Accepted
 Application_1218452071,Other
@@ -28445,7 +28445,7 @@ Application_214993756,Accepted
 Application_488502263,Accepted
 Application_429020300,Other
 Application_1578640551,Other
-Application_1641979166,Accepted
+Application_1641979166,Other
 Application_295621979,Accepted
 Application_1036492833,Other
 Application_1771326157,Accepted
@@ -28592,7 +28592,7 @@ Application_1155107642,Accepted
 Application_2055536976,Other
 Application_1877732225,Other
 Application_794921244,Other
-Application_1152946944,Accepted
+Application_1152946944,Other
 Application_224241639,Other
 Application_251776757,Other
 Application_1327286359,Accepted
@@ -28614,9 +28614,9 @@ Application_1237245886,Other
 Application_1023366085,Other
 Application_1451184688,Other
 Application_2127436939,Accepted
-Application_1411148727,Accepted
+Application_1411148727,Other
 Application_2092956119,Accepted
-Application_1877345729,Accepted
+Application_1877345729,Other
 Application_215908767,Accepted
 Application_395018530,Other
 Application_1234532723,Other
@@ -28673,7 +28673,7 @@ Application_1110591903,Accepted
 Application_743918944,Other
 Application_1101177535,Other
 Application_338944736,Other
-Application_1332266263,Accepted
+Application_1332266263,Other
 Application_1210336267,Accepted
 Application_1568090978,Other
 Application_1151479099,Accepted
@@ -28708,7 +28708,7 @@ Application_1384821775,Accepted
 Application_127639994,Other
 Application_368899409,Accepted
 Application_44239326,Other
-Application_1270439259,Accepted
+Application_1270439259,Other
 Application_945899913,Other
 Application_1146466172,Other
 Application_1470819740,Other
@@ -28741,9 +28741,9 @@ Application_1813380390,Other
 Application_1369206272,Other
 Application_561867924,Accepted
 Application_19080728,Other
-Application_368924590,Accepted
+Application_368924590,Other
 Application_959242917,Other
-Application_2127105351,Accepted
+Application_2127105351,Other
 Application_1777454448,Other
 Application_1359639481,Other
 Application_590885667,Accepted
@@ -28751,7 +28751,7 @@ Application_73130035,Other
 Application_276561013,Accepted
 Application_587158528,Other
 Application_330426541,Accepted
-Application_1404323685,Accepted
+Application_1404323685,Other
 Application_1526558485,Other
 Application_1459981505,Accepted
 Application_1034800486,Other
@@ -28763,7 +28763,7 @@ Application_423893885,Other
 Application_1313071265,Accepted
 Application_1112696012,Other
 Application_1364517552,Other
-Application_1022411160,Accepted
+Application_1022411160,Other
 Application_413306143,Accepted
 Application_729207835,Other
 Application_1486481420,Other
@@ -28839,7 +28839,7 @@ Application_68213815,Other
 Application_834614072,Accepted
 Application_1715190498,Accepted
 Application_1475071478,Accepted
-Application_788568078,Accepted
+Application_788568078,Other
 Application_978200426,Accepted
 Application_491922375,Other
 Application_329445112,Accepted
@@ -28899,7 +28899,7 @@ Application_119108505,Other
 Application_944859420,Other
 Application_763402942,Other
 Application_1644051138,Other
-Application_90070020,Accepted
+Application_90070020,Other
 Application_596539843,Accepted
 Application_1399113964,Other
 Application_1018583202,Other
@@ -28923,7 +28923,7 @@ Application_1654037961,Other
 Application_1295832185,Accepted
 Application_1751419807,Other
 Application_430703608,Accepted
-Application_116207051,Accepted
+Application_116207051,Other
 Application_616691734,Other
 Application_2031031437,Accepted
 Application_1564472847,Accepted
@@ -29081,7 +29081,7 @@ Application_493036402,Accepted
 Application_2099075534,Other
 Application_890472683,Other
 Application_507124292,Other
-Application_1451714555,Accepted
+Application_1451714555,Other
 Application_45634864,Accepted
 Application_403630678,Other
 Application_1949069602,Other
@@ -29256,7 +29256,7 @@ Application_1210607742,Accepted
 Application_1243754559,Other
 Application_358922437,Other
 Application_457837294,Accepted
-Application_1565641655,Accepted
+Application_1565641655,Other
 Application_1654987414,Other
 Application_1512229591,Accepted
 Application_2004651610,Other
@@ -29332,7 +29332,7 @@ Application_1473159696,Other
 Application_1982999758,Accepted
 Application_1113580705,Accepted
 Application_39302544,Other
-Application_1471829510,Accepted
+Application_1471829510,Other
 Application_182692737,Other
 Application_613891711,Other
 Application_622688791,Accepted
@@ -29362,8 +29362,8 @@ Application_1035739361,Accepted
 Application_589219094,Accepted
 Application_878238256,Other
 Application_1952549224,Other
-Application_1366905703,Accepted
-Application_1716488937,Accepted
+Application_1366905703,Other
+Application_1716488937,Other
 Application_1235123682,Other
 Application_1989128442,Other
 Application_876478835,Other
@@ -29427,7 +29427,7 @@ Application_340703406,Other
 Application_2021247694,Accepted
 Application_2072387574,Other
 Application_1840222468,Other
-Application_901150708,Accepted
+Application_901150708,Other
 Application_362852963,Accepted
 Application_281607427,Other
 Application_2037088925,Accepted
@@ -29577,7 +29577,7 @@ Application_523083441,Other
 Application_1140236377,Other
 Application_2085455067,Other
 Application_699126971,Accepted
-Application_1128851023,Accepted
+Application_1128851023,Other
 Application_235493091,Accepted
 Application_962505423,Accepted
 Application_1971831087,Accepted
@@ -29585,7 +29585,7 @@ Application_2131766598,Accepted
 Application_559145199,Other
 Application_800066706,Accepted
 Application_145683841,Other
-Application_713830240,Accepted
+Application_713830240,Other
 Application_1459684566,Other
 Application_1851874120,Other
 Application_2030985552,Accepted
@@ -29711,7 +29711,7 @@ Application_2103006676,Other
 Application_1745004593,Accepted
 Application_1312457363,Other
 Application_1695688535,Accepted
-Application_409843902,Accepted
+Application_409843902,Other
 Application_1030783985,Accepted
 Application_1811976667,Accepted
 Application_1428804895,Other
@@ -29728,7 +29728,7 @@ Application_826854912,Accepted
 Application_464098432,Accepted
 Application_610034914,Other
 Application_1682029053,Other
-Application_1458852944,Accepted
+Application_1458852944,Other
 Application_949514127,Other
 Application_1833857395,Accepted
 Application_1914051970,Accepted
@@ -29777,7 +29777,7 @@ Application_967577338,Other
 Application_1683592982,Other
 Application_1721513096,Other
 Application_647329744,Other
-Application_280797942,Accepted
+Application_280797942,Other
 Application_844605700,Other
 Application_156660458,Accepted
 Application_299054642,Other
@@ -29797,11 +29797,11 @@ Application_1610596108,Other
 Application_1963113833,Other
 Application_1400832878,Other
 Application_1685553482,Accepted
-Application_1369571234,Accepted
+Application_1369571234,Other
 Application_287357474,Accepted
 Application_1513321238,Other
 Application_110384193,Accepted
-Application_619819743,Accepted
+Application_619819743,Other
 Application_1669984193,Other
 Application_1693259722,Other
 Application_1384990566,Other
@@ -29866,7 +29866,7 @@ Application_1205215421,Accepted
 Application_978512250,Other
 Application_1559634770,Accepted
 Application_2086684889,Accepted
-Application_562228671,Accepted
+Application_562228671,Other
 Application_212775744,Other
 Application_1857316370,Other
 Application_2017829434,Accepted
@@ -29880,7 +29880,7 @@ Application_531296723,Other
 Application_1848685618,Other
 Application_1562508102,Accepted
 Application_774509847,Other
-Application_1395900304,Accepted
+Application_1395900304,Other
 Application_1619262727,Other
 Application_764749022,Other
 Application_987372681,Accepted
@@ -29924,7 +29924,7 @@ Application_1034454,Other
 Application_3614173,Other
 Application_2091895631,Other
 Application_1442980784,Other
-Application_1731907819,Accepted
+Application_1731907819,Other
 Application_973645066,Accepted
 Application_649420116,Other
 Application_839751740,Other
@@ -30079,7 +30079,7 @@ Application_696705115,Accepted
 Application_1037792917,Other
 Application_1416971836,Accepted
 Application_1795530227,Other
-Application_802854661,Accepted
+Application_802854661,Other
 Application_731053814,Other
 Application_128895870,Other
 Application_912571590,Other
@@ -30091,7 +30091,7 @@ Application_1988628098,Accepted
 Application_1405116066,Other
 Application_1223354907,Other
 Application_156205308,Accepted
-Application_917640298,Accepted
+Application_917640298,Other
 Application_1233625625,Other
 Application_690050804,Accepted
 Application_2131158409,Other
@@ -30135,7 +30135,7 @@ Application_1469289455,Accepted
 Application_576893560,Other
 Application_1571228698,Other
 Application_1194598473,Other
-Application_147095816,Accepted
+Application_147095816,Other
 Application_593935959,Other
 Application_673828188,Other
 Application_670770300,Accepted
@@ -30171,7 +30171,7 @@ Application_1716698141,Other
 Application_954830822,Other
 Application_2115637548,Other
 Application_1686152726,Accepted
-Application_1296679854,Accepted
+Application_1296679854,Other
 Application_538667985,Other
 Application_785051963,Other
 Application_1270199280,Accepted
@@ -30199,7 +30199,7 @@ Application_1248150861,Other
 Application_1056628969,Other
 Application_1627130886,Other
 Application_1437532627,Other
-Application_771286338,Accepted
+Application_771286338,Other
 Application_421841965,Accepted
 Application_73738380,Other
 Application_1282312320,Other
@@ -30251,7 +30251,7 @@ Application_503299627,Accepted
 Application_288379803,Accepted
 Application_224662530,Accepted
 Application_793939885,Accepted
-Application_1921072973,Accepted
+Application_1921072973,Other
 Application_1622141165,Accepted
 Application_1802121036,Accepted
 Application_871215308,Accepted
@@ -30291,7 +30291,7 @@ Application_1087053459,Accepted
 Application_2063746491,Other
 Application_1982638542,Accepted
 Application_514153976,Accepted
-Application_434150091,Accepted
+Application_434150091,Other
 Application_1633005310,Other
 Application_2062813997,Other
 Application_1742086313,Other
@@ -30307,7 +30307,7 @@ Application_624994443,Other
 Application_465060650,Accepted
 Application_322806868,Accepted
 Application_1022069965,Other
-Application_1289132611,Accepted
+Application_1289132611,Other
 Application_1899900881,Other
 Application_319276505,Accepted
 Application_96304459,Other
@@ -30404,12 +30404,12 @@ Application_1763494631,Other
 Application_1691653218,Other
 Application_1882655907,Other
 Application_1597138122,Other
-Application_131965778,Accepted
+Application_131965778,Other
 Application_601219508,Other
 Application_1206133916,Accepted
 Application_856341410,Accepted
 Application_472770940,Accepted
-Application_1023646798,Accepted
+Application_1023646798,Other
 Application_1539865472,Accepted
 Application_2106009667,Other
 Application_1399403690,Other
@@ -30443,10 +30443,10 @@ Application_1464798669,Accepted
 Application_208251490,Accepted
 Application_2099935440,Accepted
 Application_158145312,Accepted
-Application_157200774,Accepted
+Application_157200774,Other
 Application_473241090,Other
 Application_839319778,Other
-Application_769670015,Accepted
+Application_769670015,Other
 Application_401991590,Other
 Application_313331619,Accepted
 Application_44606820,Other
@@ -30539,14 +30539,14 @@ Application_1931704478,Other
 Application_344998689,Other
 Application_795845061,Other
 Application_1096634112,Other
-Application_309988784,Accepted
+Application_309988784,Other
 Application_1845988951,Accepted
 Application_1656510218,Other
 Application_662281043,Other
 Application_472301327,Accepted
 Application_1438933809,Other
 Application_1670410559,Other
-Application_1424424888,Accepted
+Application_1424424888,Other
 Application_977404337,Other
 Application_1705897613,Other
 Application_427647748,Other
@@ -30665,7 +30665,7 @@ Application_1516067273,Accepted
 Application_278409526,Other
 Application_935224559,Other
 Application_720508715,Other
-Application_366773259,Accepted
+Application_366773259,Other
 Application_429480937,Accepted
 Application_1010579931,Accepted
 Application_1638196726,Other
@@ -30709,7 +30709,7 @@ Application_206510393,Accepted
 Application_921271215,Other
 Application_1210486698,Other
 Application_499448595,Other
-Application_1935686311,Accepted
+Application_1935686311,Other
 Application_954294342,Accepted
 Application_232908541,Other
 Application_506728302,Other
@@ -30730,7 +30730,7 @@ Application_2140398412,Accepted
 Application_1939679303,Other
 Application_1505953522,Accepted
 Application_1223636711,Other
-Application_574722304,Accepted
+Application_574722304,Other
 Application_218935050,Accepted
 Application_541755335,Accepted
 Application_1240900910,Other
@@ -30787,7 +30787,7 @@ Application_595653145,Accepted
 Application_1956283946,Other
 Application_1466122701,Other
 Application_1812318096,Other
-Application_1083688690,Accepted
+Application_1083688690,Other
 Application_1433215421,Other
 Application_739987633,Other
 Application_123758220,Accepted
@@ -30832,7 +30832,7 @@ Application_1710813445,Other
 Application_140048308,Accepted
 Application_1540449226,Other
 Application_1204089991,Other
-Application_1564372447,Accepted
+Application_1564372447,Other
 Application_686843208,Accepted
 Application_1011449253,Accepted
 Application_882719698,Other
@@ -30925,7 +30925,7 @@ Application_1612709224,Other
 Application_1894445869,Other
 Application_458485755,Other
 Application_538245491,Other
-Application_888280534,Accepted
+Application_888280534,Other
 Application_750701241,Accepted
 Application_535920840,Accepted
 Application_162163279,Other
@@ -30992,7 +30992,7 @@ Application_441994285,Other
 Application_1398947853,Accepted
 Application_315713743,Accepted
 Application_67524538,Accepted
-Application_478594077,Accepted
+Application_478594077,Other
 Application_1177964671,Accepted
 Application_1299558679,Other
 Application_1553094955,Other
@@ -31029,7 +31029,7 @@ Application_237322160,Other
 Application_87131485,Other
 Application_718038013,Other
 Application_71565050,Other
-Application_456698969,Accepted
+Application_456698969,Other
 Application_10226694,Accepted
 Application_1905033774,Accepted
 Application_1897179254,Other
@@ -31051,7 +31051,7 @@ Application_1751932238,Other
 Application_1975311192,Other
 Application_1826628650,Other
 Application_1963803374,Other
-Application_1568705555,Accepted
+Application_1568705555,Other
 Application_1331937055,Accepted
 Application_133656076,Other
 Application_533938154,Other
@@ -31131,7 +31131,7 @@ Application_1281199569,Accepted
 Application_722729820,Other
 Application_72514552,Accepted
 Application_542837145,Other
-Application_867172664,Accepted
+Application_867172664,Other
 Application_65307205,Other
 Application_684536307,Other
 Application_1008848932,Other
@@ -31195,7 +31195,7 @@ Application_2014291061,Other
 Application_2012801414,Other
 Application_1789535619,Accepted
 Application_1348101743,Other
-Application_1422289499,Accepted
+Application_1422289499,Other
 Application_173826941,Accepted
 Application_584055749,Other
 Application_1892177671,Other
@@ -31203,7 +31203,7 @@ Application_1255807279,Other
 Application_1964992476,Accepted
 Application_1312774650,Other
 Application_1069793799,Other
-Application_1715369188,Accepted
+Application_1715369188,Other
 Application_581575651,Accepted
 Application_813290165,Other
 Application_143345509,Other
@@ -31220,7 +31220,7 @@ Application_595243250,Other
 Application_171367276,Other
 Application_871474450,Other
 Application_2000725110,Other
-Application_1257655392,Accepted
+Application_1257655392,Other
 Application_1076971157,Accepted
 Application_593504885,Other
 Application_1782010296,Accepted
@@ -31359,7 +31359,7 @@ Application_1720416885,Accepted
 Application_424050019,Other
 Application_1152743776,Other
 Application_1068338293,Other
-Application_718523864,Accepted
+Application_718523864,Other
 Application_579821311,Other
 Application_1062041374,Other
 Application_1858057166,Other
@@ -31403,7 +31403,7 @@ Application_1067190799,Other
 Application_688832703,Other
 Application_788182565,Other
 Application_1217715016,Other
-Application_1728492857,Accepted
+Application_1728492857,Other
 Application_1917923627,Other
 Application_1677844905,Other
 Application_1303072211,Other
@@ -31471,18 +31471,18 @@ Application_718432981,Accepted
 Application_638408365,Other
 Application_168516850,Accepted
 Application_779559950,Accepted
-Application_2105628468,Accepted
+Application_2105628468,Other
 Application_703922647,Other
 Application_1563029665,Other
 Application_2100121222,Other
 Application_488720885,Other
 Application_1120379399,Other
-Application_79391457,Accepted
-Application_1729852643,Accepted
+Application_79391457,Other
+Application_1729852643,Other
 Application_813308967,Accepted
 Application_1937646963,Accepted
 Application_1722592475,Other
-Application_45251359,Accepted
+Application_45251359,Other
 Application_586430010,Accepted
 Application_886482893,Other
 Application_2122012941,Other

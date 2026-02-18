@@ -83,6 +83,13 @@
         "mean_cycle": 21.899605591087365,
         "normalization_factor": 286.07243812499996
     },
+    "BPIC_19": {
+        "num_cases": 251734,
+        "num_events": 1595923,
+        "num_activities": 42,
+        "mean_cycle": 71.52453182779796,
+        "normalization_factor": 25670.547916666666
+    },
     "BPIC_20_DD": {
         "num_cases": 10500,
         "num_events": 56437,

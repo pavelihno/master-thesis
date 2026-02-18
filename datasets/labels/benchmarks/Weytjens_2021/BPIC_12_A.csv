@@ -7620,7 +7620,7 @@ case_id,outcome
 197428,Cancelled
 197431,Declined
 197434,Cancelled
-197437,Other
+197437,Cancelled
 197440,Cancelled
 197443,Declined
 197446,Approved
@@ -7808,7 +7808,7 @@ case_id,outcome
 198008,Declined
 198011,Declined
 198014,Cancelled
-198017,Other
+198017,Cancelled
 198020,Declined
 198023,Declined
 198026,Approved
@@ -8129,7 +8129,7 @@ case_id,outcome
 198987,Declined
 198990,Declined
 198993,Declined
-198996,Other
+198996,Cancelled
 198999,Declined
 199002,Approved
 199005,Declined
@@ -8348,7 +8348,7 @@ case_id,outcome
 199669,Declined
 199672,Declined
 199675,Cancelled
-199678,Other
+199678,Cancelled
 199681,Approved
 199684,Declined
 199687,Declined
@@ -8577,7 +8577,7 @@ case_id,outcome
 200380,Approved
 200383,Cancelled
 200386,Approved
-200389,Other
+200389,Cancelled
 200392,Declined
 200395,Approved
 200398,Declined
@@ -8680,7 +8680,7 @@ case_id,outcome
 200716,Approved
 200719,Cancelled
 200722,Declined
-200725,Other
+200725,Cancelled
 200728,Declined
 200731,Declined
 200734,Declined
@@ -8782,7 +8782,7 @@ case_id,outcome
 201033,Declined
 201036,Cancelled
 201039,Cancelled
-201042,Other
+201042,Cancelled
 201045,Declined
 201048,Declined
 201051,Declined
@@ -9096,7 +9096,7 @@ case_id,outcome
 202029,Approved
 202032,Declined
 202035,Approved
-202038,Other
+202038,Cancelled
 202039,Cancelled
 202044,Approved
 202047,Cancelled
@@ -9201,7 +9201,7 @@ case_id,outcome
 202349,Declined
 202352,Declined
 202355,Declined
-202358,Other
+202358,Cancelled
 202361,Cancelled
 202364,Declined
 202367,Declined
@@ -9246,7 +9246,7 @@ case_id,outcome
 202512,Declined
 202515,Declined
 202518,Approved
-202521,Other
+202521,Cancelled
 202524,Approved
 202527,Declined
 202530,Cancelled
@@ -9521,7 +9521,7 @@ case_id,outcome
 203353,Cancelled
 203356,Approved
 203359,Declined
-203362,Other
+203362,Cancelled
 203365,Approved
 203368,Declined
 203371,Cancelled
@@ -9542,7 +9542,7 @@ case_id,outcome
 203419,Cancelled
 203422,Declined
 203425,Approved
-203428,Other
+203428,Cancelled
 203431,Declined
 203434,Declined
 203437,Declined
@@ -9563,7 +9563,7 @@ case_id,outcome
 203495,Approved
 203498,Declined
 203501,Approved
-203504,Other
+203504,Cancelled
 203507,Declined
 203510,Declined
 203513,Declined
@@ -9605,7 +9605,7 @@ case_id,outcome
 203621,Cancelled
 203624,Approved
 203627,Declined
-203630,Other
+203630,Cancelled
 203633,Declined
 203636,Cancelled
 203639,Declined
@@ -9767,7 +9767,7 @@ case_id,outcome
 204122,Declined
 204125,Declined
 204128,Declined
-204131,Other
+204131,Cancelled
 204134,Cancelled
 204137,Approved
 204140,Approved
@@ -9883,7 +9883,7 @@ case_id,outcome
 204487,Declined
 204490,Declined
 204493,Declined
-204496,Other
+204496,Cancelled
 204499,Cancelled
 204502,Declined
 204505,Declined
@@ -10110,7 +10110,7 @@ case_id,outcome
 205176,Declined
 205179,Declined
 205182,Declined
-205199,Other
+205199,Cancelled
 205202,Approved
 205205,Cancelled
 205208,Declined
@@ -10238,7 +10238,7 @@ case_id,outcome
 205595,Cancelled
 205598,Approved
 205601,Declined
-205604,Other
+205604,Cancelled
 205607,Declined
 205610,Declined
 205613,Declined
@@ -10268,7 +10268,7 @@ case_id,outcome
 205685,Declined
 205688,Declined
 205691,Declined
-205694,Other
+205694,Cancelled
 205697,Declined
 205700,Declined
 205703,Declined
@@ -10360,11 +10360,11 @@ case_id,outcome
 205981,Declined
 205984,Declined
 205987,Declined
-205990,Other
+205990,Cancelled
 205993,Declined
 205996,Declined
 205999,Cancelled
-206002,Other
+206002,Cancelled
 206005,Declined
 206008,Cancelled
 206011,Declined
@@ -10419,7 +10419,7 @@ case_id,outcome
 206168,Declined
 206171,Declined
 206174,Declined
-206177,Other
+206177,Cancelled
 206180,Declined
 206183,Cancelled
 206186,Declined
@@ -10546,7 +10546,7 @@ case_id,outcome
 206549,Declined
 206552,Declined
 206555,Cancelled
-206558,Other
+206558,Cancelled
 206561,Cancelled
 206564,Approved
 206567,Cancelled
@@ -10572,7 +10572,7 @@ case_id,outcome
 206627,Approved
 206630,Declined
 206633,Approved
-206636,Other
+206636,Cancelled
 206639,Declined
 206642,Cancelled
 206645,Approved
@@ -10599,7 +10599,7 @@ case_id,outcome
 206712,Declined
 206715,Declined
 206718,Approved
-206721,Other
+206721,Cancelled
 206724,Declined
 206727,Declined
 206730,Declined
@@ -10654,7 +10654,7 @@ case_id,outcome
 206877,Declined
 206880,Declined
 206883,Approved
-206886,Other
+206886,Cancelled
 206889,Declined
 206892,Declined
 206895,Declined
@@ -10690,7 +10690,7 @@ case_id,outcome
 207002,Declined
 207005,Approved
 207008,Declined
-207011,Other
+207011,Cancelled
 207014,Approved
 207017,Declined
 207020,Approved
@@ -10821,7 +10821,7 @@ case_id,outcome
 207425,Declined
 207428,Declined
 207431,Declined
-207434,Other
+207434,Cancelled
 207437,Declined
 207440,Approved
 207443,Declined
@@ -10933,7 +10933,7 @@ case_id,outcome
 207768,Cancelled
 207771,Declined
 207774,Cancelled
-207777,Other
+207777,Cancelled
 207780,Approved
 207783,Approved
 207786,Declined
@@ -10987,7 +10987,7 @@ case_id,outcome
 207930,Declined
 207933,Declined
 207936,Declined
-207939,Other
+207939,Cancelled
 207942,Declined
 207945,Cancelled
 207948,Declined
@@ -11089,7 +11089,7 @@ case_id,outcome
 208250,Declined
 208253,Declined
 208256,Declined
-208259,Other
+208259,Cancelled
 208262,Declined
 208265,Declined
 208268,Declined
@@ -11166,7 +11166,7 @@ case_id,outcome
 208481,Other
 208484,Declined
 208487,Declined
-208490,Other
+208490,Cancelled
 208493,Declined
 208496,Declined
 208499,Declined
@@ -11220,10 +11220,10 @@ case_id,outcome
 208643,Declined
 208646,Declined
 208649,Declined
-208652,Other
+208652,Cancelled
 208655,Approved
 208658,Other
-208661,Other
+208661,Cancelled
 208664,Declined
 208667,Declined
 208670,Declined
@@ -11288,8 +11288,8 @@ case_id,outcome
 208847,Declined
 208850,Declined
 208853,Declined
-208856,Other
-208859,Other
+208856,Cancelled
+208859,Cancelled
 208862,Other
 208865,Cancelled
 208868,Other
@@ -11353,12 +11353,12 @@ case_id,outcome
 209042,Declined
 209045,Declined
 209048,Declined
-209051,Other
+209051,Cancelled
 209054,Declined
 209057,Cancelled
-209060,Other
+209060,Cancelled
 209063,Approved
-209066,Other
+209066,Cancelled
 209069,Declined
 209072,Declined
 209075,Cancelled
@@ -11385,7 +11385,7 @@ case_id,outcome
 209138,Declined
 209141,Declined
 209144,Declined
-209147,Other
+209147,Cancelled
 209150,Declined
 209153,Declined
 209156,Cancelled
@@ -11411,7 +11411,7 @@ case_id,outcome
 209218,Declined
 209221,Approved
 209224,Declined
-209227,Other
+209227,Cancelled
 209230,Declined
 209233,Declined
 209236,Declined
@@ -11438,8 +11438,8 @@ case_id,outcome
 209299,Declined
 209302,Approved
 209305,Declined
-209308,Other
-209311,Other
+209308,Cancelled
+209311,Cancelled
 209314,Declined
 209317,Declined
 209320,Declined
@@ -11499,7 +11499,7 @@ case_id,outcome
 209499,Other
 209502,Approved
 209505,Approved
-209508,Other
+209508,Cancelled
 209511,Declined
 209514,Declined
 209517,Declined
@@ -11523,7 +11523,7 @@ case_id,outcome
 209586,Other
 209589,Declined
 209592,Approved
-209595,Other
+209595,Cancelled
 209598,Declined
 209601,Other
 209604,Approved
@@ -11543,7 +11543,7 @@ case_id,outcome
 209646,Approved
 209649,Declined
 209652,Declined
-209655,Other
+209655,Cancelled
 209658,Declined
 209661,Cancelled
 209664,Declined
@@ -11552,7 +11552,7 @@ case_id,outcome
 209673,Declined
 209676,Declined
 209679,Other
-209682,Other
+209682,Cancelled
 209685,Declined
 209688,Declined
 209691,Declined
@@ -11583,7 +11583,7 @@ case_id,outcome
 209766,Approved
 209769,Declined
 209772,Cancelled
-209775,Other
+209775,Cancelled
 209778,Declined
 209781,Cancelled
 209784,Declined
@@ -11626,7 +11626,7 @@ case_id,outcome
 209895,Other
 209898,Declined
 209901,Approved
-209904,Other
+209904,Cancelled
 209907,Declined
 209910,Cancelled
 209913,Approved
@@ -11658,7 +11658,7 @@ case_id,outcome
 210017,Approved
 210020,Declined
 210023,Declined
-210026,Other
+210026,Cancelled
 210029,Declined
 210032,Declined
 210035,Declined
@@ -11700,7 +11700,7 @@ case_id,outcome
 210143,Declined
 210146,Cancelled
 210149,Approved
-210152,Other
+210152,Cancelled
 210155,Declined
 210158,Declined
 210161,Other
@@ -11722,7 +11722,7 @@ case_id,outcome
 210209,Other
 210212,Declined
 210215,Declined
-210218,Other
+210218,Cancelled
 210221,Declined
 210224,Cancelled
 210227,Declined
@@ -11752,7 +11752,7 @@ case_id,outcome
 210299,Cancelled
 210302,Declined
 210305,Other
-210308,Other
+210308,Cancelled
 210311,Declined
 210314,Declined
 210317,Declined
@@ -11760,7 +11760,7 @@ case_id,outcome
 210323,Declined
 210326,Cancelled
 210329,Approved
-210332,Other
+210332,Cancelled
 210335,Declined
 210338,Declined
 210341,Other
@@ -11829,7 +11829,7 @@ case_id,outcome
 210530,Declined
 210533,Declined
 210536,Declined
-210539,Other
+210539,Cancelled
 210542,Declined
 210545,Declined
 210548,Declined
@@ -11853,7 +11853,7 @@ case_id,outcome
 210602,Other
 210605,Cancelled
 210608,Declined
-210611,Other
+210611,Cancelled
 210614,Cancelled
 210617,Declined
 210620,Declined
@@ -11870,7 +11870,7 @@ case_id,outcome
 210653,Other
 210656,Declined
 210659,Approved
-210662,Other
+210662,Cancelled
 210665,Declined
 210668,Declined
 210671,Approved
@@ -11906,7 +11906,7 @@ case_id,outcome
 210761,Other
 210764,Declined
 210767,Declined
-210770,Other
+210770,Cancelled
 210773,Declined
 210776,Declined
 210779,Declined
@@ -11920,7 +11920,7 @@ case_id,outcome
 210803,Declined
 210806,Approved
 210809,Cancelled
-210812,Other
+210812,Cancelled
 210815,Approved
 210818,Declined
 210821,Declined
@@ -11932,7 +11932,7 @@ case_id,outcome
 210839,Declined
 210842,Declined
 210845,Declined
-210848,Other
+210848,Cancelled
 210851,Declined
 210854,Declined
 210857,Cancelled
@@ -11967,7 +11967,7 @@ case_id,outcome
 210944,Cancelled
 210947,Declined
 210950,Declined
-210957,Other
+210957,Cancelled
 210960,Declined
 210963,Declined
 210966,Declined
@@ -12131,7 +12131,7 @@ case_id,outcome
 211450,Declined
 211453,Declined
 211456,Other
-211459,Other
+211459,Cancelled
 211462,Declined
 211465,Declined
 211468,Declined
@@ -12168,7 +12168,7 @@ case_id,outcome
 211561,Declined
 211564,Declined
 211567,Other
-211570,Other
+211570,Cancelled
 211573,Declined
 211576,Cancelled
 211579,Declined
@@ -12189,12 +12189,12 @@ case_id,outcome
 211624,Other
 211627,Declined
 211630,Declined
-211633,Other
+211633,Cancelled
 211637,Declined
 211640,Declined
 211643,Cancelled
 211646,Declined
-211649,Other
+211649,Cancelled
 211652,Approved
 211655,Declined
 211658,Declined
@@ -12214,7 +12214,7 @@ case_id,outcome
 211700,Declined
 211703,Declined
 211706,Approved
-211709,Other
+211709,Cancelled
 211712,Other
 211715,Other
 211718,Declined
@@ -12241,7 +12241,7 @@ case_id,outcome
 211781,Declined
 211784,Declined
 211787,Declined
-211790,Other
+211790,Cancelled
 211793,Cancelled
 211796,Declined
 211799,Declined
@@ -12286,7 +12286,7 @@ case_id,outcome
 211916,Declined
 211919,Declined
 211922,Declined
-211925,Other
+211925,Cancelled
 211928,Cancelled
 211931,Declined
 211934,Declined
@@ -12320,7 +12320,7 @@ case_id,outcome
 212018,Cancelled
 212021,Cancelled
 212037,Declined
-212040,Other
+212040,Cancelled
 212043,Approved
 212046,Declined
 212049,Declined
@@ -12334,7 +12334,7 @@ case_id,outcome
 212073,Declined
 212076,Declined
 212079,Approved
-212082,Other
+212082,Cancelled
 212085,Cancelled
 212088,Declined
 212091,Approved
@@ -12359,7 +12359,7 @@ case_id,outcome
 212148,Declined
 212151,Declined
 212154,Other
-212157,Other
+212157,Cancelled
 212160,Declined
 212163,Other
 212166,Other
@@ -12386,7 +12386,7 @@ case_id,outcome
 212229,Declined
 212232,Other
 212235,Cancelled
-212238,Other
+212238,Cancelled
 212241,Declined
 212244,Cancelled
 212247,Approved
@@ -12400,14 +12400,14 @@ case_id,outcome
 212271,Other
 212274,Approved
 212277,Declined
-212280,Other
+212280,Cancelled
 212283,Other
-212286,Other
+212286,Cancelled
 212289,Approved
 212292,Declined
 212295,Approved
 212298,Declined
-212301,Other
+212301,Cancelled
 212304,Declined
 212307,Declined
 212310,Declined
@@ -12423,14 +12423,14 @@ case_id,outcome
 212340,Other
 212343,Declined
 212346,Cancelled
-212349,Other
+212349,Cancelled
 212352,Declined
 212355,Approved
 212358,Declined
-212361,Other
+212361,Cancelled
 212364,Declined
 212367,Declined
-212370,Other
+212370,Cancelled
 212373,Declined
 212377,Declined
 212380,Declined
@@ -12446,7 +12446,7 @@ case_id,outcome
 212410,Declined
 212413,Declined
 212416,Declined
-212419,Other
+212419,Cancelled
 212422,Declined
 212425,Approved
 212428,Declined
@@ -12489,7 +12489,7 @@ case_id,outcome
 212539,Declined
 212542,Cancelled
 212545,Declined
-212548,Other
+212548,Cancelled
 212551,Declined
 212554,Cancelled
 212557,Declined
@@ -12511,7 +12511,7 @@ case_id,outcome
 212605,Other
 212608,Cancelled
 212611,Other
-212614,Other
+212614,Cancelled
 212617,Other
 212620,Declined
 212623,Other
@@ -12528,7 +12528,7 @@ case_id,outcome
 212656,Declined
 212659,Declined
 212662,Cancelled
-212665,Other
+212665,Cancelled
 212668,Declined
 212671,Cancelled
 212674,Approved
@@ -12602,7 +12602,7 @@ case_id,outcome
 212878,Other
 212881,Declined
 212884,Declined
-212887,Other
+212887,Cancelled
 212890,Declined
 212893,Declined
 212896,Declined
@@ -12614,31 +12614,31 @@ case_id,outcome
 212914,Other
 212917,Approved
 212920,Cancelled
-212923,Other
+212923,Cancelled
 212926,Cancelled
 212929,Approved
-212932,Other
+212932,Cancelled
 212935,Declined
 212938,Declined
 212941,Declined
 212944,Approved
 212947,Declined
 212950,Approved
-212953,Other
+212953,Cancelled
 212956,Declined
 212959,Declined
 212962,Declined
 212965,Other
 212968,Declined
 212971,Declined
-212974,Other
-212977,Other
+212974,Cancelled
+212977,Cancelled
 212980,Declined
 212983,Cancelled
 212986,Declined
-212989,Other
+212989,Cancelled
 212992,Declined
-212995,Other
+212995,Cancelled
 212998,Declined
 213001,Approved
 213004,Other
@@ -12676,7 +12676,7 @@ case_id,outcome
 213100,Declined
 213117,Declined
 213120,Declined
-213123,Other
+213123,Cancelled
 213126,Approved
 213129,Declined
 213132,Approved
@@ -12701,7 +12701,7 @@ case_id,outcome
 213189,Other
 213192,Approved
 213195,Approved
-213198,Other
+213198,Cancelled
 213201,Approved
 213204,Declined
 213207,Declined
@@ -12711,8 +12711,8 @@ case_id,outcome
 213219,Cancelled
 213222,Declined
 213225,Cancelled
-213228,Other
-213231,Other
+213228,Cancelled
+213231,Cancelled
 213234,Approved
 213237,Declined
 213240,Cancelled
@@ -12729,9 +12729,9 @@ case_id,outcome
 213273,Declined
 213276,Other
 213279,Other
-213282,Other
+213282,Cancelled
 213285,Declined
-213288,Other
+213288,Cancelled
 213291,Other
 213294,Other
 213297,Declined
@@ -12757,7 +12757,7 @@ case_id,outcome
 213357,Declined
 213360,Declined
 213363,Declined
-213366,Other
+213366,Cancelled
 213369,Declined
 213372,Declined
 213375,Other
@@ -12775,7 +12775,7 @@ case_id,outcome
 213411,Approved
 213414,Other
 213417,Approved
-213420,Other
+213420,Cancelled
 213423,Approved
 213426,Other
 213429,Declined
@@ -12816,7 +12816,7 @@ case_id,outcome
 213534,Other
 213537,Declined
 213540,Declined
-213543,Other
+213543,Cancelled
 213546,Declined
 213557,Declined
 213560,Declined
@@ -12833,12 +12833,12 @@ case_id,outcome
 213606,Declined
 213609,Approved
 213612,Declined
-213615,Other
+213615,Cancelled
 213618,Declined
 213621,Other
 213624,Approved
 213627,Declined
-213630,Other
+213630,Cancelled
 213633,Declined
 213636,Cancelled
 213639,Other
@@ -12874,7 +12874,7 @@ case_id,outcome
 213729,Other
 213732,Declined
 213735,Declined
-213738,Other
+213738,Cancelled
 213741,Declined
 213744,Declined
 213747,Declined
@@ -12889,7 +12889,7 @@ case_id,outcome
 213774,Declined
 213777,Declined
 213780,Declined
-213783,Other
+213783,Cancelled
 213786,Declined
 213789,Approved
 213792,Declined
@@ -12907,7 +12907,7 @@ case_id,outcome
 213828,Declined
 213831,Declined
 213834,Declined
-213837,Other
+213837,Cancelled
 213840,Cancelled
 213843,Declined
 213846,Declined
@@ -12924,7 +12924,7 @@ case_id,outcome
 213879,Other
 213882,Declined
 213885,Declined
-213888,Other
+213888,Cancelled
 213891,Other
 213894,Other
 213897,Declined
@@ -12948,7 +12948,7 @@ case_id,outcome
 213951,Declined
 213954,Declined
 213957,Other
-213960,Other
+213960,Cancelled
 213963,Other
 213966,Other
 213969,Other
@@ -12959,7 +12959,7 @@ case_id,outcome
 213989,Declined
 213992,Declined
 213995,Approved
-213998,Other
+213998,Cancelled
 214001,Other
 214004,Declined
 214007,Declined
@@ -12967,10 +12967,10 @@ case_id,outcome
 214013,Declined
 214016,Declined
 214019,Approved
-214022,Other
+214022,Cancelled
 214025,Declined
 214028,Other
-214031,Other
+214031,Cancelled
 214034,Cancelled
 214037,Cancelled
 214040,Approved
@@ -13017,7 +13017,7 @@ case_id,outcome
 214163,Declined
 214166,Declined
 214169,Declined
-214172,Other
+214172,Cancelled
 214175,Other
 214178,Declined
 214181,Other
@@ -13029,7 +13029,7 @@ case_id,outcome
 214199,Cancelled
 214202,Declined
 214205,Other
-214208,Other
+214208,Cancelled
 214211,Other
 214214,Declined
 214217,Declined
@@ -13040,9 +13040,9 @@ case_id,outcome
 214232,Declined
 214235,Declined
 214238,Approved
-214241,Other
+214241,Cancelled
 214244,Declined
-214247,Other
+214247,Cancelled
 214250,Approved
 214253,Declined
 214256,Cancelled
@@ -13055,8 +13055,8 @@ case_id,outcome
 214277,Approved
 214280,Declined
 214283,Other
-214286,Other
-214289,Other
+214286,Cancelled
+214289,Cancelled
 214292,Declined
 214295,Declined
 214298,Cancelled
@@ -13064,7 +13064,7 @@ case_id,outcome
 214304,Other
 214307,Declined
 214310,Other
-214313,Other
+214313,Cancelled
 214316,Declined
 214319,Declined
 214322,Declined
@@ -13081,7 +13081,7 @@ case_id,outcome
 214355,Other
 214358,Other
 214361,Declined
-214364,Other
+214364,Cancelled
 214367,Declined
 214370,Declined
 214373,Other
