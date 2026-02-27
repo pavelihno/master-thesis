@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pandas as pd
 import yaml
-from experiment_utils import evaluate_model, load_and_prepare_data, load_config
 from sklearn.metrics import classification_report
 
+from utils.experiment import evaluate_model, load_and_prepare_data, load_config
 from utils.factories import (
     create_bucketer,
     create_dataset,

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from experiments.experiment_utils import ensure_output_dir, load_config
+from utils.experiment import ensure_output_dir, load_config
 from utils.streaming.factories import create_model, create_transformer
 from utils.streaming.pipelines import PrequentialPipeline
 
