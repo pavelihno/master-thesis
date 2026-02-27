@@ -127,6 +127,93 @@ pipeline = ProcessPredictorPipeline.load('experiments/models/xgb_traffic_fines_b
 
 ---
 
+## Streaming Experiments
+
+### 1. Create a YAML Configuration File
+
+Configuration files live in `conf/experiments/streaming/<model_type>/<Dataset_Name>.yaml`.
+
+Example structure:
+
+```
+conf/experiments/streaming/
+└── srp/
+    └── BPIC_20_DD.yaml
+```
+
+Create a YAML file with the following structure:
+
+```yaml
+experiment_name: srp_cf_bpic20dd
+
+dataset:
+    dataset_name: BPIC_20_DD
+    dataset_path: datasets/raw/BPIC_20_DD.xes
+
+# Encoding strategy for trace prefixes
+transformer:
+    type: cf # cf | data | index | dim
+    max_events: null # max prefix positions to encode (index and dim only)
+
+# Online classifier
+model:
+    type: srp # srp | arf | aht
+    params:
+        n_models: 100
+        subspace_size: 0.6
+        lam: 6
+        drift_detector: 1.0e-5 # ADWIN delta – converted automatically
+        warning_detector: 1.0e-4
+        seed: 42
+
+output:
+    folder: experiments/outputs/streaming/BPIC_20_DD
+```
+
+### 2. Run the Experiment
+
+```bash
+# Single experiment
+python experiments/streaming/run_train.py conf/experiments/streaming/streaming_random_patches/BPIC_20_DD.yaml
+
+# With custom experiment name
+python experiments/streaming/run_train.py conf/experiments/streaming/streaming_random_patches/BPIC_20_DD.yaml --name my_custom_name
+
+# Run all configs discovered sequentially
+python experiments/streaming/run_experiments.py
+
+# Run all configs in parallel (4 workers)
+python experiments/streaming/run_experiments.py --workers 4
+
+# Run all configs using all available CPUs
+python experiments/streaming/run_experiments.py --workers -1
+
+# Run all configs for a specific model type
+python experiments/streaming/run_experiments.py --model srp
+
+# Run all configs for a specific dataset
+python experiments/streaming/run_experiments.py --dataset BPIC_20_DD
+```
+
+### 3. View Results
+
+Results are saved to **`experiments/outputs/streaming/<dataset_name>/`**
+
+Each run produces two files:
+
+- `{experiment_name}_{timestamp}.csv` — full per-prediction log (one row per prediction with `n_pred`, `y_true`, `y_pred`, `correct`, `accuracy`, `macro_f1`, `trace_id`, `prefix_len`, `event_time`, `time_s`)
+- `{experiment_name}_{timestamp}.txt` — summary with configuration and final metrics
+
+Example:
+
+```
+experiments/outputs/streaming/BPIC_20_DD/
+├── srp_cf_bpic20dd_2026-02-27_14-30-45.csv
+└── srp_cf_bpic20dd_2026-02-27_14-30-45.txt
+```
+
+---
+
 ## Hyperparameter Search
 
 The framework includes a hyperparameter search tool that efficiently searches over parameter grids without re-processing data.

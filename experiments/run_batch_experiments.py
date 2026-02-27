@@ -72,11 +72,6 @@ def main():
         default='python',
         help='Python executable to use',
     )
-    parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help='List configs without running',
-    )
 
     args = parser.parse_args()
 
@@ -96,10 +91,6 @@ def main():
     for config in configs:
         print(f'  - {config}')
     print()
-
-    if args.dry_run:
-        print('Dry run - not executing experiments.')
-        return 0
 
     # Run experiments
     results = {}
