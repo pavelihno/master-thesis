@@ -120,6 +120,22 @@ class CollectorSink(BaseSink):
         return pd.DataFrame(self.records)
 
 
+class TraceCollectorSink(BaseSink):
+    """Groups BEvents by trace_id into a dict."""
+
+    def __init__(self):
+        self.traces: dict[str, list[BEvent]] = defaultdict(list)
+
+    def consume(self, event: BEvent) -> None:
+        self.traces[event.get_trace_name()].append(event)
+
+    def close(self) -> None:
+        pass
+
+    def to_dict(self) -> dict[str, list[BEvent]]:
+        return dict(self.traces)
+
+
 class PrequentialPipeline:
     """End-to-end prequential streaming pipeline."""
 
