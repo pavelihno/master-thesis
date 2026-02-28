@@ -1,4 +1,6 @@
+import functools
 import time
+import traceback
 from collections import defaultdict
 
 import pandas as pd
@@ -9,6 +11,21 @@ from pybeamline.stream.base_sink import BaseSink
 from river import metrics as river_metrics
 
 from utils.streaming.transformers import BaseStreamingTransformer
+
+
+def catch_and_reraise(method):
+    """Decorator for catching exceptions in `transform`."""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return method(self, *args, **kwargs)
+        except Exception:
+            print(f'[ERROR] {self.__class__.__name__}.{method.__name__} crashed')
+            traceback.print_exc()
+            raise
+
+    return wrapper
 
 
 class NextActivityEmitterMap(BaseMap):
@@ -22,6 +39,7 @@ class NextActivityEmitterMap(BaseMap):
         self._trace_n: int = 0
         self._trace_index: dict[str, int] = {}
 
+    @catch_and_reraise
     def transform(self, event: BEvent) -> list[tuple[dict, str, dict]] | None:
         trace_id = event.get_trace_name()
 
@@ -62,16 +80,15 @@ class PrequentialClassifierMap(BaseMap):
         self._f1 = river_metrics.MacroF1()
         self._n_pred = 0
 
+    @catch_and_reraise
     def transform(self, item: tuple[dict, str, dict]) -> list[dict] | None:
         features, y_true, metadata = item
 
         y_pred = self._model.predict_one(features)
-        correct = None
         if y_pred is not None:
             self._acc.update(y_true, y_pred)
             self._f1.update(y_true, y_pred)
             self._n_pred += 1
-            correct = y_pred == y_true
 
         self._model.learn_one(features, y_true)
 
@@ -80,7 +97,6 @@ class PrequentialClassifierMap(BaseMap):
                 'n_pred': self._n_pred,
                 'y_true': y_true,
                 'y_pred': y_pred,
-                'correct': correct,
                 'accuracy': self._acc.get(),
                 'macro_f1': self._f1.get(),
                 **metadata,
@@ -129,4 +145,5 @@ class PrequentialPipeline:
 
         df = sink.to_dataframe()
         df['time_s'] = elapsed
-        return df
+
+        return df, self.model

@@ -1,4 +1,5 @@
 import argparse
+import pickle
 from datetime import datetime
 from pathlib import Path
 
@@ -43,8 +44,20 @@ def save_results(
         f.write(f'Macro F1    : {last["macro_f1"]:.4f}\n')
         f.write(f'Time (s)    : {last["time_s"]:.2f}\n')
 
-    print(f'  CSV     → {csv_file}')
-    print(f'  Summary → {summary_file}')
+    print(f'CSV → {csv_file}')
+    print(f'Summary → {summary_file}')
+
+
+def save_model(
+    output_path: Path,
+    experiment_name: str,
+    timestamp: str,
+    model,
+) -> None:
+    model_file = output_path / f'{experiment_name}_{timestamp}.pkl'
+    with open(model_file, 'wb') as f:
+        pickle.dump(model, f)
+    print(f'Model → {model_file}')
 
 
 def run_experiment(config_path: str, experiment_name: str | None = None) -> dict:
@@ -55,19 +68,29 @@ def run_experiment(config_path: str, experiment_name: str | None = None) -> dict
         experiment_name = config.get('experiment_name', Path(config_path).stem)
 
     print('=' * 60)
-    print(f'Experiment : {experiment_name}')
+    print(f'Experiment: {experiment_name}')
     print('=' * 60)
 
     # Resolve dataset path relative to project root
     dataset_path = config['dataset']['dataset_path']
 
-    print(f'Dataset    : {config["dataset"]["dataset_name"]}')
+    print(f'Dataset: {config["dataset"]["dataset_name"]}')
     print(f'Transformer: {config["transformer"]["type"]}')
-    print(f'Model      : {config["model"]["type"]}')
+    print(f'Model: {config["model"]["type"]}')
 
     # Build components
     transformer = create_transformer(config['transformer'])
-    model = create_model(config['model'])
+
+    pretrain_path = config['model'].get('pretrain_path')
+    if pretrain_path:
+        pretrain_path = Path(pretrain_path)
+        if not pretrain_path.exists():
+            raise FileNotFoundError(f'pretrain_path not found: {pretrain_path}')
+        print(f'Pretrain: {pretrain_path}')
+        with open(pretrain_path, 'rb') as f:
+            model = pickle.load(f)
+    else:
+        model = create_model(config['model'])
 
     pipeline = PrequentialPipeline(
         model=model,
@@ -77,11 +100,11 @@ def run_experiment(config_path: str, experiment_name: str | None = None) -> dict
 
     # Run
     print('\nRunning prequential evaluation...')
-    df = pipeline.run(dataset_path)
-    df['experiment'] = experiment_name
+    results_df, model = pipeline.run(dataset_path)
+    results_df['experiment'] = experiment_name
 
     # Report
-    last = df.iloc[-1]
+    last = results_df.iloc[-1]
     print(
         f'\nn_pred={int(last["n_pred"])}, '
         f'accuracy={last["accuracy"]:.4f}, '
@@ -92,7 +115,10 @@ def run_experiment(config_path: str, experiment_name: str | None = None) -> dict
     # Save
     output_folder = ensure_output_dir(config)
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    save_results(output_folder, experiment_name, config_path, timestamp, config, df)
+    save_results(
+        output_folder, experiment_name, config_path, timestamp, config, results_df
+    )
+    save_model(output_folder, experiment_name, timestamp, model)
 
     return {
         'experiment_name': experiment_name,

@@ -43,6 +43,7 @@ def create_model(config: dict):
         _inject_adwin(params)
         return ARFClassifier(**params)
     elif model_type == 'aht':
+        _inject_adwin(params)
         return HoeffdingAdaptiveTreeClassifier(**params)
     else:
         raise ValueError(

@@ -1,0 +1,32 @@
+experiment_name: aht_index_bpic20dd
+
+dataset:
+  dataset_name: BPIC_20_DD
+  dataset_path: datasets/raw/BPIC_20_DD.xes
+
+transformer:
+  type: index
+  max_events: 6
+
+model:
+  type: aht
+  params:
+    drift_detector: 0.002
+
+    grace_period: 100
+    delta: 0.001
+    tau: 0.05
+    split_criterion: 'info_gain'
+
+    leaf_prediction: 'nba'
+    nb_threshold: 10
+
+    switch_significance: 0.05
+    max_depth: 20
+    seed: 42
+
+  # pretrain_path: experiments/outputs/streaming/BPIC_20_DD/aht_index_bpic20dd_2026-02-28_13-07-58.pkl
+
+
+output:
+  folder: experiments/outputs/streaming/BPIC_20_DD

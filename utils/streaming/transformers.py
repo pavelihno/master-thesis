@@ -49,8 +49,10 @@ class ControlFlowTransformer(BaseStreamingTransformer):
         counts: dict[str, int] = defaultdict(int)
         for e in events:
             counts[f'act_{e.get_event_name()}'] += 1
+
         features: dict[str, Any] = dict(counts)
         features['prefix_len'] = len(events)
+
         return features
 
 
@@ -94,6 +96,7 @@ class DataTransformer(BaseStreamingTransformer):
             features[f'data_{k}_{v}'] = 1
 
         features['prefix_len'] = len(events)
+
         return features
 
 
@@ -121,12 +124,13 @@ class IndexBasedTransformer(BaseStreamingTransformer):
         for k, v in _trace_data(events[0]).items():
             _encode_value(features, f'trace_{k}', v)
 
-        # Activity at each position
-        limit = self._max_events if self._max_events is not None else len(events)
-        for i, e in enumerate(events[:limit]):
-            features[f'act_{i}_{e.get_event_name()}'] = 1
+        # Activity at each position (last max_events positions)
+        max_events = self._max_events if self._max_events is not None else len(events)
+        for i, e in enumerate(events[:-max_events-1:-1]):
+            features[f'act_{i}'] = e.get_event_name()
 
         features['prefix_len'] = len(events)
+
         return features
 
 
@@ -151,14 +155,15 @@ class DimensionTransformer(BaseStreamingTransformer):
         for k, v in _trace_data(events[0]).items():
             _encode_value(features, f'trace_{k}', v)
 
-        # Activity at each position
-        limit = self._max_events if self._max_events is not None else len(events)
-        for i, e in enumerate(events[:limit]):
-            features[f'act_{i}_{e.get_event_name()}'] = 1
+        # Activity + data at each position (last max_events positions)
+        max_events = self._max_events if self._max_events is not None else len(events)
+        for i, e in enumerate(events[:-max_events-1:-1]):
+            features[f'act_{i}'] = e.get_event_name()
 
             # Event-level data attributes at each position
             for k, v in _event_data(e).items():
                 _encode_value(features, f'data_{i}_{k}', v)
 
         features['prefix_len'] = len(events)
+
         return features

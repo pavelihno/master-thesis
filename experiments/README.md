@@ -174,10 +174,10 @@ output:
 
 ```bash
 # Single experiment
-python experiments/streaming/run_train.py conf/experiments/streaming/streaming_random_patches/BPIC_20_DD.yaml
+python experiments/streaming/run_train.py conf/experiments/streaming/srp/BPIC_20_DD.yaml
 
 # With custom experiment name
-python experiments/streaming/run_train.py conf/experiments/streaming/streaming_random_patches/BPIC_20_DD.yaml --name my_custom_name
+python experiments/streaming/run_train.py conf/experiments/streaming/srp/BPIC_20_DD.yaml --name my_custom_name
 
 # Run all configs discovered sequentially
 python experiments/streaming/run_experiments.py
