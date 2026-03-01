@@ -30,12 +30,11 @@ def catch_and_reraise(method):
 
 class NextActivityEmitterMap(BaseMap):
     """
-    Buffers events per trace and emits (features, next_activity, metadata) tuples.
+    Emits (features, next_activity, metadata) tuples.
     """
 
     def __init__(self, transformer: BaseStreamingTransformer):
         self._transformer = transformer
-        self._buffers: dict[str, list[BEvent]] = defaultdict(list)
         self._trace_n: int = 0
         self._trace_index: dict[str, int] = {}
 
@@ -43,25 +42,27 @@ class NextActivityEmitterMap(BaseMap):
     def transform(self, event: BEvent) -> list[tuple[dict, str, dict]] | None:
         trace_id = event.get_trace_name()
 
-        if trace_id not in self._trace_index:
+        is_first = trace_id not in self._trace_index
+        if is_first:
             self._trace_n += 1
             self._trace_index[trace_id] = self._trace_n
-
-        buf = self._buffers[trace_id]
-
-        if len(buf) == 0:
-            buf.append(event)
+            self._transformer.update(trace_id, event)
             return None
 
-        features = self._transformer.transform(buf)
+        features = self._transformer.get_features(trace_id)
         label = event.get_event_name()
         metadata = {
             'trace_id': trace_id,
             'trace_n': self._trace_index[trace_id],
-            'prefix_len': len(buf),
+            'prefix_len': self._transformer.prefix_len(trace_id),
             'event_time': str(event.get_event_time()),
         }
-        buf.append(event)
+        self._transformer.update(trace_id, event)
+
+        # TODO: detect end-of-trace and clear up memory
+        #   self._transformer.clear(trace_id)
+        #   del self._trace_index[trace_id]
+
         return [(features, label, metadata)]
 
 
@@ -91,6 +92,8 @@ class PrequentialClassifierMap(BaseMap):
             self._n_pred += 1
 
         self._model.learn_one(features, y_true)
+
+        # self._model.drift_detector.change_detected
 
         return [
             {
