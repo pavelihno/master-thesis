@@ -42,6 +42,7 @@ def save_results(
         f.write(f'Predictions : {int(last["n_pred"])}\n')
         f.write(f'Accuracy    : {last["accuracy"]:.4f}\n')
         f.write(f'Macro F1    : {last["macro_f1"]:.4f}\n')
+        f.write(f'Num Drifts  : {int(last["n_drifts"])}\n')
         f.write(f'Time (s)    : {last["time_s"]:.2f}\n')
 
     print(f'CSV → {csv_file}')
@@ -109,6 +110,7 @@ def run_experiment(config_path: str, experiment_name: str | None = None) -> dict
         f'\nn_pred={int(last["n_pred"])}, '
         f'accuracy={last["accuracy"]:.4f}, '
         f'macro_f1={last["macro_f1"]:.4f}, '
+        f'n_drifts={int(last["n_drifts"])}, '
         f'time={last["time_s"]:.2f}s'
     )
 
@@ -125,6 +127,7 @@ def run_experiment(config_path: str, experiment_name: str | None = None) -> dict
         'n_pred': int(last['n_pred']),
         'accuracy': float(last['accuracy']),
         'macro_f1': float(last['macro_f1']),
+        'n_drifts': int(last['n_drifts']),
         'time_s': float(last['time_s']),
         'output_dir': str(output_folder),
     }

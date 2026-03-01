@@ -111,14 +111,14 @@ class DataTransformer(BaseStreamingTransformer):
 
         for k, v in _event_data(event).items():
             if isinstance(v, (int, float)):
-                fv = float(v)
+                float_v = float(v)
                 self._numeric_sums[trace_id][k] = (
-                    self._numeric_sums[trace_id].get(k, 0.0) + fv
+                    self._numeric_sums[trace_id].get(k, 0.0) + float_v
                 )
                 self._numeric_counts[trace_id][k] = (
                     self._numeric_counts[trace_id].get(k, 0) + 1
                 )
-                self._numeric_last[trace_id][k] = fv
+                self._numeric_last[trace_id][k] = float_v
             else:
                 self._categorical_last[trace_id][k] = v
 

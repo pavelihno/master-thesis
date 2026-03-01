@@ -80,6 +80,8 @@ class PrequentialClassifierMap(BaseMap):
         self._acc = river_metrics.Accuracy()
         self._f1 = river_metrics.MacroF1()
         self._n_pred = 0
+        self._n_drifts = 0
+        self._has_drift_detector = hasattr(model, 'drift_detector')
 
     @catch_and_reraise
     def transform(self, item: tuple[dict, str, dict]) -> list[dict] | None:
@@ -93,7 +95,8 @@ class PrequentialClassifierMap(BaseMap):
 
         self._model.learn_one(features, y_true)
 
-        # self._model.drift_detector.change_detected
+        if self._has_drift_detector and self._model.drift_detector.drift_detected:
+            self._n_drifts += 1
 
         return [
             {
@@ -102,6 +105,7 @@ class PrequentialClassifierMap(BaseMap):
                 'y_pred': y_pred,
                 'accuracy': self._acc.get(),
                 'macro_f1': self._f1.get(),
+                'n_drifts': self._n_drifts,
                 **metadata,
             }
         ]
