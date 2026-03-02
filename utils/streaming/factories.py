@@ -15,15 +15,20 @@ def create_transformer(config: dict):
     """Create a streaming transformer from a config dict."""
     transformer_type = config['type']
     max_events = config.get('max_events', None)
+    include_prefix_len = config.get('include_prefix_len', True)
 
     if transformer_type == 'cf':
-        return ControlFlowTransformer()
+        return ControlFlowTransformer(include_prefix_len=include_prefix_len)
     elif transformer_type == 'data':
-        return DataTransformer()
+        return DataTransformer(include_prefix_len=include_prefix_len)
     elif transformer_type == 'index':
-        return IndexBasedTransformer(max_events=max_events)
+        return IndexBasedTransformer(
+            max_events=max_events, include_prefix_len=include_prefix_len
+        )
     elif transformer_type == 'dim':
-        return DimensionTransformer(max_events=max_events)
+        return DimensionTransformer(
+            max_events=max_events, include_prefix_len=include_prefix_len
+        )
     else:
         raise ValueError(
             f"Unknown transformer type: '{transformer_type}'. "
@@ -52,8 +57,14 @@ def create_model(config: dict):
 
 
 def _inject_adwin(params: dict) -> None:
-    """Replace plain ADWIN delta values with ADWIN objects in-place."""
+    """Replace ADWIN config values with ADWIN objects in-place."""
     for key in ('drift_detector', 'warning_detector'):
         val = params.get(key)
-        if isinstance(val, float):
-            params[key] = ADWIN(delta=val)
+        if val is None:
+            continue
+        elif isinstance(val, dict):
+            if not val.get('include', True):
+                del params[key]
+            else:
+                adwin_params = {k: v for k, v in val.items() if k != 'include'}
+                params[key] = ADWIN(**adwin_params)

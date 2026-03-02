@@ -34,8 +34,13 @@ class NextActivityEmitterMap(BaseMap):
     Emits (features, next_activity, metadata) tuples.
     """
 
-    def __init__(self, transformer: BaseStreamingTransformer):
+    def __init__(
+        self,
+        transformer: BaseStreamingTransformer,
+        end_events: set[str] | None = None,
+    ):
         self._transformer = transformer
+        self._end_events: set[str] = end_events or set()
         self._trace_n: int = 0
         self._trace_index: dict[str, int] = {}
 
@@ -60,9 +65,9 @@ class NextActivityEmitterMap(BaseMap):
         }
         self._transformer.update(trace_id, event)
 
-        # TODO: detect end-of-trace and clear up memory
-        #   self._transformer.clear(trace_id)
-        #   del self._trace_index[trace_id]
+        if label in self._end_events:
+            self._transformer.clear(trace_id)
+            del self._trace_index[trace_id]
 
         return [(features, label, metadata)]
 
@@ -153,18 +158,20 @@ class PrequentialPipeline:
         transformer: BaseStreamingTransformer,
         model_name: str = '',
         rolling_pct: float = 0.2,
+        end_events: set[str] | None = None,
     ):
         self.model = model
         self.transformer = transformer
         self.model_name = model_name
         self.rolling_pct = rolling_pct
+        self.end_events = end_events
 
     def run(self, dataset_path: str) -> tuple[pd.DataFrame, object]:
         sink = CollectorSink()
 
         start_time = time.perf_counter()
         xes_log_source_from_file(dataset_path).pipe(
-            NextActivityEmitterMap(self.transformer),
+            NextActivityEmitterMap(self.transformer, end_events=self.end_events),
             PrequentialClassifierMap(self.model, self.model_name),
         ).sink(sink)
         elapsed = time.perf_counter() - start_time

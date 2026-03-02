@@ -30,6 +30,11 @@ def _encode_value(features: dict, key: str, value: Any) -> None:
 class BaseStreamingTransformer(ABC):
     """Base class for incremental streaming feature extractors."""
 
+    def __init__(self, include_prefix_len: bool = True):
+        self._include_prefix_len: bool = include_prefix_len
+
+        self._prefix_lens: dict[str, int] = {}
+
     @abstractmethod
     def update(self, trace_id: str, event: BEvent) -> None:
         """Incrementally update per-trace state with a new event."""
@@ -40,10 +45,9 @@ class BaseStreamingTransformer(ABC):
         """Extract the current feature vector for a trace prefix."""
         pass
 
-    @abstractmethod
     def prefix_len(self, trace_id: str) -> int:
         """Return the number of events seen so far for a trace."""
-        pass
+        return self._prefix_lens.get(trace_id, 0)
 
     @abstractmethod
     def clear(self, trace_id: str) -> None:
@@ -58,9 +62,10 @@ class ControlFlowTransformer(BaseStreamingTransformer):
     Stores a counter of activity occurrences per trace.
     """
 
-    def __init__(self):
+    def __init__(self, include_prefix_len: bool = True):
+        super().__init__(include_prefix_len)
+
         self._counts: dict[str, Counter] = {}
-        self._prefix_lens: dict[str, int] = {}
 
     def update(self, trace_id: str, event: BEvent) -> None:
         if trace_id not in self._counts:
@@ -71,11 +76,11 @@ class ControlFlowTransformer(BaseStreamingTransformer):
 
     def get_features(self, trace_id: str) -> dict[str, Any]:
         features: dict[str, Any] = dict(self._counts.get(trace_id, {}))
-        features['prefix_len'] = self._prefix_lens.get(trace_id, 0)
-        return features
 
-    def prefix_len(self, trace_id: str) -> int:
-        return self._prefix_lens.get(trace_id, 0)
+        if self._include_prefix_len:
+            features['prefix_len'] = self.prefix_len(trace_id)
+
+        return features
 
     def clear(self, trace_id: str) -> None:
         self._counts.pop(trace_id, None)
@@ -92,13 +97,14 @@ class DataTransformer(BaseStreamingTransformer):
     - Trace-level: captured from the first event
     """
 
-    def __init__(self):
+    def __init__(self, include_prefix_len: bool = True):
+        super().__init__(include_prefix_len)
+
         self._trace_attrs: dict[str, dict] = {}
         self._numeric_sums: dict[str, dict[str, float]] = {}
         self._numeric_counts: dict[str, dict[str, int]] = {}
         self._numeric_last: dict[str, dict[str, float]] = {}
         self._categorical_last: dict[str, dict[str, Any]] = {}
-        self._prefix_lens: dict[str, int] = {}
 
     def update(self, trace_id: str, event: BEvent) -> None:
         if trace_id not in self._trace_attrs:
@@ -138,11 +144,10 @@ class DataTransformer(BaseStreamingTransformer):
         for k, v in self._categorical_last.get(trace_id, {}).items():
             features[f'data_{k}_{v}'] = 1
 
-        features['prefix_len'] = self._prefix_lens.get(trace_id, 0)
-        return features
+        if self._include_prefix_len:
+            features['prefix_len'] = self.prefix_len(trace_id)
 
-    def prefix_len(self, trace_id: str) -> int:
-        return self._prefix_lens.get(trace_id, 0)
+        return features
 
     def clear(self, trace_id: str) -> None:
         self._trace_attrs.pop(trace_id, None)
@@ -162,11 +167,12 @@ class IndexBasedTransformer(BaseStreamingTransformer):
     - Dynamic part: activity name per position
     """
 
-    def __init__(self, max_events: int = 10):
+    def __init__(self, max_events: int = 10, include_prefix_len: bool = True):
+        super().__init__(include_prefix_len)
+
         self._max_events = max_events
         self._trace_attrs: dict[str, dict] = {}
         self._activity_deques: dict[str, deque] = {}
-        self._prefix_lens: dict[str, int] = {}
 
     def update(self, trace_id: str, event: BEvent) -> None:
         if trace_id not in self._trace_attrs:
@@ -187,11 +193,10 @@ class IndexBasedTransformer(BaseStreamingTransformer):
         ):
             features[f'act_{i}'] = name
 
-        features['prefix_len'] = self._prefix_lens.get(trace_id, 0)
-        return features
+        if self._include_prefix_len:
+            features['prefix_len'] = self.prefix_len(trace_id)
 
-    def prefix_len(self, trace_id: str) -> int:
-        return self._prefix_lens.get(trace_id, 0)
+        return features
 
     def clear(self, trace_id: str) -> None:
         self._trace_attrs.pop(trace_id, None)
@@ -207,11 +212,12 @@ class DimensionTransformer(BaseStreamingTransformer):
     Full combination of control-flow and data features.
     """
 
-    def __init__(self, max_events: int = 10):
+    def __init__(self, max_events: int = 10, include_prefix_len: bool = True):
+        super().__init__(include_prefix_len)
+
         self._max_events = max_events
         self._trace_attrs: dict[str, dict] = {}
         self._event_deques: dict[str, deque] = {}
-        self._prefix_lens: dict[str, int] = {}
 
     def update(self, trace_id: str, event: BEvent) -> None:
         if trace_id not in self._trace_attrs:
@@ -236,11 +242,10 @@ class DimensionTransformer(BaseStreamingTransformer):
             for k, v in data.items():
                 _encode_value(features, f'data_{i}_{k}', v)
 
-        features['prefix_len'] = self._prefix_lens.get(trace_id, 0)
-        return features
+        if self._include_prefix_len:
+            features['prefix_len'] = self.prefix_len(trace_id)
 
-    def prefix_len(self, trace_id: str) -> int:
-        return self._prefix_lens.get(trace_id, 0)
+        return features
 
     def clear(self, trace_id: str) -> None:
         self._trace_attrs.pop(trace_id, None)

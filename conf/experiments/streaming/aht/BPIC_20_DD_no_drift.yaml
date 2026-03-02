@@ -1,15 +1,19 @@
 dataset:
   dataset_name: BPIC_20_DD
   dataset_path: datasets/raw/BPIC_20_DD.xes
+  end_events:
+    - 'Payment Handled'
 
 transformer:
   type: index
   max_events: 6
+  include_prefix_len: false
 
 model:
   type: aht
   params:
-    drift_detector: 0.002
+    drift_detector:
+      include: false
 
     grace_period: 100
     delta: 0.001
@@ -22,9 +26,6 @@ model:
     switch_significance: 0.05
     max_depth: 20
     seed: 42
-
-  # pretrain_path: experiments/outputs/streaming/BPIC_20_DD/aht_index_bpic20dd_2026-02-28_13-07-58.pkl
-
 
 output:
   folder: experiments/outputs/streaming/BPIC_20_DD

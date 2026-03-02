@@ -109,11 +109,15 @@ def run_experiment(config_path: str) -> dict:
     rolling_pct = config.get('evaluation', {}).get('rolling_pct', 0.2)
     print(f'Rolling window: last {rolling_pct:.0%} of predictions')
 
+    end_events_cfg = config['dataset'].get('end_events')
+    end_events = set(end_events_cfg) if end_events_cfg else None
+
     pipeline = PrequentialPipeline(
         model=model,
         transformer=transformer,
         model_name=config['model']['type'],
         rolling_pct=rolling_pct,
+        end_events=end_events,
     )
 
     # Run
