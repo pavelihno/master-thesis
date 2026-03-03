@@ -1,10 +1,12 @@
 dataset:
-  dataset_name: NO_DRIFT
-  dataset_path: datasets/stream/synthetic/no_drift.xes
+  dataset_name: DRIFT
+  dataset_path: datasets/stream/synthetic/drift.xes
   end_events:
     - 'H'
     - 'N'
     - 'O'
+  drift_points:
+    - 500
 
 transformer:
   type: index
@@ -30,4 +32,4 @@ model:
     seed: 42
 
 output:
-  folder: experiments/outputs/streaming/no_drift
+  folder: experiments/outputs/streaming/drift

@@ -11,6 +11,7 @@ def plot_stream_metric(
     center_window: bool = False,
     figsize: tuple[int, int] = (12, 4),
     save_path: str | None = None,
+    actual_drift_points: list[int] | None = None,
 ) -> plt.Axes:
     """
     Plot a prequential metric over stream progress with concept drift markers.
@@ -49,7 +50,7 @@ def plot_stream_metric(
         raise ValueError(f'Unknown {metric}')
 
     # Rows where the drift counter first increments
-    drift_trace_ns = (
+    detected_drift_points = (
         results_df[results_df['n_drifts'].diff() > 0]
         .drop_duplicates('n_drifts')['trace_n']
         .values
@@ -64,14 +65,26 @@ def plot_stream_metric(
         color='steelblue',
         label=line_label,
     )
-    for i, dt in enumerate(drift_trace_ns):
+    for i, dt in enumerate(detected_drift_points):
         ax.axvline(
             dt,
             color='red',
             linewidth=0.8,
             linestyle='--',
             alpha=0.7,
+            label='Detected drift' if i == 0 else None,
         )
+
+    if actual_drift_points:
+        for i, dt in enumerate(actual_drift_points):
+            ax.axvline(
+                dt,
+                color='green',
+                linewidth=1.2,
+                linestyle='-',
+                alpha=0.8,
+                label='Actual drift' if i == 0 else None,
+            )
 
     ax.set_xlabel('Stream Progress (Trace #)')
     ax.set_ylabel(ylabel)

@@ -73,6 +73,7 @@ def save_model(
 def save_plots(
     output_path: Path,
     df,
+    drift_points: list[int] | None = None,
 ) -> None:
 
     plot_path = output_path / 'plots'
@@ -89,6 +90,7 @@ def save_plots(
                     window=window,
                     center_window=center_window,
                     save_path=fig_file,
+                    actual_drift_points=drift_points,
                 )
 
 
@@ -156,7 +158,7 @@ def run_experiment(config_path: str) -> dict:
     output_folder.mkdir(parents=True, exist_ok=True)
     save_results(output_folder, run_id, config_path, timestamp, config, results_df)
     save_model(output_folder, model)
-    save_plots(output_folder, results_df)
+    save_plots(output_folder, results_df, config['dataset'].get('drift_points'))
 
     return {
         'run_id': run_id,

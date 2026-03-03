@@ -66,7 +66,7 @@ class NextActivityEmitterMap(BaseMap):
 
         if label in self._end_events:
             self._transformer.clear(trace_id)
-            del self._trace_index[trace_id]
+            # del self._trace_index[trace_id]
 
         return [(features, label, metadata)]
 
