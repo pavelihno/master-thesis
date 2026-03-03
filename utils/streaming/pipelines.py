@@ -9,7 +9,6 @@ from pybeamline.sources import xes_log_source_from_file
 from pybeamline.stream.base_map import BaseMap
 from pybeamline.stream.base_sink import BaseSink
 from river import metrics as river_metrics
-from sklearn.metrics import accuracy_score, f1_score
 
 from utils.streaming.transformers import BaseStreamingTransformer
 
@@ -157,13 +156,11 @@ class PrequentialPipeline:
         model,
         transformer: BaseStreamingTransformer,
         model_name: str = '',
-        rolling_pct: float = 0.2,
         end_events: set[str] | None = None,
     ):
         self.model = model
         self.transformer = transformer
         self.model_name = model_name
-        self.rolling_pct = rolling_pct
         self.end_events = end_events
 
     def run(self, dataset_path: str) -> tuple[pd.DataFrame, object]:
@@ -178,13 +175,5 @@ class PrequentialPipeline:
 
         df = sink.to_dataframe()
         df['time_s'] = elapsed
-
-        predicted = df[df['y_pred'].notna()]
-        n_tail = max(1, int(len(predicted) * self.rolling_pct))
-        tail = predicted.iloc[-n_tail:]
-        df['rolling_accuracy'] = accuracy_score(tail['y_true'], tail['y_pred'])
-        df['rolling_macro_f1'] = f1_score(
-            tail['y_true'], tail['y_pred'], average='macro', zero_division=0
-        )
 
         return df, self.model

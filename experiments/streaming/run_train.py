@@ -29,12 +29,12 @@ def save_results(
 ) -> None:
     """Persist the prediction DataFrame and a summary text file."""
     # Raw predictions CSV
-    csv_file = output_path / f'{run_id}.csv'
+    csv_file = output_path / 'results.csv'
     df.to_csv(csv_file, index=False)
 
     # Summary text
     last = df.iloc[-1]
-    summary_file = output_path / f'{run_id}.txt'
+    summary_file = output_path / 'summary.txt'
     with open(summary_file, 'w') as f:
         f.write(f'Run ID: {run_id}\n')
         f.write(f'Config     : {config_path}\n')
@@ -51,12 +51,11 @@ def save_results(
         f.write(f'Predictions: {int(last["n_pred"])}\n')
         f.write(f'Accuracy: {last["accuracy"]:.4f}\n')
         f.write(f'Macro F1: {last["macro_f1"]:.4f}\n')
-        f.write(f'Rolling Accuracy: {last["rolling_accuracy"]:.4f}\n')
-        f.write(f'Rolling Macro F1: {last["rolling_macro_f1"]:.4f}\n')
+
         f.write(f'Num Drifts: {int(last["n_drifts"])}\n')
         f.write(f'Time (s): {last["time_s"]:.2f}\n')
 
-    print(f'CSV → {csv_file}')
+    print(f'Results → {csv_file}')
     print(f'Summary → {summary_file}')
 
 
@@ -65,7 +64,7 @@ def save_model(
     run_id: str,
     model,
 ) -> None:
-    model_file = output_path / f'{run_id}.pkl'
+    model_file = output_path / 'model.pkl'
     with open(model_file, 'wb') as f:
         pickle.dump(model, f)
     print(f'Model → {model_file}')
@@ -80,7 +79,7 @@ def run_experiment(config_path: str) -> dict:
     config_hash = compute_config_hash(config)
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
-    run_id = f'{dataset_name}_{model_type}_{config_hash}_{timestamp}'
+    run_id = f'{model_type}_{config_hash}_{timestamp}'
 
     print('=' * 60)
     print(f'Run ID: {run_id}')
@@ -106,9 +105,6 @@ def run_experiment(config_path: str) -> dict:
     else:
         model = create_model(config['model'])
 
-    rolling_pct = config.get('evaluation', {}).get('rolling_pct', 0.2)
-    print(f'Rolling window: last {rolling_pct:.0%} of predictions')
-
     end_events_cfg = config['dataset'].get('end_events')
     end_events = set(end_events_cfg) if end_events_cfg else None
 
@@ -116,7 +112,6 @@ def run_experiment(config_path: str) -> dict:
         model=model,
         transformer=transformer,
         model_name=config['model']['type'],
-        rolling_pct=rolling_pct,
         end_events=end_events,
     )
 
@@ -131,14 +126,13 @@ def run_experiment(config_path: str) -> dict:
         f'\nn_pred={int(last["n_pred"])}, '
         f'accuracy={last["accuracy"]:.4f}, '
         f'macro_f1={last["macro_f1"]:.4f}, '
-        f'rolling_accuracy={last["rolling_accuracy"]:.4f}, '
-        f'rolling_macro_f1={last["rolling_macro_f1"]:.4f}, '
         f'n_drifts={int(last["n_drifts"])}, '
         f'time={last["time_s"]:.2f}s'
     )
 
     # Save
-    output_folder = ensure_output_dir(config)
+    output_folder = ensure_output_dir(config) / run_id
+    output_folder.mkdir(parents=True, exist_ok=True)
     save_results(output_folder, run_id, config_path, timestamp, config, results_df)
     save_model(output_folder, run_id, model)
 
@@ -147,8 +141,6 @@ def run_experiment(config_path: str) -> dict:
         'n_pred': int(last['n_pred']),
         'accuracy': float(last['accuracy']),
         'macro_f1': float(last['macro_f1']),
-        'rolling_accuracy': float(last['rolling_accuracy']),
-        'rolling_macro_f1': float(last['rolling_macro_f1']),
         'n_drifts': int(last['n_drifts']),
         'time_s': float(last['time_s']),
         'output_dir': str(output_folder),

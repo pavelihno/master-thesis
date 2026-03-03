@@ -33,4 +33,3 @@ output:
   folder: experiments/outputs/streaming/no_drift
 
 evaluation:
-  rolling_pct: 0.2

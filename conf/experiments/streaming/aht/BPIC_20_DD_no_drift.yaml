@@ -31,4 +31,3 @@ output:
   folder: experiments/outputs/streaming/BPIC_20_DD
 
 evaluation:
-  rolling_pct: 0.2
