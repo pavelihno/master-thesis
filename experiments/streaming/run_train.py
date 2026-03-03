@@ -8,6 +8,7 @@ from pathlib import Path
 import yaml
 
 from utils.experiment import ensure_output_dir, load_config
+from utils.streaming.evaluation import plot_stream_metric
 from utils.streaming.factories import create_model, create_transformer
 from utils.streaming.pipelines import PrequentialPipeline
 
@@ -61,7 +62,6 @@ def save_results(
 
 def save_model(
     output_path: Path,
-    run_id: str,
     model,
 ) -> None:
     model_file = output_path / 'model.pkl'
@@ -70,11 +70,32 @@ def save_model(
     print(f'Model → {model_file}')
 
 
+def save_plots(
+    output_path: Path,
+    df,
+) -> None:
+
+    plot_path = output_path / 'plots'
+    plot_path.mkdir(exist_ok=True)
+
+    for metric in ('f1', 'accuracy'):
+        for window in (100, 200):
+            for center_window in (True, False):
+                center_str = 'centered' if center_window else 'trailing'
+                fig_file = plot_path / f'{metric}_w{window}_{center_str}.png'
+                plot_stream_metric(
+                    df,
+                    metric=metric,
+                    window=window,
+                    center_window=center_window,
+                    save_path=fig_file,
+                )
+
+
 def run_experiment(config_path: str) -> dict:
     """Run a single streaming experiment from a YAML config file."""
     config = load_config(config_path)
 
-    dataset_name = config['dataset']['dataset_name'].lower().replace('_', '')
     model_type = config['model']['type'].lower()
     config_hash = compute_config_hash(config)
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -134,7 +155,8 @@ def run_experiment(config_path: str) -> dict:
     output_folder = ensure_output_dir(config) / run_id
     output_folder.mkdir(parents=True, exist_ok=True)
     save_results(output_folder, run_id, config_path, timestamp, config, results_df)
-    save_model(output_folder, run_id, model)
+    save_model(output_folder, model)
+    save_plots(output_folder, results_df)
 
     return {
         'run_id': run_id,
