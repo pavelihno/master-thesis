@@ -1,0 +1,37 @@
+dataset:
+  dataset_name: BPIC_20_DD
+  dataset_path: datasets/raw/BPIC_20_DD.xes
+
+transformer:
+  type: darwin
+
+model:
+  type: darwin
+  params:
+    vocab_size: 200
+    embedding_dim: 64
+    window_size: 2
+    hidden_dim: 128
+    lstm_layers: 1
+    n_classes: 200
+
+    w2v_optimizer:
+      type: sgd
+      lr: 0.01
+
+    clf_optimizer:
+      type: adam
+      lr: 0.001
+
+    w2v_criterion:
+      type: cross_entropy
+
+    clf_criterion:
+      type: cross_entropy
+
+    drift_detector:
+      type: adwin
+      delta: 1.0e-5
+
+output:
+  folder: experiments/outputs/streaming/BPIC_20_DD

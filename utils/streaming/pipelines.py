@@ -148,9 +148,7 @@ class TraceCollectorSink(BaseSink):
         return dict(self.traces)
 
 
-class PrequentialPipeline:
-    """End-to-end prequential streaming pipeline."""
-
+class NextActivityPredictionPipeline:
     def __init__(
         self,
         model,

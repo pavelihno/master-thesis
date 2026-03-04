@@ -30,7 +30,7 @@ def _encode_value(features: dict, key: str, value: Any) -> None:
 class BaseStreamingTransformer(ABC):
     """Base class for incremental streaming feature extractors."""
 
-    def __init__(self, include_prefix_len: bool = True):
+    def __init__(self, include_prefix_len: bool = False):
         self._include_prefix_len: bool = include_prefix_len
 
         self._prefix_lens: dict[str, int] = {}
@@ -250,4 +250,33 @@ class DimensionTransformer(BaseStreamingTransformer):
     def clear(self, trace_id: str) -> None:
         self._trace_attrs.pop(trace_id, None)
         self._event_deques.pop(trace_id, None)
+        self._prefix_lens.pop(trace_id, None)
+
+
+class DARWINTransformer(BaseStreamingTransformer):
+    """
+    Transformer for DARWIN-style streaming models.
+
+    Stores the most recent activity name per trace and emits:
+        {'case_id': trace_id, 'activity': last_activity_name}
+    """
+
+    def __init__(self) -> None:
+        super().__init__(include_prefix_len=False)
+        self._last_activity: dict[str, str] = {}
+
+    def update(self, trace_id: str, event: BEvent) -> None:
+        if trace_id not in self._last_activity:
+            self._prefix_lens[trace_id] = 0
+        self._last_activity[trace_id] = event.get_event_name()
+        self._prefix_lens[trace_id] += 1
+
+    def get_features(self, trace_id: str) -> dict[str, Any]:
+        return {
+            'case_id': trace_id,
+            'activity': self._last_activity.get(trace_id, ''),
+        }
+
+    def clear(self, trace_id: str) -> None:
+        self._last_activity.pop(trace_id, None)
         self._prefix_lens.pop(trace_id, None)

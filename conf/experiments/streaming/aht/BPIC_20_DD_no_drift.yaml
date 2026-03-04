@@ -13,7 +13,7 @@ model:
   type: aht
   params:
     drift_detector:
-      include: false
+      type: none
 
     grace_period: 100
     delta: 0.001
@@ -29,5 +29,3 @@ model:
 
 output:
   folder: experiments/outputs/streaming/BPIC_20_DD
-
-evaluation:

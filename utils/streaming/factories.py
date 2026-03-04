@@ -1,11 +1,17 @@
+from collections.abc import Callable
+
+import torch.nn as nn
+import torch.optim as optim
 from river.drift import ADWIN
 from river.ensemble import SRPClassifier
 from river.forest import ARFClassifier
 from river.tree import HoeffdingAdaptiveTreeClassifier
 
+from models.darwin import DARWINClassifier
 from utils.streaming.drift_detector import NoDriftDetector
 from utils.streaming.transformers import (
     ControlFlowTransformer,
+    DARWINTransformer,
     DataTransformer,
     DimensionTransformer,
     IndexBasedTransformer,
@@ -30,6 +36,8 @@ def create_transformer(config: dict):
         return DimensionTransformer(
             max_events=max_events, include_prefix_len=include_prefix_len
         )
+    elif transformer_type == 'darwin':
+        return DARWINTransformer()
     else:
         raise ValueError(f"Unknown transformer type: '{transformer_type}'.")
 
@@ -52,6 +60,28 @@ def create_model(config: dict):
         )
     elif model_type == 'aht':
         return HoeffdingAdaptiveTreeClassifier(**params, drift_detector=drift_detector)
+    elif model_type == 'darwin':
+        w2v_optimizer_cls = create_optimizer_cls(
+            params.pop('w2v_optimizer', {'type': 'sgd', 'lr': 0.01})
+        )
+        clf_optimizer_cls = create_optimizer_cls(
+            params.pop('clf_optimizer', {'type': 'adam', 'lr': 0.001})
+        )
+        w2v_criterion = create_criterion(
+            params.pop('w2v_criterion', {'type': 'cross_entropy'})
+        )
+        clf_criterion = create_criterion(
+            params.pop('clf_criterion', {'type': 'cross_entropy'})
+        )
+
+        return DARWINClassifier(
+            **params,
+            w2v_optimizer_cls=w2v_optimizer_cls,
+            w2v_criterion=w2v_criterion,
+            clf_optimizer_cls=clf_optimizer_cls,
+            clf_criterion=clf_criterion,
+            drift_detector=drift_detector,
+        )
     else:
         raise ValueError(f"Unknown model type: '{model_type}'.")
 
@@ -67,3 +97,39 @@ def create_drift_detector(config: dict):
         return NoDriftDetector()
     else:
         raise ValueError(f"Unknown drift detector type: '{detector_type}'.")
+
+
+def create_optimizer_cls(config: dict) -> Callable:
+    """Return an optimizer callable from a config dict."""
+
+    config = dict(config)
+    optimizer_type = config.pop('type', 'adam').lower()
+
+    if optimizer_type == 'adam':
+        return lambda p: optim.Adam(p, **config)
+    elif optimizer_type == 'sgd':
+        return lambda p: optim.SGD(p, **config)
+    elif optimizer_type == 'adamw':
+        return lambda p: optim.AdamW(p, **config)
+    elif optimizer_type == 'rmsprop':
+        return lambda p: optim.RMSprop(p, **config)
+    else:
+        raise ValueError(f"Unknown optimizer type: '{optimizer_type}'.")
+
+
+def create_criterion(config: dict):
+    """Return a loss instance from a config dict."""
+
+    config = dict(config)
+    criterion_type = config.pop('type', 'cross_entropy').lower()
+
+    if criterion_type == 'cross_entropy':
+        return nn.CrossEntropyLoss(**config)
+    elif criterion_type == 'nll':
+        return nn.NLLLoss(**config)
+    elif criterion_type == 'bce':
+        return nn.BCELoss(**config)
+    elif criterion_type == 'bce_logits':
+        return nn.BCEWithLogitsLoss(**config)
+    else:
+        raise ValueError(f"Unknown criterion type: '{criterion_type}'.")
