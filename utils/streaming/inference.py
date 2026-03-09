@@ -4,7 +4,7 @@ import pandas as pd
 from pybeamline.sources import xes_log_source_from_file
 
 from utils.streaming.pipelines import TraceCollectorSink
-from utils.streaming.transformers import BaseStreamingTransformer
+from utils.streaming.transformers import StreamingTransformer
 
 
 def load_traces(dataset_path: str) -> dict[str, list]:
@@ -16,7 +16,7 @@ def load_traces(dataset_path: str) -> dict[str, list]:
 
 def infer_trace(
     model,
-    transformer: BaseStreamingTransformer,
+    transformer: StreamingTransformer,
     dataset_path: str,
     trace_id: str | None = None,
     seed: int | None = None,

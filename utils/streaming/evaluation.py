@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.metrics import f1_score
 
 
 def plot_stream_metric(
@@ -25,24 +24,38 @@ def plot_stream_metric(
 
     if metric == 'accuracy':
         correct = (stream_df['y_true'] == stream_df['y_pred']).astype(float)
+
         metric_values = correct.rolling(
             window=window, center=center_window, min_periods=1
         ).mean()
+
         ylabel = 'Accuracy'
         line_label = f'Accuracy (window={window}, center={center_window})'
 
     elif metric == 'f1':
+        # Vectorised rolling macro-F1
+        classes = np.union1d(stream_df['y_true'].unique(), stream_df['y_pred'].unique())
+        roll_kw = {'window': window, 'center': center_window, 'min_periods': 1}
 
-        def _window_f1(positions: np.ndarray) -> float:
-            sub = stream_df.iloc[positions.astype(int)]
-            return f1_score(
-                sub['y_true'], sub['y_pred'], average='macro', zero_division=0
-            )
+        tp_cols, fp_cols, fn_cols = [], [], []
+        for c in classes:
+            is_true_c = stream_df['y_true'] == c
+            is_pred_c = stream_df['y_pred'] == c
+            tp_cols.append((is_true_c & is_pred_c).astype(float))
+            fp_cols.append((~is_true_c & is_pred_c).astype(float))
+            fn_cols.append((is_true_c & ~is_pred_c).astype(float))
 
-        # Roll over a numeric positional index
-        pos = pd.Series(np.arange(len(stream_df)))
-        roll = pos.rolling(window=window, center=center_window, min_periods=1)
-        metric_values = roll.apply(_window_f1, raw=True)
+        tp_roll = pd.concat(tp_cols, axis=1).rolling(**roll_kw).sum().values
+        fp_roll = pd.concat(fp_cols, axis=1).rolling(**roll_kw).sum().values
+        fn_roll = pd.concat(fn_cols, axis=1).rolling(**roll_kw).sum().values
+
+        denom = 2 * tp_roll + fp_roll + fn_roll
+        f1_per_class = np.zeros_like(denom)
+        valid = denom > 0
+        np.divide(2 * tp_roll, denom, out=f1_per_class, where=valid)
+
+        metric_values = pd.Series(f1_per_class.mean(axis=1), index=stream_df.index)
+
         ylabel = 'Macro F1-score'
         line_label = f'Macro F1 (window={window}, center={center_window})'
 

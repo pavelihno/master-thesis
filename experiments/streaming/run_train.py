@@ -9,8 +9,7 @@ import yaml
 
 from utils.experiment import ensure_output_dir, load_config
 from utils.streaming.evaluation import plot_stream_metric
-from utils.streaming.factories import create_model, create_transformer
-from utils.streaming.pipelines import PrequentialPipeline
+from utils.streaming.factories import create_model, create_pipeline, create_transformer
 
 
 def compute_config_hash(config: dict, length: int = 8) -> str:
@@ -79,9 +78,15 @@ def save_plots(
     plot_path = output_path / 'plots'
     plot_path.mkdir(exist_ok=True)
 
-    for metric in ('f1', 'accuracy'):
-        for window in (100, 200):
-            for center_window in (True, False):
+    metrics = ['accuracy', 'f1']
+
+    windows = [100, 200]
+
+    centered_windows = [True, False]
+
+    for metric in metrics:
+        for window in windows:
+            for center_window in centered_windows:
                 center_str = 'centered' if center_window else 'trailing'
                 fig_file = plot_path / f'{metric}_w{window}_{center_str}.png'
                 plot_stream_metric(
@@ -131,26 +136,25 @@ def run_experiment(config_path: str) -> dict:
     end_events_cfg = config['dataset'].get('end_events')
     end_events = set(end_events_cfg) if end_events_cfg else None
 
-    pipeline = PrequentialPipeline(
+    pipeline = create_pipeline(
+        config['task'],
         model=model,
         transformer=transformer,
-        model_name=config['model']['type'],
         end_events=end_events,
     )
 
     # Run
-    print('\nRunning prequential evaluation...')
     results_df, model = pipeline.run(dataset_path)
     results_df['experiment'] = run_id
 
     # Report
     last = results_df.iloc[-1]
     print(
-        f'\nn_pred={int(last["n_pred"])}, '
-        f'accuracy={last["accuracy"]:.4f}, '
-        f'macro_f1={last["macro_f1"]:.4f}, '
-        f'n_drifts={int(last["n_drifts"])}, '
-        f'time={last["time_s"]:.2f}s'
+        f'\nn_pred={int(last.get("n_pred", 0))}, '
+        f'accuracy={last.get("accuracy", 0):.4f}, '
+        f'macro_f1={last.get("macro_f1", 0):.4f}, '
+        f'n_drifts={int(last.get("n_drifts", 0))}, '
+        f'time={last.get("time_s", 0):.2f}s'
     )
 
     # Save
@@ -162,11 +166,11 @@ def run_experiment(config_path: str) -> dict:
 
     return {
         'run_id': run_id,
-        'n_pred': int(last['n_pred']),
-        'accuracy': float(last['accuracy']),
-        'macro_f1': float(last['macro_f1']),
-        'n_drifts': int(last['n_drifts']),
-        'time_s': float(last['time_s']),
+        'n_pred': int(last.get('n_pred', 0)),
+        'accuracy': float(last.get('accuracy', 0)),
+        'macro_f1': float(last.get('macro_f1', 0)),
+        'n_drifts': int(last.get('n_drifts', 0)),
+        'time_s': float(last.get('time_s', 0)),
         'output_dir': str(output_folder),
     }
 

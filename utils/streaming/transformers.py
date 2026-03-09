@@ -27,7 +27,7 @@ def _encode_value(features: dict, key: str, value: Any) -> None:
         features[f'{key}_{value}'] = 1
 
 
-class BaseStreamingTransformer(ABC):
+class StreamingTransformer(ABC):
     """Base class for incremental streaming feature extractors."""
 
     def __init__(self, include_prefix_len: bool = False):
@@ -55,7 +55,7 @@ class BaseStreamingTransformer(ABC):
         pass
 
 
-class ControlFlowTransformer(BaseStreamingTransformer):
+class ControlFlowTransformer(StreamingTransformer):
     """
     Control-flow only encoding.
 
@@ -87,7 +87,7 @@ class ControlFlowTransformer(BaseStreamingTransformer):
         self._prefix_lens.pop(trace_id, None)
 
 
-class DataTransformer(BaseStreamingTransformer):
+class DataTransformer(StreamingTransformer):
     """
     Data only encoding.
 
@@ -158,7 +158,7 @@ class DataTransformer(BaseStreamingTransformer):
         self._prefix_lens.pop(trace_id, None)
 
 
-class IndexBasedTransformer(BaseStreamingTransformer):
+class IndexBasedTransformer(StreamingTransformer):
     """
     Index-based encoding.
 
@@ -204,7 +204,7 @@ class IndexBasedTransformer(BaseStreamingTransformer):
         self._prefix_lens.pop(trace_id, None)
 
 
-class DimensionTransformer(BaseStreamingTransformer):
+class DimensionTransformer(StreamingTransformer):
     """
     Dimension encoding.
 
@@ -253,7 +253,7 @@ class DimensionTransformer(BaseStreamingTransformer):
         self._prefix_lens.pop(trace_id, None)
 
 
-class DARWINTransformer(BaseStreamingTransformer):
+class DARWINTransformer(StreamingTransformer):
     """
     Transformer for DARWIN-style streaming models.
 

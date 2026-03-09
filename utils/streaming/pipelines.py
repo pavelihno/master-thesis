@@ -1,6 +1,7 @@
 import functools
 import time
 import traceback
+from abc import ABC, abstractmethod
 from collections import defaultdict
 
 import pandas as pd
@@ -9,8 +10,9 @@ from pybeamline.sources import xes_log_source_from_file
 from pybeamline.stream.base_map import BaseMap
 from pybeamline.stream.base_sink import BaseSink
 from river import metrics as river_metrics
+from river.base.estimator import Estimator
 
-from utils.streaming.transformers import BaseStreamingTransformer
+from utils.streaming.transformers import StreamingTransformer
 
 
 def catch_and_reraise(method):
@@ -35,7 +37,7 @@ class NextActivityEmitterMap(BaseMap):
 
     def __init__(
         self,
-        transformer: BaseStreamingTransformer,
+        transformer: StreamingTransformer,
         end_events: set[str] | None = None,
     ):
         self._transformer = transformer
@@ -61,6 +63,7 @@ class NextActivityEmitterMap(BaseMap):
             'trace_n': self._trace_index[trace_id],
             'prefix_len': self._transformer.prefix_len(trace_id),
             'event_time': str(event.get_event_time()),
+            'y_true': label,
         }
         self._transformer.update(trace_id, event)
 
@@ -71,48 +74,37 @@ class NextActivityEmitterMap(BaseMap):
         return [(features, label, metadata)]
 
 
-class PrequentialClassifierMap(BaseMap):
-    """
-    Prequential (test-then-train) evaluation map.
-
-    Receives (features, y_true, metadata), predicts, updates metrics,
-    then trains on the sample.
-    """
-
-    def __init__(self, model, model_name: str = ''):
+class PredictorMap(BaseMap):
+    def __init__(self, model):
         self._model = model
-        self._name = model_name
-        self._acc = river_metrics.Accuracy()
-        self._f1 = river_metrics.MacroF1()
-        self._n_pred = 0
-        self._n_drifts = 0
+
+    @catch_and_reraise
+    def transform(
+        self, item: tuple[dict, any, dict]
+    ) -> list[tuple[dict, any, any, dict]] | None:
+        features, y_true, metadata = item
+        y_pred = self._model.predict_one(features)
+        return [(features, y_true, y_pred, metadata)]
+
+
+class LearnerMap(BaseMap):
+    def __init__(self, model):
+        self._model = model
         self._has_drift_detector = hasattr(model, 'drift_detector')
 
     @catch_and_reraise
-    def transform(self, item: tuple[dict, str, dict]) -> list[dict] | None:
-        features, y_true, metadata = item
-
-        y_pred = self._model.predict_one(features)
-        if y_pred is not None:
-            self._acc.update(y_true, y_pred)
-            self._f1.update(y_true, y_pred)
-            self._n_pred += 1
+    def transform(
+        self, item: tuple[dict, any, any, dict]
+    ) -> list[tuple[dict, any, any, dict]] | None:
+        features, y_true, y_pred, metadata = item
 
         self._model.learn_one(features, y_true)
-
-        if self._has_drift_detector and self._model.drift_detector.drift_detected:
-            self._n_drifts += 1
+        drift_detected = (
+            self._has_drift_detector and self._model.drift_detector.drift_detected
+        )
 
         return [
-            {
-                'n_pred': self._n_pred,
-                'y_true': y_true,
-                'y_pred': y_pred,
-                'accuracy': self._acc.get(),
-                'macro_f1': self._f1.get(),
-                'n_drifts': self._n_drifts,
-                **metadata,
-            }
+            (features, y_true, y_pred, {**metadata, 'drift_detected': drift_detected})
         ]
 
 
@@ -132,6 +124,98 @@ class CollectorSink(BaseSink):
         return pd.DataFrame(self.records)
 
 
+class EvaluatorSink(CollectorSink):
+    """Sink that evaluates predictions in a prequential manner."""
+
+    def __init__(self):
+        super().__init__()
+        self._n_pred: int = 0
+        self._n_drifts: int = 0
+        self._pending: dict[str, tuple[any, dict]] = {}
+        self._metrics: dict = self._make_metrics()
+
+    def _make_metrics(self) -> dict:
+        raise NotImplementedError
+
+    def _update_metrics(self, y_true, y_pred) -> dict:
+        raise NotImplementedError
+
+    def _current_metric_values(self) -> dict:
+        return {name: m.get() for name, m in self._metrics.items()}
+
+    def consume(self, item: tuple[dict, any, any, dict]) -> None:
+        features, y_true, y_pred, metadata = item
+        trace_id = metadata['trace_id']
+
+        drift_detected = metadata.pop('drift_detected', False)
+        if drift_detected:
+            self._n_drifts += 1
+
+        if trace_id in self._pending:
+            prev_y_pred, prev_metadata = self._pending[trace_id]
+            prev_y_true = prev_metadata['y_true']
+
+            if prev_y_pred is not None:
+                metric_vals = self._update_metrics(prev_y_true, prev_y_pred)
+                self._n_pred += 1
+            else:
+                metric_vals = self._current_metric_values()
+
+            self.records.append(
+                {
+                    'n_pred': self._n_pred,
+                    'y_true': prev_y_true,
+                    'y_pred': prev_y_pred,
+                    'n_drifts': self._n_drifts,
+                    **metric_vals,
+                    **prev_metadata,
+                }
+            )
+
+        self._pending[trace_id] = (y_pred, metadata)
+
+    def close(self) -> None:
+        """Flush remaining pending predictions after the stream ends."""
+        for trace_id, (y_pred, metadata) in self._pending.items():
+            self.records.append(
+                {
+                    'n_pred': self._n_pred,
+                    'y_true': None,
+                    'y_pred': y_pred,
+                    'n_drifts': self._n_drifts,
+                    **self._current_metric_values(),
+                    **metadata,
+                }
+            )
+        self._pending.clear()
+
+
+class ClassificationEvaluatorSink(EvaluatorSink):
+    def _make_metrics(self) -> dict:
+        return {
+            'accuracy': river_metrics.Accuracy(),
+            'macro_f1': river_metrics.MacroF1(),
+        }
+
+    def _update_metrics(self, y_true, y_pred) -> dict:
+        for m in self._metrics.values():
+            m.update(y_true, y_pred)
+        return self._current_metric_values()
+
+
+class RegressionEvaluatorSink(EvaluatorSink):
+    def _make_metrics(self) -> dict:
+        return {
+            'mae': river_metrics.MAE(),
+            'rmse': river_metrics.RMSE(),
+        }
+
+    def _update_metrics(self, y_true, y_pred) -> dict:
+        for m in self._metrics.values():
+            m.update(y_true, y_pred)
+        return self._current_metric_values()
+
+
 class TraceCollectorSink(BaseSink):
     """Groups BEvents by trace_id into a dict."""
 
@@ -148,30 +232,45 @@ class TraceCollectorSink(BaseSink):
         return dict(self.traces)
 
 
-class NextActivityPredictionPipeline:
+class TaskPipeline(ABC):
     def __init__(
         self,
-        model,
-        transformer: BaseStreamingTransformer,
-        model_name: str = '',
+        model: Estimator,
+        transformer: StreamingTransformer,
         end_events: set[str] | None = None,
     ):
         self.model = model
         self.transformer = transformer
-        self.model_name = model_name
         self.end_events = end_events
 
+    @abstractmethod
     def run(self, dataset_path: str) -> tuple[pd.DataFrame, object]:
-        sink = CollectorSink()
+        pass
+
+
+class NextActivityPredictionPipeline(TaskPipeline):
+    def __init__(
+        self,
+        model,
+        transformer: StreamingTransformer,
+        end_events: set[str] | None = None,
+    ):
+        super().__init__(model, transformer, end_events)
+
+    def run(self, dataset_path: str) -> tuple[pd.DataFrame, object]:
+        sink = ClassificationEvaluatorSink()
 
         start_time = time.perf_counter()
+
         xes_log_source_from_file(dataset_path).pipe(
             NextActivityEmitterMap(self.transformer, end_events=self.end_events),
-            PrequentialClassifierMap(self.model, self.model_name),
+            PredictorMap(self.model),
+            LearnerMap(self.model),
         ).sink(sink)
-        elapsed = time.perf_counter() - start_time
+
+        elapsed_time = time.perf_counter() - start_time
 
         df = sink.to_dataframe()
-        df['time_s'] = elapsed
+        df['time_s'] = elapsed_time
 
         return df, self.model

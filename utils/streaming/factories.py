@@ -9,6 +9,7 @@ from river.tree import HoeffdingAdaptiveTreeClassifier
 
 from models.darwin import DARWINClassifier
 from utils.streaming.drift_detector import NoDriftDetector
+from utils.streaming.pipelines import NextActivityPredictionPipeline
 from utils.streaming.transformers import (
     ControlFlowTransformer,
     DARWINTransformer,
@@ -61,14 +62,8 @@ def create_model(config: dict):
     elif model_type == 'aht':
         return HoeffdingAdaptiveTreeClassifier(**params, drift_detector=drift_detector)
     elif model_type == 'darwin':
-        w2v_optimizer_cls = create_optimizer_cls(
-            params.pop('w2v_optimizer', {'type': 'sgd', 'lr': 0.01})
-        )
         clf_optimizer_cls = create_optimizer_cls(
             params.pop('clf_optimizer', {'type': 'adam', 'lr': 0.001})
-        )
-        w2v_criterion = create_criterion(
-            params.pop('w2v_criterion', {'type': 'cross_entropy'})
         )
         clf_criterion = create_criterion(
             params.pop('clf_criterion', {'type': 'cross_entropy'})
@@ -76,8 +71,6 @@ def create_model(config: dict):
 
         return DARWINClassifier(
             **params,
-            w2v_optimizer_cls=w2v_optimizer_cls,
-            w2v_criterion=w2v_criterion,
             clf_optimizer_cls=clf_optimizer_cls,
             clf_criterion=clf_criterion,
             drift_detector=drift_detector,
@@ -133,3 +126,17 @@ def create_criterion(config: dict):
         return nn.BCEWithLogitsLoss(**config)
     else:
         raise ValueError(f"Unknown criterion type: '{criterion_type}'.")
+
+
+def create_pipeline(config: dict, model, transformer, end_events: set | None = None):
+    """Create a task pipeline from a config dict."""
+    task_type = config['type']
+
+    if task_type == 'next_activity':
+        return NextActivityPredictionPipeline(
+            model=model,
+            transformer=transformer,
+            end_events=end_events,
+        )
+    else:
+        raise ValueError(f"Unknown task type: '{task_type}'.")

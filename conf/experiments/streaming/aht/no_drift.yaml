@@ -1,3 +1,6 @@
+task:
+  type: next_activity
+
 dataset:
   dataset_name: NO_DRIFT
   dataset_path: datasets/stream/synthetic/no_drift.xes
