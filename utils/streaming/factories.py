@@ -9,7 +9,9 @@ from river.tree import HoeffdingAdaptiveTreeClassifier
 
 from models.darwin import DARWINClassifier
 from utils.streaming.drift_detector import NoDriftDetector
-from utils.streaming.pipelines import NextActivityPredictionPipeline
+from utils.streaming.pipelines import (
+    NextActivityPredictionPipeline,
+)
 from utils.streaming.transformers import (
     ControlFlowTransformer,
     DARWINTransformer,

@@ -23,13 +23,14 @@ class CollectorSink(BaseSink):
 
 
 class EvaluatorSink(CollectorSink):
-    """Sink that evaluates predictions in a prequential manner."""
-
     def __init__(self):
         super().__init__()
+
         self._n_pred: int = 0
         self._n_drifts: int = 0
-        self._pending: dict[str, tuple[any, dict]] = {}
+
+        # Predictions from the previous event per trace
+        self._pending_predictions: dict[str, any] = {}
         self._metrics: dict = self._make_metrics()
 
     def _make_metrics(self) -> dict:
@@ -42,50 +43,44 @@ class EvaluatorSink(CollectorSink):
         return {name: m.get() for name, m in self._metrics.items()}
 
     def consume(self, item: tuple[dict, any, any, dict]) -> None:
-        features, y_true, y_pred, metadata = item
-        trace_id = metadata['trace_id']
+        trace_id, features, y_true, y_pred, metadata = item
 
         drift_detected = metadata.pop('drift_detected', False)
         if drift_detected:
             self._n_drifts += 1
 
-        if trace_id in self._pending:
-            prev_y_pred, prev_metadata = self._pending[trace_id]
-            prev_y_true = prev_metadata['y_true']
-
+        # Evaluate on prediction from the previous event of the same trace
+        if trace_id in self._pending_predictions:
+            self._n_pred += 1
+            prev_y_pred = self._pending_predictions[trace_id]
             if prev_y_pred is not None:
-                metric_vals = self._update_metrics(prev_y_true, prev_y_pred)
-                self._n_pred += 1
+                metric_vals = self._update_metrics(y_true, prev_y_pred)
             else:
                 metric_vals = self._current_metric_values()
+        else:
+            prev_y_pred = None
+            metric_vals = self._current_metric_values()
 
-            self.records.append(
-                {
-                    'n_pred': self._n_pred,
-                    'y_true': prev_y_true,
-                    'y_pred': prev_y_pred,
-                    'n_drifts': self._n_drifts,
-                    **metric_vals,
-                    **prev_metadata,
-                }
-            )
+        # Store current prediction for the next event of the same trace
+        if features:
+            self._pending_predictions[trace_id] = y_pred
+        else:
+            self._pending_predictions.pop(trace_id, None)
 
-        self._pending[trace_id] = (y_pred, metadata)
+        self.records.append(
+            {
+                'y_true': y_true,
+                'y_pred': prev_y_pred,
+                'n_pred': self._n_pred,
+                'n_drifts': self._n_drifts,
+                **metric_vals,
+                **metadata,
+            }
+        )
 
     def close(self) -> None:
-        """Flush remaining pending predictions after the stream ends."""
-        for trace_id, (y_pred, metadata) in self._pending.items():
-            self.records.append(
-                {
-                    'n_pred': self._n_pred,
-                    'y_true': None,
-                    'y_pred': y_pred,
-                    'n_drifts': self._n_drifts,
-                    **self._current_metric_values(),
-                    **metadata,
-                }
-            )
-        self._pending.clear()
+        """Flush remaining pending predictions that were never evaluated."""
+        self._pending_predictions.clear()
 
 
 class ClassificationEvaluatorSink(EvaluatorSink):

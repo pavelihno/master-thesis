@@ -5,7 +5,11 @@ import pandas as pd
 from pybeamline.sources import xes_log_source_from_file
 from river.base.estimator import Estimator
 
-from utils.streaming.maps import LearnerMap, NextActivityEmitterMap, PredictorMap
+from utils.streaming.maps import (
+    LearnerMap,
+    NextActivityEmitterMap,
+    PredictorMap,
+)
 from utils.streaming.sinks import ClassificationEvaluatorSink
 from utils.streaming.transformers import StreamingTransformer
 

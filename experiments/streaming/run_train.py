@@ -115,6 +115,7 @@ def run_experiment(config_path: str) -> dict:
 
     dataset_path = config['dataset']['dataset_path']
 
+    print(f'Task: {config["task"]["type"]}')
     print(f'Dataset: {config["dataset"]["dataset_name"]}')
     print(f'Transformer: {config["transformer"]["type"]}')
     print(f'Model: {config["model"]["type"]}')

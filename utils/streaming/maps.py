@@ -24,10 +24,6 @@ def catch_and_reraise(method):
 
 
 class NextActivityEmitterMap(BaseMap):
-    """
-    Emits (features, next_activity, metadata) tuples.
-    """
-
     def __init__(
         self,
         transformer: StreamingTransformer,
@@ -41,30 +37,34 @@ class NextActivityEmitterMap(BaseMap):
     @catch_and_reraise
     def transform(self, event: BEvent) -> list[tuple[dict, str, dict]] | None:
         trace_id = event.get_trace_name()
+        event_time = event.get_event_time()
+        y_true = event.get_event_name()
 
         is_first = trace_id not in self._trace_index
+        is_end = y_true in self._end_events
+
         if is_first:
             self._trace_n += 1
             self._trace_index[trace_id] = self._trace_n
-            self._transformer.update(trace_id, event)
-            return None
 
-        features = self._transformer.get_features(trace_id)
-        label = event.get_event_name()
-        metadata = {
-            'trace_id': trace_id,
-            'trace_n': self._trace_index[trace_id],
-            'prefix_len': self._transformer.prefix_len(trace_id),
-            'event_time': str(event.get_event_time()),
-            'y_true': label,
-        }
         self._transformer.update(trace_id, event)
+        prefix_len = self._transformer.prefix_len(trace_id)
+        trace_n = self._trace_index[trace_id]
 
-        if label in self._end_events:
+        # No prediction for the last event of a trace
+        if is_end:
+            features = {}
             self._transformer.clear(trace_id)
-            # del self._trace_index[trace_id]
+        else:
+            features = self._transformer.get_features(trace_id)
 
-        return [(features, label, metadata)]
+        metadata = {
+            'trace_n': trace_n,
+            'prefix_len': prefix_len,
+            'event_time': str(event_time),
+        }
+
+        return [(trace_id, features, y_true, metadata)]
 
 
 class PredictorMap(BaseMap):
@@ -73,11 +73,17 @@ class PredictorMap(BaseMap):
 
     @catch_and_reraise
     def transform(
-        self, item: tuple[dict, any, dict]
-    ) -> list[tuple[dict, any, any, dict]] | None:
-        features, y_true, metadata = item
-        y_pred = self._model.predict_one(features)
-        return [(features, y_true, y_pred, metadata)]
+        self, item: tuple[str, dict, any, dict]
+    ) -> list[tuple[str, dict, any, any, dict]] | None:
+        trace_id, features, y_true, metadata = item
+
+        if features:
+            y_pred = self._model.predict_one(features)
+        else:
+            # No prediction if no features
+            y_pred = None
+
+        return [(trace_id, features, y_true, y_pred, metadata)]
 
 
 class LearnerMap(BaseMap):
@@ -85,19 +91,40 @@ class LearnerMap(BaseMap):
         self._model = model
         self._has_drift_detector = hasattr(model, 'drift_detector')
 
+        # Features from the previous event per trace
+        self._pending_features: dict[str, dict] = {}
+
     @catch_and_reraise
     def transform(
-        self, item: tuple[dict, any, any, dict]
-    ) -> list[tuple[dict, any, any, dict]] | None:
-        features, y_true, y_pred, metadata = item
+        self, item: tuple[str, dict, any, any, dict]
+    ) -> list[tuple[str, dict, any, any, dict]] | None:
+        trace_id, features, y_true, y_pred, metadata = item
 
-        self._model.learn_one(features, y_true)
-        drift_detected = (
-            self._has_drift_detector and self._model.drift_detector.drift_detected
-        )
+        drift_detected = False
+
+        # Learn on features from previous event of the same trace
+        if trace_id in self._pending_features:
+            prev_features = self._pending_features[trace_id]
+            self._model.learn_one(prev_features, y_true)
+            drift_detected = (
+                self._has_drift_detector
+                and self._model.drift_detector.drift_detected
+            )
+
+        # Store current features for the next event of the same trace
+        if features:
+            self._pending_features[trace_id] = features
+        else:
+            self._pending_features.pop(trace_id, None)
 
         return [
-            (features, y_true, y_pred, {**metadata, 'drift_detected': drift_detected})
+            (
+                trace_id,
+                features,
+                y_true,
+                y_pred,
+                {**metadata, 'drift_detected': drift_detected},
+            )
         ]
 
 
@@ -119,8 +146,8 @@ class PrequentialClassifierMap(BaseMap):
         self._has_drift_detector = hasattr(model, 'drift_detector')
 
     @catch_and_reraise
-    def transform(self, item: tuple[dict, str, dict]) -> list[dict] | None:
-        features, y_true, metadata = item
+    def transform(self, item: tuple[str, dict, str, dict]) -> list[dict] | None:
+        trace_id, features, y_true, metadata = item
 
         y_pred = self._model.predict_one(features)
         if y_pred is not None:
