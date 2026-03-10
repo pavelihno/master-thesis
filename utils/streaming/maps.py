@@ -1,0 +1,146 @@
+import functools
+import traceback
+
+from pybeamline.bevent import BEvent
+from pybeamline.stream.base_map import BaseMap
+from river import metrics as river_metrics
+
+from utils.streaming.transformers import StreamingTransformer
+
+
+def catch_and_reraise(method):
+    """Decorator for catching exceptions in `transform`."""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return method(self, *args, **kwargs)
+        except Exception:
+            print(f'[ERROR] {self.__class__.__name__}.{method.__name__} crashed')
+            traceback.print_exc()
+            raise
+
+    return wrapper
+
+
+class NextActivityEmitterMap(BaseMap):
+    """
+    Emits (features, next_activity, metadata) tuples.
+    """
+
+    def __init__(
+        self,
+        transformer: StreamingTransformer,
+        end_events: set[str] | None = None,
+    ):
+        self._transformer = transformer
+        self._end_events: set[str] = end_events or set()
+        self._trace_n: int = 0
+        self._trace_index: dict[str, int] = {}
+
+    @catch_and_reraise
+    def transform(self, event: BEvent) -> list[tuple[dict, str, dict]] | None:
+        trace_id = event.get_trace_name()
+
+        is_first = trace_id not in self._trace_index
+        if is_first:
+            self._trace_n += 1
+            self._trace_index[trace_id] = self._trace_n
+            self._transformer.update(trace_id, event)
+            return None
+
+        features = self._transformer.get_features(trace_id)
+        label = event.get_event_name()
+        metadata = {
+            'trace_id': trace_id,
+            'trace_n': self._trace_index[trace_id],
+            'prefix_len': self._transformer.prefix_len(trace_id),
+            'event_time': str(event.get_event_time()),
+            'y_true': label,
+        }
+        self._transformer.update(trace_id, event)
+
+        if label in self._end_events:
+            self._transformer.clear(trace_id)
+            # del self._trace_index[trace_id]
+
+        return [(features, label, metadata)]
+
+
+class PredictorMap(BaseMap):
+    def __init__(self, model):
+        self._model = model
+
+    @catch_and_reraise
+    def transform(
+        self, item: tuple[dict, any, dict]
+    ) -> list[tuple[dict, any, any, dict]] | None:
+        features, y_true, metadata = item
+        y_pred = self._model.predict_one(features)
+        return [(features, y_true, y_pred, metadata)]
+
+
+class LearnerMap(BaseMap):
+    def __init__(self, model):
+        self._model = model
+        self._has_drift_detector = hasattr(model, 'drift_detector')
+
+    @catch_and_reraise
+    def transform(
+        self, item: tuple[dict, any, any, dict]
+    ) -> list[tuple[dict, any, any, dict]] | None:
+        features, y_true, y_pred, metadata = item
+
+        self._model.learn_one(features, y_true)
+        drift_detected = (
+            self._has_drift_detector and self._model.drift_detector.drift_detected
+        )
+
+        return [
+            (features, y_true, y_pred, {**metadata, 'drift_detected': drift_detected})
+        ]
+
+
+class PrequentialClassifierMap(BaseMap):
+    """
+    Prequential (test-then-train) evaluation map.
+
+    Receives (features, y_true, metadata), predicts, updates metrics,
+    then trains on the sample.
+    """
+
+    def __init__(self, model, model_name: str = ''):
+        self._model = model
+        self._name = model_name
+        self._acc = river_metrics.Accuracy()
+        self._f1 = river_metrics.MacroF1()
+        self._n_pred = 0
+        self._n_drifts = 0
+        self._has_drift_detector = hasattr(model, 'drift_detector')
+
+    @catch_and_reraise
+    def transform(self, item: tuple[dict, str, dict]) -> list[dict] | None:
+        features, y_true, metadata = item
+
+        y_pred = self._model.predict_one(features)
+        if y_pred is not None:
+            self._acc.update(y_true, y_pred)
+            self._f1.update(y_true, y_pred)
+            self._n_pred += 1
+
+        self._model.learn_one(features, y_true)
+
+        if self._has_drift_detector and self._model.drift_detector.drift_detected:
+            self._n_drifts += 1
+
+        return [
+            {
+                'n_pred': self._n_pred,
+                'y_true': y_true,
+                'y_pred': y_pred,
+                'accuracy': self._acc.get(),
+                'macro_f1': self._f1.get(),
+                'n_drifts': self._n_drifts,
+                **metadata,
+            }
+        ]
