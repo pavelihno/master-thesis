@@ -1,5 +1,7 @@
 task:
   type: next_activity
+  mode: predict_and_learn
+  # mode: predict_only
 
 dataset:
   dataset_name: BPIC_20_DD

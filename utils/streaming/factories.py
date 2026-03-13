@@ -11,6 +11,7 @@ from models.darwin import DARWINClassifier
 from utils.streaming.drift_detector import NoDriftDetector
 from utils.streaming.pipelines import (
     NextActivityPredictionPipeline,
+    PipelineMode,
 )
 from utils.streaming.transformers import (
     ControlFlowTransformer,
@@ -135,10 +136,19 @@ def create_pipeline(config: dict, model, transformer, end_events: set | None = N
     task_type = config['type']
 
     if task_type == 'next_activity':
+        mode_str = config.get('mode', PipelineMode.PREDICT_AND_LEARN.value)
+        try:
+            mode = PipelineMode(mode_str)
+        except ValueError:
+            valid = [m.value for m in PipelineMode]
+            raise ValueError(
+                f"Unknown pipeline mode: '{mode_str}'. Valid: {valid}."
+            ) from None
         return NextActivityPredictionPipeline(
             model=model,
             transformer=transformer,
             end_events=end_events,
+            mode=mode,
         )
     else:
         raise ValueError(f"Unknown task type: '{task_type}'.")

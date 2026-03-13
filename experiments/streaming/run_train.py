@@ -53,7 +53,6 @@ def save_results(
         f.write(f'Macro F1: {last["macro_f1"]:.4f}\n')
 
         f.write(f'Num Drifts: {int(last["n_drifts"])}\n')
-        f.write(f'Time (s): {last["time_s"]:.2f}\n')
 
     print(f'Results → {csv_file}')
     print(f'Summary → {summary_file}')
@@ -116,6 +115,7 @@ def run_experiment(config_path: str) -> dict:
     dataset_path = config['dataset']['dataset_path']
 
     print(f'Task: {config["task"]["type"]}')
+    print(f'Mode: {config["task"].get("mode")}')
     print(f'Dataset: {config["dataset"]["dataset_name"]}')
     print(f'Transformer: {config["transformer"]["type"]}')
     print(f'Model: {config["model"]["type"]}')
@@ -124,6 +124,7 @@ def run_experiment(config_path: str) -> dict:
     transformer = create_transformer(config['transformer'])
 
     pretrain_path = config['model'].get('pretrain_path')
+
     if pretrain_path:
         pretrain_path = Path(pretrain_path)
         if not pretrain_path.exists():
@@ -145,8 +146,7 @@ def run_experiment(config_path: str) -> dict:
     )
 
     # Run
-    results_df, model = pipeline.run(dataset_path)
-    results_df['experiment'] = run_id
+    results_df, model, elapsed_time = pipeline.run(dataset_path)
 
     # Report
     last = results_df.iloc[-1]
@@ -155,7 +155,7 @@ def run_experiment(config_path: str) -> dict:
         f'accuracy={last.get("accuracy", 0):.4f}, '
         f'macro_f1={last.get("macro_f1", 0):.4f}, '
         f'n_drifts={int(last.get("n_drifts", 0))}, '
-        f'time={last.get("time_s", 0):.2f}s'
+        f'time={elapsed_time:.2f}s'
     )
 
     # Save
@@ -171,7 +171,7 @@ def run_experiment(config_path: str) -> dict:
         'accuracy': float(last.get('accuracy', 0)),
         'macro_f1': float(last.get('macro_f1', 0)),
         'n_drifts': int(last.get('n_drifts', 0)),
-        'time_s': float(last.get('time_s', 0)),
+        'time_s': float(elapsed_time),
         'output_dir': str(output_folder),
     }
 
