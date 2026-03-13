@@ -34,7 +34,7 @@ class TaskPipeline(ABC):
         self.mode = mode
 
     @abstractmethod
-    def run(self, dataset_path: str) -> tuple[pd.DataFrame, object]:
+    def run(self, dataset_path: str) -> tuple[pd.DataFrame, object, float]:
         pass
 
 
@@ -48,7 +48,7 @@ class NextActivityPredictionPipeline(TaskPipeline):
     ):
         super().__init__(model, transformer, end_events, mode)
 
-    def run(self, dataset_path: str) -> tuple[pd.DataFrame, object]:
+    def run(self, dataset_path: str) -> tuple[pd.DataFrame, object, float]:
         sink = ClassificationEvaluatorSink()
 
         start_time = time.perf_counter()
@@ -73,6 +73,5 @@ class NextActivityPredictionPipeline(TaskPipeline):
         elapsed_time = time.perf_counter() - start_time
 
         df = sink.to_dataframe()
-        df['time_s'] = elapsed_time
 
-        return df, self.model
+        return df, self.model, elapsed_time

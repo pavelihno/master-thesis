@@ -3,7 +3,7 @@ import random
 import pandas as pd
 from pybeamline.sources import xes_log_source_from_file
 
-from utils.streaming.pipelines import TraceCollectorSink
+from utils.streaming.sinks import TraceCollectorSink
 from utils.streaming.transformers import StreamingTransformer
 
 

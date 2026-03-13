@@ -21,26 +21,26 @@ def plot_stream_metric(
         .reset_index(drop=True)
         .copy()
     )
+    roll_kw = {'window': window, 'center': center_window, 'min_periods': 1}
 
     if metric == 'accuracy':
         correct = (stream_df['y_true'] == stream_df['y_pred']).astype(float)
 
-        metric_values = correct.rolling(
-            window=window, center=center_window, min_periods=1
-        ).mean()
+        metric_values = correct.rolling(**roll_kw).mean()
 
         ylabel = 'Accuracy'
         line_label = f'Accuracy (window={window}, center={center_window})'
 
     elif metric == 'f1':
-        # Vectorised rolling macro-F1
-        classes = np.union1d(stream_df['y_true'].unique(), stream_df['y_pred'].unique())
-        roll_kw = {'window': window, 'center': center_window, 'min_periods': 1}
+        unique_classes = np.union1d(
+            stream_df['y_true'].unique(), stream_df['y_pred'].unique()
+        )
 
         tp_cols, fp_cols, fn_cols = [], [], []
-        for c in classes:
+        for c in unique_classes:
             is_true_c = stream_df['y_true'] == c
             is_pred_c = stream_df['y_pred'] == c
+
             tp_cols.append((is_true_c & is_pred_c).astype(float))
             fp_cols.append((~is_true_c & is_pred_c).astype(float))
             fn_cols.append((is_true_c & ~is_pred_c).astype(float))
@@ -49,12 +49,17 @@ def plot_stream_metric(
         fp_roll = pd.concat(fp_cols, axis=1).rolling(**roll_kw).sum().values
         fn_roll = pd.concat(fn_cols, axis=1).rolling(**roll_kw).sum().values
 
+        nom = 2 * tp_roll
         denom = 2 * tp_roll + fp_roll + fn_roll
-        f1_per_class = np.zeros_like(denom)
-        valid = denom > 0
-        np.divide(2 * tp_roll, denom, out=f1_per_class, where=valid)
 
-        metric_values = pd.Series(f1_per_class.mean(axis=1), index=stream_df.index)
+        f1_per_class = np.full_like(denom, np.nan)
+        np.divide(nom, denom, out=f1_per_class, where=denom > 0)
+
+        # Macro average: only over classes *present* in each window (denom > 0)
+        with np.errstate(all='ignore'):
+            metric_values = pd.Series(
+                np.nanmean(f1_per_class, axis=1), index=stream_df.index
+            )
 
         ylabel = 'Macro F1-score'
         line_label = f'Macro F1 (window={window}, center={center_window})'
