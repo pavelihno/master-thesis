@@ -10,26 +10,31 @@ dataset:
 
 transformer:
   type: index
-  max_events: 6
-  include_prefix_len: false
+  max_events: null
 
 model:
-  type: aht
+  type: arf
   params:
-    drift_detector:
-      type: adwin
-      delta: 0.002
+    n_models: 20
+    max_features: sqrt
+    lambda_value: 6
+
+    disable_weighted_vote: false
 
     grace_period: 100
+    max_depth: 20
+    split_criterion: info_gain
     delta: 0.001
     tau: 0.05
-    split_criterion: 'info_gain'
-
-    leaf_prediction: 'nba'
+    leaf_prediction: nba
     nb_threshold: 10
 
-    switch_significance: 0.05
-    max_depth: 20
+    drift_detector:
+      type: none
+
+    warning_detector:
+      type: none
+
     seed: 42
 
 output:

@@ -1,5 +1,6 @@
 task:
   type: next_activity
+  mode: predict_and_learn
 
 dataset:
   dataset_name: BPIC_20_DD
@@ -14,6 +15,7 @@ transformer:
 
 model:
   type: aht
+
   params:
     drift_detector:
       type: none

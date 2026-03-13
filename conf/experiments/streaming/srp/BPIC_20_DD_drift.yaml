@@ -5,9 +5,11 @@ task:
 dataset:
   dataset_name: BPIC_20_DD
   dataset_path: datasets/raw/BPIC_20_DD.xes
+  end_events:
+    - 'Payment Handled'
 
 transformer:
-  type: cf
+  type: index
   max_events: null
 
 model:
@@ -15,15 +17,20 @@ model:
   params:
     n_models: 100
     subspace_size: 0.6
+    training_method: patches
     lam: 6
+
+    disable_detector: 'off'
+    disable_weighted_vote: false
 
     drift_detector:
       type: adwin
-      delta: 1.0e-5
+      delta: 1.0e-4
 
     warning_detector:
       type: adwin
-      delta: 1.0e-4
+      delta: 1.0e-3
+
     seed: 42
 
 output:
