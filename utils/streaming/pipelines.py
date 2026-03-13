@@ -62,11 +62,13 @@ class NextActivityPredictionPipeline(TaskPipeline):
                 predictor,
                 LearnerMap(self.model),
             ).sink(sink)
+
         elif self.mode == PipelineMode.PREDICT_ONLY:
             xes_log_source_from_file(dataset_path).pipe(
                 emitter,
                 predictor,
             ).sink(sink)
+
         else:
             raise ValueError(f'Unknown pipeline mode: {self.mode}')
 

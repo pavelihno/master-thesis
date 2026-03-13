@@ -62,10 +62,23 @@ def save_model(
     output_path: Path,
     model,
 ) -> None:
-    model_file = output_path / 'model.pkl'
-    with open(model_file, 'wb') as f:
-        pickle.dump(model, f)
+    if hasattr(model, 'save_checkpoint'):
+        model_file = output_path / 'model.pt'
+        model.save_checkpoint(model_file)
+    else:
+        model_file = output_path / 'model.pkl'
+        with open(model_file, 'wb') as f:
+            pickle.dump(model, f)
     print(f'Model → {model_file}')
+
+
+def load_model(model_path: Path, model=None):
+    if hasattr(model, 'load_checkpoint'):
+        model.load_checkpoint(model_path)
+        return model
+
+    with open(model_path, 'rb') as f:
+        return pickle.load(f)
 
 
 def save_plots(
@@ -123,17 +136,15 @@ def run_experiment(config_path: str) -> dict:
     # Build components
     transformer = create_transformer(config['transformer'])
 
-    pretrain_path = config['model'].get('pretrain_path')
+    model = create_model(config['model'])
 
+    pretrain_path = config['model'].get('pretrain_path')
     if pretrain_path:
         pretrain_path = Path(pretrain_path)
         if not pretrain_path.exists():
             raise FileNotFoundError(f'pretrain_path not found: {pretrain_path}')
         print(f'Pretrain: {pretrain_path}')
-        with open(pretrain_path, 'rb') as f:
-            model = pickle.load(f)
-    else:
-        model = create_model(config['model'])
+        model = load_model(pretrain_path, model)
 
     end_events_cfg = config['dataset'].get('end_events')
     end_events = set(end_events_cfg) if end_events_cfg else None

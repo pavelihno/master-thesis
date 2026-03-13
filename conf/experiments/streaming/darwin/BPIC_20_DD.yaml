@@ -19,11 +19,11 @@ model:
     lstm_layers: 1
     n_classes: 200
 
-    clf_optimizer:
+    optimizer:
       type: adam
       lr: 0.001
 
-    clf_criterion:
+    loss_fn:
       type: cross_entropy
 
     drift_detector:

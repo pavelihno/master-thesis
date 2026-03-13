@@ -65,17 +65,17 @@ def create_model(config: dict):
     elif model_type == 'aht':
         return HoeffdingAdaptiveTreeClassifier(**params, drift_detector=drift_detector)
     elif model_type == 'darwin':
-        clf_optimizer_cls = create_optimizer_cls(
-            params.pop('clf_optimizer', {'type': 'adam', 'lr': 0.001})
+        optimizer_cls = create_optimizer_cls(
+            params.pop('optimizer', {'type': 'adam', 'lr': 0.001})
         )
-        clf_criterion = create_criterion(
-            params.pop('clf_criterion', {'type': 'cross_entropy'})
+        loss_fn = create_loss_fn(
+            params.pop('loss_fn', {'type': 'cross_entropy'})
         )
 
         return DARWINClassifier(
             **params,
-            clf_optimizer_cls=clf_optimizer_cls,
-            clf_criterion=clf_criterion,
+            optimizer_cls=optimizer_cls,
+            loss_fn=loss_fn,
             drift_detector=drift_detector,
         )
     else:
@@ -113,7 +113,7 @@ def create_optimizer_cls(config: dict) -> Callable:
         raise ValueError(f"Unknown optimizer type: '{optimizer_type}'.")
 
 
-def create_criterion(config: dict):
+def create_loss_fn(config: dict):
     """Return a loss instance from a config dict."""
 
     config = dict(config)

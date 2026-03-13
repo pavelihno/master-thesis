@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -84,6 +85,55 @@ class DARWINClassifier(base.Classifier):
 
         self.events_processed: int = 0
         self.initialized: bool = False
+
+    def save_checkpoint(self, path: str | Path) -> None:
+        checkpoint = {
+            'lstm_state_dict': self.lstm.state_dict(),
+            'head_state_dict': self.head.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict(),
+            'runtime_state': {
+                'w2v': self.w2v,
+                'prefix_tree': self.prefix_tree,
+                'header_table': self.header_table,
+                'active_predictions': self.active_predictions,
+                'init_buffer': self.init_buffer,
+                'adaptive_window': self.adaptive_window,
+                'vocab': self.vocab,
+                'idx_to_act': self.idx_to_act,
+                'events_processed': self.events_processed,
+                'initialized': self.initialized,
+            },
+        }
+        torch.save(checkpoint, Path(path))
+
+    def load_checkpoint(
+        self,
+        path: str | Path,
+        map_location: str | torch.device = 'cpu',
+    ) -> 'DARWINClassifier':
+        checkpoint = torch.load(
+            Path(path),
+            map_location=map_location,
+            weights_only=False,
+        )
+
+        self.lstm.load_state_dict(checkpoint['lstm_state_dict'])
+        self.head.load_state_dict(checkpoint['head_state_dict'])
+        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
+        runtime_state = checkpoint['runtime_state']
+        self.w2v = runtime_state['w2v']
+        self.prefix_tree = runtime_state['prefix_tree']
+        self.header_table = runtime_state['header_table']
+        self.active_predictions = runtime_state['active_predictions']
+        self.init_buffer = runtime_state['init_buffer']
+        self.adaptive_window = runtime_state['adaptive_window']
+        self.vocab = runtime_state['vocab']
+        self.idx_to_act = runtime_state['idx_to_act']
+        self.events_processed = runtime_state['events_processed']
+        self.initialized = runtime_state['initialized']
+
+        return self
 
     def _update_prefix_tree(self, case_id: str, activity_name: str) -> PrefixTreeNode:
         """Update the prefix tree and header table with a new event."""
@@ -177,9 +227,9 @@ class DARWINClassifier(base.Classifier):
 
         if not self.initialized:
             self.init_buffer.append(WindowEntry(cid, node, y_idx))
-            self.processed_events += 1
+            self.events_processed += 1
 
-            if self.processed_events >= self.init_size:
+            if self.events_processed >= self.init_size:
                 self._adapt_model(self.init_buffer)
                 self.init_buffer = []
                 self.initialized = True
