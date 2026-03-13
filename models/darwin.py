@@ -1,91 +1,54 @@
-from collections import deque
 from collections.abc import Callable
+from dataclasses import dataclass, field
 
+import numpy as np
 import torch
 import torch.nn as nn
+from gensim.models import Word2Vec
 from river import base
 
 
-class Word2Vec(nn.Module):
-    def __init__(
-        self,
-        vocab_size: int,
-        embedding_dim: int,
-        window_size: int,
-        optimizer_cls: Callable,
-        criterion: nn.Module,
-    ):
-        super().__init__()
+@dataclass
+class PrefixTreeNode:
+    """A node in the Prefix Tree (T) representing a process activity."""
 
-        self.vocab_size = vocab_size
-        self.embedding_dim = embedding_dim
-        self.window_size = window_size
+    activity_name: str | None
+    parent: 'PrefixTreeNode' | None
+    children: dict[str, 'PrefixTreeNode'] = field(default_factory=dict)
 
-        self.vocab = {}
-        self.buffer = deque(maxlen=2 * window_size + 1)
 
-        self.embedding = nn.Embedding(vocab_size, embedding_dim)
-        self.output = nn.Linear(embedding_dim, vocab_size, bias=True)
+@dataclass
+class WindowEntry:
+    """A labeled prefix sequence extracted from the stream for learning."""
 
-        # Tie S and S^T
-        self.output.weight.data = self.embedding.weight.data
-
-        self.optimizer = optimizer_cls(self.parameters())
-        self.criterion = criterion
-
-    def get_id(self, activity):
-        if activity not in self.vocab:
-            if len(self.vocab) < self.vocab_size:
-                self.vocab[activity] = len(self.vocab)
-            else:
-                return 0
-        return self.vocab[activity]
-
-    def update_embeddings(self, activity_id):
-        self.buffer.append(activity_id)
-        if len(self.buffer) < self.buffer.maxlen:
-            return
-
-        center_idx = self.window_size
-        center_id = torch.tensor(self.buffer[center_idx])
-        context_ids = [
-            self.buffer[i] for i in range(len(self.buffer)) if i != center_idx
-        ]
-
-        context_tensor = torch.tensor(context_ids)
-        hidden = self.embedding(context_tensor).mean(dim=0, keepdim=True)
-        logits = self.output(hidden)
-
-        loss = self.criterion(logits, center_id)
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-
-    def encode(self, activity_id):
-        with torch.no_grad():
-            idx = torch.tensor([activity_id])
-            return self.embedding(idx)
+    case_id: str
+    prefix_node: PrefixTreeNode
+    label_idx: int
+    clf_error: int | None = None
 
 
 class DARWINClassifier(base.Classifier):
     def __init__(
         self,
-        vocab_size: int,
         embedding_dim: int,
-        window_size: int,
-        w2v_optimizer_cls: Callable,
-        w2v_criterion: nn.Module,
-        clf_optimizer_cls: Callable,
-        clf_criterion: nn.Module,
+        w2v_window: int,
+        sequence_window: int,
+        optimizer_cls: Callable,
+        loss_fn: nn.Module,
         lstm_layers: int,
         hidden_dim: int,
         n_classes: int,
         drift_detector: base.DriftDetector,
+        init_size: int,
         end_events: set[str] | None = None,
     ):
-        self.w2v = Word2Vec(
-            vocab_size, embedding_dim, window_size, w2v_optimizer_cls, w2v_criterion
-        )
+        self.embedding_dim = embedding_dim
+        self.w2v_window = w2v_window
+        self.sequence_window = sequence_window
+        self.init_size = init_size
+        self.end_events = end_events or set()
+
+        self.w2v = None
 
         self.lstm = nn.LSTM(
             input_size=embedding_dim,
@@ -95,117 +58,172 @@ class DARWINClassifier(base.Classifier):
         )
         self.head = nn.Linear(hidden_dim, n_classes)
 
-        self.optimizer = clf_optimizer_cls(
+        self.optimizer = optimizer_cls(
             list(self.lstm.parameters()) + list(self.head.parameters())
         )
-        self.criterion = clf_criterion
+        self.loss_fn = loss_fn
 
         self.drift_detector = drift_detector
         self.n_classes = n_classes
-        self.end_events = end_events or set()
 
-        self.case_states: dict[str, tuple[torch.Tensor, torch.Tensor]] = {}
-        self.predictions: dict[
-            str, int
-        ] = {}  # hash table A: {case_id: last_predicted_activity}
-        self.window: list[
-            tuple[dict, str]
-        ] = []  # adaptive window W for fine-tuning after drift
+        # Data Synopsis D = (Hash Table H, Prefix Tree T)
+        self.prefix_tree = PrefixTreeNode(activity_name=None, parent=None)
+        self.header_table: dict[str, PrefixTreeNode] = {}
 
-        self.label_vocab: dict[str, int] = {}
-        self.label_idx_to_name: dict[int, str] = {}
+        # Hash table A
+        self.active_predictions: dict[str, int] = {}
 
-    def _get_label_id(self, label: str) -> int:
-        """Map an activity name to an integer class index."""
-        if label not in self.label_vocab:
-            idx = len(self.label_vocab)
+        # Initialization buffer
+        self.init_buffer: list[WindowEntry] = []
+
+        # Window W
+        self.adaptive_window: list[WindowEntry] = []
+
+        self.vocab: dict[str, int] = {}
+        self.idx_to_act: dict[int, str] = {}
+
+        self.events_processed: int = 0
+        self.initialized: bool = False
+
+    def _update_prefix_tree(self, case_id: str, activity_name: str) -> PrefixTreeNode:
+        """Update the prefix tree and header table with a new event."""
+        current_node = self.header_table.get(case_id, self.prefix_tree)
+        next_node = current_node.children.get(activity_name)
+
+        if next_node is None:
+            next_node = PrefixTreeNode(activity_name=activity_name, parent=current_node)
+            current_node.children[activity_name] = next_node
+
+        self.header_table[case_id] = next_node
+        return next_node
+
+    def _get_prefix(self, node: PrefixTreeNode) -> list[str]:
+        """Reconstruct the activity sequence by backtracking the tree."""
+        path = []
+        curr = node
+        while curr.parent is not None:
+            if curr.activity_name is not None:
+                path.append(curr.activity_name)
+            curr = curr.parent
+        path.reverse()
+        return path[-self.sequence_window :]
+
+    def _map_label(self, activity: str) -> int:
+        """Map activity names to categorical classification indices."""
+        if activity not in self.vocab:
+            idx = len(self.vocab)
             if idx < self.n_classes:
-                self.label_vocab[label] = idx
-                self.label_idx_to_name[idx] = label
+                self.vocab[activity] = idx
+                self.idx_to_act[idx] = activity
             else:
                 return 0
-        return self.label_vocab[label]
+        return self.vocab[activity]
 
-    def _get_embedding(self, activity_name: str) -> tuple[torch.Tensor, int]:
-        act_id = self.w2v.get_id(activity_name)
-        self.w2v.update_embeddings(act_id)
-        return self.w2v.encode(act_id).unsqueeze(0), act_id
+    def _get_embedding(self, activity: str) -> np.ndarray:
+        """Retrieve the Word2Vec embedding for an activity."""
+        if self.w2v is not None and activity in self.w2v.wv:
+            return self.w2v.wv[activity]
+        return np.zeros(self.embedding_dim, dtype=np.float32)
 
-    def learn_one(self, x: dict, y: str):
-        case_id = x['case_id']
-        act_name = x['activity']
+    def _to_tensor(self, activities: list[str]) -> torch.Tensor:
+        """Prepare a zero-padded tensor for LSTM input."""
+        history = activities[-self.sequence_window :]
+        vectors = [self._get_embedding(a) for a in history]
 
-        y_idx = self._get_label_id(y)
+        pad = self.sequence_window - len(vectors)
+        if pad > 0:
+            vectors = [np.zeros(self.embedding_dim, dtype=np.float32)] * pad + vectors
 
-        if case_id in self.predictions:
-            clf_error = 0 if self.predictions[case_id] == y_idx else 1
+        # (1, sequence_window, embedding_dim)
+        return torch.tensor(np.stack(vectors), dtype=torch.float32).unsqueeze(0)
 
-            self.window.append((x, y))
-            self.drift_detector.update(clf_error)
-
-            if self.drift_detector.drift_detected:
-                self._fine_tune()
-                self.window = []
-
-            del self.predictions[case_id]
-
-        emb, _ = self._get_embedding(act_name)
-        h_0, c_0 = self.case_states.get(case_id, (None, None))
-
-        self.lstm.train()
-        self.head.train()
-
-        out, (h_n, c_n) = self.lstm(emb, (h_0, c_0) if h_0 is not None else None)
-        logits = self.head(out[:, -1, :])
-
-        loss = self.criterion(logits, torch.tensor([y_idx]))
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-
-        self.case_states[case_id] = (h_n.detach(), c_n.detach())
-
-        if y in self.end_events:
-            self.case_states.pop(case_id, None)
-
-        return self
-
-    def _fine_tune(self):
-        """Re-train on the adaptive window after a drift is detected."""
-        if not self.window:
+    def _adapt_model(self, samples: list[WindowEntry]) -> None:
+        """Updates Word2Vec and fine-tunes the LSTM on the provided window."""
+        if not samples:
             return
 
+        # Word2Vec update
+        sequences = [self._get_prefix(s.prefix_node) for s in samples]
+        if self.w2v is None:
+            self.w2v = Word2Vec(
+                vector_size=self.embedding_dim, window=self.w2v_window, min_count=1
+            )
+            self.w2v.build_vocab(sequences)
+        else:
+            self.w2v.build_vocab(sequences, update=True)
+
+        self.w2v.train(sequences, total_examples=len(sequences), epochs=1)
+
+        # LSTM fine-tuning
         self.lstm.train()
         self.head.train()
 
-        for x_w, y_w in self.window:
-            act_name_w = x_w['activity']
-            emb, _ = self._get_embedding(act_name_w)
-            out, _ = self.lstm(emb)
+        for s in samples:
+            tensor = self._to_tensor(self._get_prefix(s.prefix_node))
+            out, _ = self.lstm(tensor)
             logits = self.head(out[:, -1, :])
-            y_idx_w = self._get_label_id(y_w)
 
-            loss = self.criterion(logits, torch.tensor([y_idx_w]))
+            loss = self.loss_fn(logits, torch.tensor([s.label_idx]))
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
 
-    def predict_one(self, x: dict):
-        case_id = x['case_id']
-        act_name = x['activity']
+    def learn_one(self, x: dict, y: str):
+        """Processes a single event and manages initialization or drift adaptation."""
+        cid, act = x['case_id'], x['activity']
 
-        if not act_name:
+        y_idx = self._map_label(y)
+        node = self._update_prefix_tree(cid, act)
+
+        if not self.initialized:
+            self.init_buffer.append(WindowEntry(cid, node, y_idx))
+            self.processed_events += 1
+
+            if self.processed_events >= self.init_size:
+                self._adapt_model(self.init_buffer)
+                self.init_buffer = []
+                self.initialized = True
+
+            if act in self.end_events:
+                self.header_table.pop(cid, None)
+
+            return self
+
+        if cid in self.active_predictions:
+            error = 0 if self.active_predictions[cid] == y_idx else 1
+
+            self.drift_detector.update(error)
+            self.adaptive_window.append(WindowEntry(cid, node, y_idx, error))
+
+            if self.drift_detector.drift_detected:
+                self._adapt_model(self.adaptive_window)
+                self.adaptive_window = []
+
+            del self.active_predictions[cid]
+
+        if act in self.end_events:
+            self.header_table.pop(cid, None)
+            self.active_predictions.pop(cid, None)
+
+        return self
+
+    def predict_one(self, x: dict) -> str | None:
+        """Predicts the next activity for an ongoing trace."""
+        cid, act = x['case_id'], x['activity']
+
+        if not self.initialized or not act:
             return None
 
-        emb, _ = self._get_embedding(act_name)
-        h_0, c_0 = self.case_states.get(case_id, (None, None))
+        # Predict based on current state
+        node = self.header_table.get(cid, self.prefix_tree)
+        full_seq = self._get_prefix(node) + [act]
+        tensor = self._to_tensor(full_seq)
 
         self.lstm.eval()
-        self.head.eval()
         with torch.no_grad():
-            out, _ = self.lstm(emb, (h_0, c_0) if h_0 is not None else None)
+            out, _ = self.lstm(tensor)
             logits = self.head(out[:, -1, :])
-            y_idx = torch.argmax(logits, dim=1).item()
+            y_idx = int(torch.argmax(logits, dim=1).item())
 
-        self.predictions[case_id] = y_idx
-        return self.label_idx_to_name.get(y_idx)
+        self.active_predictions[cid] = y_idx
+        return self.idx_to_act.get(y_idx)
