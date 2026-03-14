@@ -1,5 +1,6 @@
 task:
   type: next_activity
+  mode: predict_and_learn 
 
 dataset:
   dataset_name: BPIC_20_DD
@@ -14,10 +15,10 @@ model:
     embedding_dim: 64
     w2v_window: 2
     sequence_window: 4
-    eta: 1000
     hidden_dim: 128
     lstm_layers: 1
     n_classes: 200
+    init_size: 1050
 
     optimizer:
       type: adam
@@ -28,7 +29,8 @@ model:
 
     drift_detector:
       type: adwin
-      delta: 1.0e-5
+      delta: 0.0001
+
 
 output:
   folder: experiments/outputs/streaming/BPIC_20_DD

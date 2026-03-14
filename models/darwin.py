@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -14,8 +16,8 @@ class PrefixTreeNode:
     """A node in the Prefix Tree (T) representing a process activity."""
 
     activity_name: str | None
-    parent: 'PrefixTreeNode' | None
-    children: dict[str, 'PrefixTreeNode'] = field(default_factory=dict)
+    parent: PrefixTreeNode | None
+    children: dict[str, PrefixTreeNode] = field(default_factory=dict)
 
 
 @dataclass
@@ -25,7 +27,6 @@ class WindowEntry:
     case_id: str
     prefix_node: PrefixTreeNode
     label_idx: int
-    clf_error: int | None = None
 
 
 class DARWINClassifier(base.Classifier):
@@ -109,11 +110,11 @@ class DARWINClassifier(base.Classifier):
     def load_checkpoint(
         self,
         path: str | Path,
-        map_location: str | torch.device = 'cpu',
-    ) -> 'DARWINClassifier':
+        device: str | torch.device = 'cpu',
+    ) -> DARWINClassifier:
         checkpoint = torch.load(
             Path(path),
-            map_location=map_location,
+            map_location=device,
             weights_only=False,
         )
 
@@ -196,7 +197,11 @@ class DARWINClassifier(base.Classifier):
         sequences = [self._get_prefix(s.prefix_node) for s in samples]
         if self.w2v is None:
             self.w2v = Word2Vec(
-                vector_size=self.embedding_dim, window=self.w2v_window, min_count=1
+                sg=0,
+                vector_size=self.embedding_dim,
+                window=self.w2v_window,
+                min_count=1,
+                workers=1,
             )
             self.w2v.build_vocab(sequences)
         else:
@@ -220,52 +225,56 @@ class DARWINClassifier(base.Classifier):
 
     def learn_one(self, x: dict, y: str):
         """Processes a single event and manages initialization or drift adaptation."""
-        cid, act = x['case_id'], x['activity']
+        case_id, act = x['case_id'], x['activity']
 
         y_idx = self._map_label(y)
-        node = self._update_prefix_tree(cid, act)
+        node = self._update_prefix_tree(case_id, act)
 
         if not self.initialized:
-            self.init_buffer.append(WindowEntry(cid, node, y_idx))
+            self.init_buffer.append(WindowEntry(case_id, node, y_idx))
             self.events_processed += 1
 
             if self.events_processed >= self.init_size:
                 self._adapt_model(self.init_buffer)
                 self.init_buffer = []
                 self.initialized = True
+                print('Initialization completed')
+                print(f'{self.events_processed} events processed')
+                print(f'Initial vocabulary size: {len(self.vocab)}')
+                print(set(self.vocab.keys()))
 
             if act in self.end_events:
-                self.header_table.pop(cid, None)
+                self.header_table.pop(case_id, None)
 
             return self
 
-        if cid in self.active_predictions:
-            error = 0 if self.active_predictions[cid] == y_idx else 1
+        if case_id in self.active_predictions:
+            if self.drift_detector is not None:
+                error = 0 if self.active_predictions[case_id] == y_idx else 1
+                self.drift_detector.update(error)
+                self.adaptive_window.append(WindowEntry(case_id, node, y_idx))
 
-            self.drift_detector.update(error)
-            self.adaptive_window.append(WindowEntry(cid, node, y_idx, error))
+                if self.drift_detector.drift_detected:
+                    self._adapt_model(self.adaptive_window)
+                    self.adaptive_window = []
 
-            if self.drift_detector.drift_detected:
-                self._adapt_model(self.adaptive_window)
-                self.adaptive_window = []
-
-            del self.active_predictions[cid]
+            del self.active_predictions[case_id]
 
         if act in self.end_events:
-            self.header_table.pop(cid, None)
-            self.active_predictions.pop(cid, None)
+            self.header_table.pop(case_id, None)
+            self.active_predictions.pop(case_id, None)
 
         return self
 
     def predict_one(self, x: dict) -> str | None:
         """Predicts the next activity for an ongoing trace."""
-        cid, act = x['case_id'], x['activity']
+        case_id, act = x['case_id'], x['activity']
 
         if not self.initialized or not act:
             return None
 
         # Predict based on current state
-        node = self.header_table.get(cid, self.prefix_tree)
+        node = self.header_table.get(case_id, self.prefix_tree)
         full_seq = self._get_prefix(node) + [act]
         tensor = self._to_tensor(full_seq)
 
@@ -275,5 +284,5 @@ class DARWINClassifier(base.Classifier):
             logits = self.head(out[:, -1, :])
             y_idx = int(torch.argmax(logits, dim=1).item())
 
-        self.active_predictions[cid] = y_idx
+        self.active_predictions[case_id] = y_idx
         return self.idx_to_act.get(y_idx)

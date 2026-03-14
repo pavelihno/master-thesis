@@ -258,7 +258,7 @@ class DARWINTransformer(StreamingTransformer):
     Transformer for DARWIN-style streaming models.
 
     Stores the most recent activity name per trace and emits:
-        {'case_id': trace_id, 'activity': last_activity_name}
+    {'case_id': trace_id, 'activity': last_activity_name}
     """
 
     def __init__(self) -> None:
