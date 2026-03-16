@@ -25,6 +25,11 @@ def catch_and_reraise(method):
     return wrapper
 
 
+class EmptyOperator(BaseMap):
+    def transform(self, item):
+        return [item]
+
+
 class EmitterMap(BaseMap):
     def __init__(
         self,
@@ -37,7 +42,7 @@ class EmitterMap(BaseMap):
         self._trace_index: dict[str, int] = {}
 
     @abstractmethod
-    def _extract_target(self, event: BEvent) -> Any:
+    def _get_target(self, event: BEvent) -> Any:
         """Extract task target from an event."""
         pass
 
@@ -56,7 +61,7 @@ class EmitterMap(BaseMap):
     @catch_and_reraise
     def transform(self, event: BEvent) -> list[tuple[str, dict, Any, dict]] | None:
         trace_id = event.get_trace_name()
-        y_true = self._extract_target(event)
+        y_true = self._get_target(event)
 
         is_first = trace_id not in self._trace_index
         is_end = y_true in self._end_events
@@ -69,7 +74,7 @@ class EmitterMap(BaseMap):
         prefix_len = self._transformer.prefix_len(trace_id)
         trace_n = self._trace_index[trace_id]
 
-        if is_end:
+        if not is_end:
             features = self._transformer.get_features(trace_id)
         else:
             features = {}
@@ -83,7 +88,7 @@ class EmitterMap(BaseMap):
 
 
 class NextActivityEmitterMap(EmitterMap):
-    def _extract_target(self, event: BEvent) -> str:
+    def _get_target(self, event: BEvent) -> str:
         return event.get_event_name()
 
 
