@@ -1,5 +1,7 @@
 import functools
 import traceback
+from abc import abstractmethod
+from typing import Any
 
 from pybeamline.bevent import BEvent
 from pybeamline.stream.base_map import BaseMap
@@ -23,7 +25,7 @@ def catch_and_reraise(method):
     return wrapper
 
 
-class NextActivityEmitterMap(BaseMap):
+class EmitterMap(BaseMap):
     def __init__(
         self,
         transformer: StreamingTransformer,
@@ -34,11 +36,27 @@ class NextActivityEmitterMap(BaseMap):
         self._trace_n: int = 0
         self._trace_index: dict[str, int] = {}
 
+    @abstractmethod
+    def _extract_target(self, event: BEvent) -> Any:
+        """Extract task target from an event."""
+        pass
+
+    def _build_metadata(
+        self,
+        event: BEvent,
+        trace_n: int,
+        prefix_len: int,
+    ) -> dict[str, Any]:
+        return {
+            'trace_n': trace_n,
+            'prefix_len': prefix_len,
+            'event_time': str(event.get_event_time()),
+        }
+
     @catch_and_reraise
-    def transform(self, event: BEvent) -> list[tuple[dict, str, dict]] | None:
+    def transform(self, event: BEvent) -> list[tuple[str, dict, Any, dict]] | None:
         trace_id = event.get_trace_name()
-        event_time = event.get_event_time()
-        y_true = event.get_event_name()
+        y_true = self._extract_target(event)
 
         is_first = trace_id not in self._trace_index
         is_end = y_true in self._end_events
@@ -51,20 +69,22 @@ class NextActivityEmitterMap(BaseMap):
         prefix_len = self._transformer.prefix_len(trace_id)
         trace_n = self._trace_index[trace_id]
 
-        # No prediction for the last event of a trace
         if is_end:
-            features = {}
-            self._transformer.clear(trace_id)
-        else:
             features = self._transformer.get_features(trace_id)
+        else:
+            features = {}
 
-        metadata = {
-            'trace_n': trace_n,
-            'prefix_len': prefix_len,
-            'event_time': str(event_time),
-        }
+        if is_end:
+            self._transformer.clear(trace_id)
+
+        metadata = self._build_metadata(event, trace_n=trace_n, prefix_len=prefix_len)
 
         return [(trace_id, features, y_true, metadata)]
+
+
+class NextActivityEmitterMap(EmitterMap):
+    def _extract_target(self, event: BEvent) -> str:
+        return event.get_event_name()
 
 
 class PredictorMap(BaseMap):
@@ -107,8 +127,7 @@ class LearnerMap(BaseMap):
             prev_features = self._pending_features[trace_id]
             self._model.learn_one(prev_features, y_true)
             drift_detected = (
-                self._has_drift_detector
-                and self._model.drift_detector.drift_detected
+                self._has_drift_detector and self._model.drift_detector.drift_detected
             )
 
         # Store current features for the next event of the same trace
