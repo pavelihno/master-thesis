@@ -1,144 +1,164 @@
 import argparse
-import subprocess
 import sys
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 from pathlib import Path
 
-
-def find_configs(
-    base_path: str,
-    model_type: str | None = None,
-    dataset: str | None = None,
-) -> list[Path]:
-    """Return sorted YAML configs."""
-    base = Path(base_path)
-
-    if model_type:
-        search_root = base / model_type
-        configs = sorted(search_root.glob('*.yaml')) if search_root.exists() else []
-    else:
-        configs = sorted(
-            p
-            for d in base.iterdir()
-            if d.is_dir() and not d.name.startswith('_')
-            for p in d.glob('*.yaml')
-        )
-
-    if dataset:
-        configs = [c for c in configs if dataset.lower() in c.stem.lower()]
-
-    return configs
+from utils.streaming.experiment.batch import (
+    find_config_files,
+    print_batch_summary,
+    run_config_process,
+    save_comparison_reports,
+)
 
 
-def _run_subprocess(config_path: Path, python_exe: str) -> tuple[Path, bool]:
-    """Launch a single experiment in a child process."""
-    cmd = [python_exe, str(Path(__file__).parent / 'run_train.py'), str(config_path)]
-    result = subprocess.run(cmd, capture_output=False)
-    return config_path, result.returncode == 0
-
-
-def run_experiments(
-    configs: list[Path],
+def run_batch(
+    config_files: list[Path],
     workers: int = 1,
-    python_exe: str = 'python',
-) -> dict[Path, bool]:
-    """Run a list of experiment configs, optionally in parallel."""
+    save_artifacts: bool = True,
+) -> list[dict]:
+    runner_path = Path(__file__).with_name('run_train.py')
+    python_executable = sys.executable
 
-    print(f'Found {len(configs)} config(s).')
+    print(f'Found {len(config_files)} config(s).')
 
     if workers == -1:
         import os
 
         workers = os.cpu_count() or 1
 
-    results: dict[Path, bool] = {}
+    metrics_dir = Path('experiments/outputs/streaming/.tmp_metrics')
+    metrics_dir.mkdir(parents=True, exist_ok=True)
+
+    def _is_hyperparam_search(p: Path) -> bool:
+        import yaml
+
+        with open(p, encoding='utf-8') as f:
+            return bool(yaml.safe_load(f).get('hyperparam_search', False))
+
+    skipped = [c for c in config_files if _is_hyperparam_search(c)]
+    config_files = [c for c in config_files if not _is_hyperparam_search(c)]
+    if skipped:
+        print(f'Skipping {len(skipped)} config(s) with hyperparam_search=true ')
+
+    results: list[dict] = []
 
     if workers == 1:
-        for config_path in configs:
+        for config_path in config_files:
             print(f'\n{"=" * 60}')
             print(f'Running: {config_path.name}')
             print('=' * 60)
-            _, ok = _run_subprocess(config_path, python_exe)
-            results[config_path] = ok
+            result = run_config_process(
+                config_path,
+                runner_path,
+                python_executable,
+                metrics_dir,
+                save_artifacts,
+            )
+            status = 'OK' if result['ok'] else 'FAILED'
+            print(f'[{status}] {config_path.name}')
+            results.append(result)
+            if not result['ok'] and result['stderr_tail']:
+                print(result['stderr_tail'])
     else:
         print(f'Launching up to {workers} experiments in parallel.\n')
-        with ProcessPoolExecutor(max_workers=workers) as pool:
-            futures = {pool.submit(_run_subprocess, c, python_exe): c for c in configs}
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {
+                pool.submit(
+                    run_config_process,
+                    c,
+                    runner_path,
+                    python_executable,
+                    metrics_dir,
+                    save_artifacts,
+                ): c
+                for c in config_files
+            }
             for future in as_completed(futures):
-                config_path, ok = future.result()
-                status = 'OK' if ok else 'FAILED'
+                result = future.result()
+                status = 'OK' if result['ok'] else 'FAILED'
+                config_path = Path(result['config_path'])
                 print(f'[{status}] {config_path.name}')
-                results[config_path] = ok
+                results.append(result)
+                if not result['ok'] and result['stderr_tail']:
+                    print(result['stderr_tail'])
 
     return results
 
 
-def _print_summary(results: dict[Path, bool]) -> int:
-    successful = sum(results.values())
-    failed = len(results) - successful
-
-    print(f'\n{"=" * 60}')
-    print('BATCH SUMMARY')
-    print('=' * 60)
-    print(f'Total      : {len(results)}')
-    print(f'Successful : {successful}')
-    print(f'Failed     : {failed}')
-
-    if failed:
-        print('\nFailed experiments:')
-        for path, ok in results.items():
-            if not ok:
-                print(f'  - {path}')
-        return 1
-
-    return 0
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description='Batch streaming experiment runner.')
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description='Run a batch of streaming experiments.'
+    )
     parser.add_argument(
         '--model',
         type=str,
         default=None,
-        help='Model sub-folder to filter (e.g. streaming_random_patches).',
+        help='Model subfolder to run.',
     )
     parser.add_argument(
         '--dataset',
         type=str,
         default=None,
-        help='Filter configs by dataset name substring (e.g. BPIC_20_DD).',
+        help='Filter config names by dataset substring.',
     )
     parser.add_argument(
         '--base-path',
         type=str,
         default='conf/experiments/streaming',
-        help='Base directory for streaming experiment configs.',
+        help='Directory with streaming configs.',
     )
     parser.add_argument(
         '--workers',
         type=int,
         default=1,
-        help='Number of experiments to run in parallel (-1 = all CPUs, default: 1).',
+        help='Parallel workers (-1 uses all CPUs).',
     )
     parser.add_argument(
-        '--python',
-        type=str,
-        default='python',
-        help='Python executable to use (default: python).',
+        '--no-save-artifacts',
+        action='store_true',
+        help='Run without saving per-run artifacts.',
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        '--report-dir',
+        type=str,
+        default='experiments/outputs/streaming/comparisons',
+        help='Directory for comparison reports.',
+    )
+    parser.add_argument(
+        '--comparison-name',
+        type=str,
+        default=None,
+        help='Optional report prefix.',
+    )
+    return parser.parse_args()
 
-    configs = find_configs(args.base_path, model_type=args.model, dataset=args.dataset)
 
-    if not configs:
+def main() -> None:
+    args = parse_args()
+
+    config_files = find_config_files(
+        args.base_path,
+        model_name=args.model,
+        dataset_name=args.dataset,
+    )
+
+    if not config_files:
         print('No configs found. Check conf/experiments/streaming/.')
         sys.exit(1)
 
-    run_experiments(
-        configs,
+    results = run_batch(
+        config_files,
         workers=args.workers,
-        python_exe=args.python,
+        save_artifacts=not args.no_save_artifacts,
     )
+
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    comparison_name = args.comparison_name or f'streaming_comparison_{timestamp}'
+    save_comparison_reports(results, Path(args.report_dir), comparison_name)
+
+    exit_code = print_batch_summary(results)
+    sys.exit(exit_code)
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ from utils.streaming.transformers import StreamingTransformer
 
 
 def load_traces(dataset_path: str) -> dict[str, list]:
-    """Read an XES file and return a dict mapping trace_id → list of BEvents."""
+    """Read an XES file and return a dict mapping trace_id -> list of BEvents."""
     sink = TraceCollectorSink()
     xes_log_source_from_file(dataset_path).sink(sink)
     return sink.to_dict()
