@@ -66,7 +66,7 @@ def run_config(
         end_events=end_events,
     )
 
-    results_df, model, elapsed_seconds = pipeline.run(dataset_path)
+    results_df, model, elapsed_seconds = pipeline.run(dataset_path=dataset_path)
 
     last_row = results_df.iloc[-1]
     print(

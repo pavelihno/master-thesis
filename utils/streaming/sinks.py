@@ -6,6 +6,14 @@ from pybeamline.stream.base_sink import BaseSink
 from river import metrics as river_metrics
 
 
+class EmptySink(BaseSink):
+    def consume(self, item) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+
+
 class CollectorSink(BaseSink):
     """Accumulates all emitted records into an in-memory list."""
 

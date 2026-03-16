@@ -1,10 +1,13 @@
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from enum import Enum
 
 import pandas as pd
+from pybeamline.bevent import BEvent
 from pybeamline.mappers.print_operator import print_operator
 from pybeamline.sources import string_test_source, xes_log_source_from_file
+from pybeamline.stream.stream import Stream
 from river.base.estimator import Estimator
 
 from utils.streaming.maps import (
@@ -26,6 +29,7 @@ class PipelineMode(Enum):
 class SourceMode(Enum):
     LOG = 'log'
     STRING = 'string'
+    BEVENTS = 'bevents'
 
 
 class Source(ABC):
@@ -48,6 +52,22 @@ class StringSource(Source):
         if string is None:
             raise ValueError('string must be provided for StringSource')
         return string_test_source([string])
+
+
+class BEventSource(Source):
+    def get_source(self, **kwargs):
+        bevents = kwargs.get('bevents')
+        if bevents is None:
+            raise ValueError('bevents must be provided for BEventsSource')
+        if not isinstance(bevents, Iterable):
+            raise TypeError('bevents must be an iterable of BEvent')
+
+        bevents = list(bevents)
+        invalid_items = [event for event in bevents if not isinstance(event, BEvent)]
+        if invalid_items:
+            raise TypeError('bevents must contain only BEvent instances')
+
+        return Stream.from_iterable(bevents)
 
 
 class TaskPipeline(ABC):
@@ -80,16 +100,18 @@ class TaskPipeline(ABC):
         pass
 
     def run(self, debug=False, **kwargs) -> tuple[pd.DataFrame, object, float]:
-        sink = self.get_sink()
 
         emitter = self.get_emitter()
         predictor = self.get_predictor()
         learner = self.get_learner()
+        sink = self.get_sink()
 
         if self.source_mode == SourceMode.LOG:
             source_obj = LogSource()
         elif self.source_mode == SourceMode.STRING:
             source_obj = StringSource()
+        elif self.source_mode == SourceMode.BEVENTS:
+            source_obj = BEventSource()
         else:
             raise ValueError(f'Unknown source mode: {self.source_mode}')
 
