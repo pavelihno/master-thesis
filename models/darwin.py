@@ -44,6 +44,7 @@ class DARWINClassifier(base.Classifier):
         init_size: int,
         batch_size: int,
         dropout: float,
+        epochs: int = 1,
         end_events: set[str] | None = None,
     ):
         self.embedding_dim = embedding_dim
@@ -52,6 +53,7 @@ class DARWINClassifier(base.Classifier):
         self.init_size = init_size
         self.batch_size = batch_size
         self.dropout = dropout
+        self.epochs = epochs
         self.end_events = end_events or set()
 
         self.w2v = None
@@ -220,25 +222,30 @@ class DARWINClassifier(base.Classifier):
         else:
             self.w2v.build_vocab(sequences, update=True)
 
-        self.w2v.train(sequences, total_examples=len(sequences), epochs=1)
+        self.w2v.train(
+            sequences,
+            total_examples=len(sequences),
+            epochs=max(1, self.epochs),
+        )
 
         # LSTM fine-tuning
         self.lstm.train()
         self.head.train()
 
-        for i in range(0, len(samples), self.batch_size):
-            batch = samples[i : i + self.batch_size]
-            batch_sequences = [self._get_prefix(s.prefix_node) for s in batch]
-            batch_labels = torch.tensor([s.label_idx for s in batch])
+        for _ in range(max(1, self.epochs)):
+            for i in range(0, len(samples), self.batch_size):
+                batch = samples[i : i + self.batch_size]
+                batch_sequences = [self._get_prefix(s.prefix_node) for s in batch]
+                batch_labels = torch.tensor([s.label_idx for s in batch])
 
-            tensor = self._to_tensor(batch_sequences)
-            out, _ = self.lstm(tensor)
-            logits = self.head(out[:, -1, :])
+                tensor = self._to_tensor(batch_sequences)
+                out, _ = self.lstm(tensor)
+                logits = self.head(out[:, -1, :])
 
-            loss = self.loss_fn(logits, batch_labels)
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
+                loss = self.loss_fn(logits, batch_labels)
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
     def learn_one(self, x: dict, y: str):
         """Processes a single event and manages initialization or drift adaptation."""
@@ -259,6 +266,10 @@ class DARWINClassifier(base.Classifier):
                 print(f'{self.events_processed} events processed')
                 print(f'Initial vocabulary size: {len(self.vocab)}')
                 print(set(self.vocab.keys()))
+                # for activity in self.vocab.keys():
+                #     if activity in self.w2v.wv:
+                #         vector = self.w2v.wv[activity][:5]
+                #         print(f'Activity: "{activity}", Vector: {vector}...')
 
             if act in self.end_events:
                 self.header_table.pop(case_id, None)
