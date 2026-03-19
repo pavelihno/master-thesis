@@ -25,7 +25,7 @@ def catch_and_reraise(method):
     return wrapper
 
 
-class EmptyOperator(BaseMap):
+class EmptyMap(BaseMap):
     def transform(self, item):
         return [item]
 

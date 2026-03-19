@@ -71,6 +71,11 @@ def create_model(config: dict):
         loss_fn = create_loss_fn(
             params.pop('loss_fn', {'type': 'cross_entropy'})
         )
+        # TODO: early stopping
+        params.pop('early_stopping', None)
+
+        # TODO: learning rate reducer
+        params.pop('lr_reducer', None)
 
         return DARWINClassifier(
             **params,
@@ -109,6 +114,8 @@ def create_optimizer_cls(config: dict) -> Callable:
         return lambda p: optim.AdamW(p, **config)
     elif optimizer_type == 'rmsprop':
         return lambda p: optim.RMSprop(p, **config)
+    elif optimizer_type == 'nadam':
+        return lambda p: optim.NAdam(p, **config)
     else:
         raise ValueError(f"Unknown optimizer type: '{optimizer_type}'.")
 

@@ -12,7 +12,7 @@ from river.base.estimator import Estimator
 
 from utils.streaming.maps import (
     EmitterMap,
-    EmptyOperator,
+    EmptyMap,
     LearnerMap,
     NextActivityEmitterMap,
     PredictorMap,
@@ -122,18 +122,18 @@ class TaskPipeline(ABC):
         if self.mode == PipelineMode.PREDICT_AND_LEARN:
             source.pipe(
                 emitter,
-                print_operator('EMIT> {0}') if debug else EmptyOperator(),
+                print_operator('EMIT> {0}') if debug else EmptyMap(),
                 predictor,
-                print_operator('PREDICT> {0}') if debug else EmptyOperator(),
+                print_operator('PREDICT> {0}') if debug else EmptyMap(),
                 learner,
             ).sink(sink)
 
         elif self.mode == PipelineMode.PREDICT_ONLY:
             source.pipe(
                 emitter,
-                print_operator('EMIT> {0}') if debug else EmptyOperator(),
+                print_operator('EMIT> {0}') if debug else EmptyMap(),
                 predictor,
-                print_operator('PREDICT> {0}') if debug else EmptyOperator(),
+                print_operator('PREDICT> {0}') if debug else EmptyMap(),
             ).sink(sink)
 
         else:

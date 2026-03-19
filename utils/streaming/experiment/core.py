@@ -131,7 +131,7 @@ def save_plots(
     plots_dir = output_dir / 'plots'
     plots_dir.mkdir(exist_ok=True)
 
-    for metric_name in ['accuracy', 'f1']:
+    for metric_name in ['accuracy', 'macro_f1']:
         for window_size in [100, 200]:
             for centered in [True, False]:
                 suffix = 'centered' if centered else 'trailing'
