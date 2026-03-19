@@ -43,6 +43,7 @@ class DARWINClassifier(base.Classifier):
         drift_detector: base.DriftDetector,
         init_size: int,
         batch_size: int,
+        dropout: float,
         end_events: set[str] | None = None,
     ):
         self.embedding_dim = embedding_dim
@@ -50,6 +51,7 @@ class DARWINClassifier(base.Classifier):
         self.sequence_window = sequence_window
         self.init_size = init_size
         self.batch_size = batch_size
+        self.dropout = dropout
         self.end_events = end_events or set()
 
         self.w2v = None
@@ -58,6 +60,7 @@ class DARWINClassifier(base.Classifier):
             input_size=embedding_dim,
             hidden_size=hidden_dim,
             num_layers=lstm_layers,
+            dropout=self.dropout,
             batch_first=True,
         )
         self.head = nn.Linear(hidden_dim, n_classes)
