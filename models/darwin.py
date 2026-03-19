@@ -42,12 +42,14 @@ class DARWINClassifier(base.Classifier):
         n_classes: int,
         drift_detector: base.DriftDetector,
         init_size: int,
+        batch_size: int,
         end_events: set[str] | None = None,
     ):
         self.embedding_dim = embedding_dim
         self.w2v_window = w2v_window
         self.sequence_window = sequence_window
         self.init_size = init_size
+        self.batch_size = batch_size
         self.end_events = end_events or set()
 
         self.w2v = None
@@ -176,17 +178,25 @@ class DARWINClassifier(base.Classifier):
             return self.w2v.wv[activity]
         return np.zeros(self.embedding_dim, dtype=np.float32)
 
-    def _to_tensor(self, activities: list[str]) -> torch.Tensor:
-        """Prepare a zero-padded tensor for LSTM input."""
-        history = activities[-self.sequence_window :]
-        vectors = [self._get_embedding(a) for a in history]
+    def _to_tensor(self, activities_list: list[list[str]] | list[str]) -> torch.Tensor:
+        """Prepare zero-padded tensors for LSTM input."""
+        # Handle single sequence
+        if not activities_list or isinstance(activities_list[0], str):
+            activities_list = [activities_list]
 
-        pad = self.sequence_window - len(vectors)
-        if pad > 0:
-            vectors = [np.zeros(self.embedding_dim, dtype=np.float32)] * pad + vectors
+        vectors_batch = []
+        for activities in activities_list:
+            history = activities[-self.sequence_window :]
+            vectors = [self._get_embedding(a) for a in history]
+            pad = self.sequence_window - len(vectors)
+            if pad > 0:
+                vectors = [
+                    np.zeros(self.embedding_dim, dtype=np.float32)
+                ] * pad + vectors
+            vectors_batch.append(np.stack(vectors))
 
-        # (1, sequence_window, embedding_dim)
-        return torch.tensor(np.stack(vectors), dtype=torch.float32).unsqueeze(0)
+        # (batch_size, sequence_window, embedding_dim)
+        return torch.tensor(np.stack(vectors_batch), dtype=torch.float32)
 
     def _adapt_model(self, samples: list[WindowEntry]) -> None:
         """Updates Word2Vec and fine-tunes the LSTM on the provided window."""
@@ -213,12 +223,16 @@ class DARWINClassifier(base.Classifier):
         self.lstm.train()
         self.head.train()
 
-        for s in samples:
-            tensor = self._to_tensor(self._get_prefix(s.prefix_node))
+        for i in range(0, len(samples), self.batch_size):
+            batch = samples[i : i + self.batch_size]
+            batch_sequences = [self._get_prefix(s.prefix_node) for s in batch]
+            batch_labels = torch.tensor([s.label_idx for s in batch])
+
+            tensor = self._to_tensor(batch_sequences)
             out, _ = self.lstm(tensor)
             logits = self.head(out[:, -1, :])
 
-            loss = self.loss_fn(logits, torch.tensor([s.label_idx]))
+            loss = self.loss_fn(logits, batch_labels)
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
