@@ -232,7 +232,7 @@ class DARWINClassifier(base.Classifier):
         if label not in self.vocab:
             idx = len(self.vocab)
 
-            if idx >= self.max_n_classes:
+            if self.max_n_classes is not None and idx >= self.max_n_classes:
                 raise KeyError(f'Exceeded maximum number of classes: {label}')
 
             self.vocab[label] = idx

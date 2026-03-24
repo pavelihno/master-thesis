@@ -1,0 +1,34 @@
+transformer:
+  type: darwin
+
+model:
+  type: darwin
+  params:
+    w2v_window: 5
+    sequence_window: 4 # 3 - 7
+    embedding_dim: [16, 32] # 2^4 - 2^10
+    lstm_layers: [1, 2, 3]
+    hidden_dim: [10, 150] # 10 - 150
+    dropout: [0.0, 0.4] # 0.0 - 1.0
+    batch_size: [32, 64] # 2^5 - 2^10
+    epochs: [1, 10]
+    dynamic_n_classes: true
+    max_n_classes: 20
+    init_size: 5000
+
+    optimizer:
+      type: nadam
+      lr: [0.00001, 0.0001, 0.001, 0.01, 0.1] # 0.00001 - 0.1
+
+    loss_fn:
+      type: cross_entropy
+
+    drift_detector:
+      type: none
+
+search:
+  method: grid
+  max_trials: 40
+  metric: f1_macro
+  maximize: true
+  init_validation_split: 0.2

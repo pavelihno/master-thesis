@@ -8,20 +8,21 @@ dataset:
   end_events: ["Payment Handled"]
 
 transformer:
-  type: index
-  max_events: null
+  type: [index, dim]
+  max_events: [4, 6, 8]
+  include_prefix_len: false
 
 model:
   type: arf
   params:
-    n_models: 20
-    max_features: sqrt
-    lambda_value: 6
+    n_models: [10, 20, 50]
+    max_features: [sqrt, log2]
+    lambda_value: [4, 6, 8]
 
     disable_weighted_vote: false
 
-    grace_period: 100
-    max_depth: 20
+    grace_period: [50, 100, 200]
+    max_depth: [10, 20, 30]
     split_criterion: info_gain
     delta: 0.001
     tau: 0.05
@@ -29,12 +30,19 @@ model:
     nb_threshold: 10
 
     drift_detector:
-      type: none
+      type: adwin
+      delta: [1.0e-5, 1.0e-4, 1.0e-3]
 
     warning_detector:
-      type: none
+      type: adwin
+      delta: [1.0e-4, 1.0e-3, 1.0e-2]
 
     seed: 42
+
+search:
+  method: grid
+  metric: f1_macro
+  maximize: true
 
 output:
   folder: experiments/outputs/streaming/BPIC_20_DD
