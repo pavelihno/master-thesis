@@ -45,6 +45,7 @@ class DARWINClassifier(base.Classifier):
         batch_size: int,
         dropout: float,
         epochs: int = 1,
+        early_stop_patience: int | None = None,
         end_events: set[str] | None = None,
     ):
         self.embedding_dim = embedding_dim
@@ -54,6 +55,7 @@ class DARWINClassifier(base.Classifier):
         self.batch_size = batch_size
         self.dropout = dropout
         self.epochs = epochs
+        self.early_stop_patience = early_stop_patience
         self.end_events = end_events or set()
 
         self.w2v = None
@@ -62,7 +64,7 @@ class DARWINClassifier(base.Classifier):
             input_size=embedding_dim,
             hidden_size=hidden_dim,
             num_layers=lstm_layers,
-            dropout=self.dropout,
+            dropout=self.dropout if lstm_layers > 1 else 0.0,
             batch_first=True,
         )
         self.head = nn.Linear(hidden_dim, n_classes)
@@ -71,6 +73,8 @@ class DARWINClassifier(base.Classifier):
             list(self.lstm.parameters()) + list(self.head.parameters())
         )
         self.loss_fn = loss_fn
+
+        self.loss_history = []
 
         self.drift_detector = drift_detector
         self.n_classes = n_classes
@@ -232,7 +236,12 @@ class DARWINClassifier(base.Classifier):
         self.lstm.train()
         self.head.train()
 
+        best_loss = float('inf')
+        early_stop_patience_counter = 0
+
         for _ in range(max(1, self.epochs)):
+            epoch_loss_history = []
+
             for i in range(0, len(samples), self.batch_size):
                 batch = samples[i : i + self.batch_size]
                 batch_sequences = [self._get_prefix(s.prefix_node) for s in batch]
@@ -246,6 +255,21 @@ class DARWINClassifier(base.Classifier):
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
+
+                epoch_loss_history.append(loss.item())
+
+            avg_epoch_loss = np.mean(epoch_loss_history)
+            self.loss_history.append(avg_epoch_loss)
+
+            # Early stopping
+            if self.early_stop_patience is not None:
+                if avg_epoch_loss < best_loss:
+                    best_loss = avg_epoch_loss
+                    early_stop_patience_counter = 0
+                else:
+                    early_stop_patience_counter += 1
+                    if early_stop_patience_counter >= self.early_stop_patience:
+                        break
 
     def learn_one(self, x: dict, y: str):
         """Processes a single event and manages initialization or drift adaptation."""
@@ -294,10 +318,7 @@ class DARWINClassifier(base.Classifier):
 
         return self
 
-    def predict_one(self, x: dict) -> str | None:
-        """Predicts the next activity for an ongoing trace."""
-        case_id, act = x['case_id'], x['activity']
-
+    def _get_logits(self, case_id: str, act: str) -> torch.Tensor | None:
         if not self.initialized or not act:
             return None
 
@@ -307,10 +328,44 @@ class DARWINClassifier(base.Classifier):
         tensor = self._to_tensor(full_seq)
 
         self.lstm.eval()
+        self.head.eval()
+
         with torch.no_grad():
             out, _ = self.lstm(tensor)
             logits = self.head(out[:, -1, :])
-            y_idx = int(torch.argmax(logits, dim=1).item())
+
+        return logits
+
+    def predict_proba_one(self, x: dict) -> dict[str, float]:
+        """Returns the probability distribution over known activities."""
+        case_id, act, event_id = x['case_id'], x['activity'], x['event_id']
+
+        self._update_prefix_tree(case_id, act, event_id)
+
+        logits = self._get_logits(case_id, act)
+        if logits is None:
+            return {}
+
+        probabilities = torch.softmax(logits, dim=1).flatten().tolist()
+
+        return {
+            self.idx_to_act[i]: prob
+            for i, prob in enumerate(probabilities)
+            if i in self.idx_to_act
+        }
+
+    def predict_one(self, x: dict) -> str | None:
+        """Predicts the next activity for an ongoing trace."""
+        case_id, act, event_id = x['case_id'], x['activity'], x['event_id']
+
+        self._update_prefix_tree(case_id, act, event_id)
+
+        logits = self._get_logits(case_id, act)
+        if logits is None:
+            return None
+
+        y_idx = int(torch.argmax(logits, dim=1).item())
 
         self.active_predictions[case_id] = y_idx
+
         return self.idx_to_act.get(y_idx)
