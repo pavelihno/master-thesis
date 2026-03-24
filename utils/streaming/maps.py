@@ -84,7 +84,7 @@ class EmitterMap(BaseMap):
 
         metadata = self._build_metadata(event, trace_n=trace_n, prefix_len=prefix_len)
 
-        return [(trace_id, features, y_true, metadata)]
+        return [(trace_id, features, y_true, None, metadata)]
 
 
 class NextActivityEmitterMap(EmitterMap):
@@ -100,7 +100,7 @@ class PredictorMap(BaseMap):
     def transform(
         self, item: tuple[str, dict, any, dict]
     ) -> list[tuple[str, dict, any, any, dict]] | None:
-        trace_id, features, y_true, metadata = item
+        trace_id, features, y_true, _, metadata = item
 
         if features:
             y_pred = self._model.predict_one(features)
@@ -141,15 +141,9 @@ class LearnerMap(BaseMap):
         else:
             self._pending_features.pop(trace_id, None)
 
-        return [
-            (
-                trace_id,
-                features,
-                y_true,
-                y_pred,
-                {**metadata, 'drift_detected': drift_detected},
-            )
-        ]
+        metadata = {**metadata, 'drift_detected': drift_detected}
+
+        return [(trace_id, features, y_true, y_pred, metadata)]
 
 
 class PrequentialClassifierMap(BaseMap):
