@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -14,11 +14,10 @@ from river import base
 
 @dataclass
 class PrefixTreeNode:
-    """A node in the Prefix Tree (T) representing a process activity."""
+    """A node in the Prefix Tree (T) representing a process event."""
 
-    activity_name: str | None
+    event_name: str | None
     parent: PrefixTreeNode | None
-    children: dict[str, PrefixTreeNode] = field(default_factory=dict)
 
 
 @dataclass
@@ -40,11 +39,13 @@ class DARWINClassifier(base.Classifier):
         loss_fn: nn.Module,
         lstm_layers: int,
         hidden_dim: int,
-        n_classes: int,
+        dropout: float,
+        batch_size: int,
         drift_detector: base.DriftDetector,
         init_size: int,
-        batch_size: int,
-        dropout: float,
+        dynamic_n_classes: bool = False,
+        n_classes: int | None = None,
+        max_n_classes: int | None = None,
         epochs: int = 1,
         early_stop_patience: int | None = None,
         end_events: set[str] | None = None,
@@ -59,6 +60,17 @@ class DARWINClassifier(base.Classifier):
         self.early_stop_patience = early_stop_patience
         self.end_events = end_events or set()
 
+        # Class number configuration
+        self.dynamic_n_classes = dynamic_n_classes
+        if dynamic_n_classes:
+            self.max_n_classes = max_n_classes
+            self.n_classes = 0
+        else:
+            if n_classes is None or n_classes <= 0:
+                raise ValueError('In fixed mode, n_classes must be a positive integer')
+            self.max_n_classes = None
+            self.n_classes = n_classes
+
         self.w2v = None
 
         self.lstm = nn.LSTM(
@@ -68,21 +80,18 @@ class DARWINClassifier(base.Classifier):
             dropout=self.dropout if lstm_layers > 1 else 0.0,
             batch_first=True,
         )
-        # TODO: dynamic n_classes handling (new activity can be introduced)
-        self.head = nn.Linear(hidden_dim, n_classes)
+        self.head = None
 
-        self.optimizer = optimizer_cls(
-            list(self.lstm.parameters()) + list(self.head.parameters())
-        )
+        self.optimizer_cls = optimizer_cls
+        self.optimizer = None
         self.loss_fn = loss_fn
 
         self.loss_history = []
 
         self.drift_detector = drift_detector
-        self.n_classes = n_classes
 
         # Prefix tree and header table for the most recent event of each case
-        self.prefix_tree = PrefixTreeNode(activity_name=None, parent=None)
+        self.prefix_tree = PrefixTreeNode(event_name=None, parent=None)
         self.header_table: dict[str, PrefixTreeNode] = {}
         self.previous_events: dict[str, set[int]] = defaultdict(set)
 
@@ -98,8 +107,8 @@ class DARWINClassifier(base.Classifier):
         # Window W
         self.adaptive_window: list[WindowEntry] = []
 
-        self.vocab: dict[str, int] = {}
-        self.idx_to_act: dict[int, str] = {}
+        self.vocab: dict[str, int] = {}  # label -> index
+        self.idx_to_label: dict[int, str] = {}  # index -> label
 
         self.events_processed: int = 0
         self.initialized: bool = False
@@ -107,8 +116,12 @@ class DARWINClassifier(base.Classifier):
     def save_checkpoint(self, path: str | Path) -> None:
         checkpoint = {
             'lstm_state_dict': self.lstm.state_dict(),
-            'head_state_dict': self.head.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
+            'head_state_dict': self.head.state_dict()
+            if self.head is not None
+            else None,
+            'optimizer_state_dict': self.optimizer.state_dict()
+            if self.optimizer is not None
+            else None,
             'runtime_state': {
                 'w2v': self.w2v,
                 'prefix_tree': self.prefix_tree,
@@ -119,9 +132,10 @@ class DARWINClassifier(base.Classifier):
                 'init_buffer': self.init_buffer,
                 'adaptive_window': self.adaptive_window,
                 'vocab': self.vocab,
-                'idx_to_act': self.idx_to_act,
+                'idx_to_label': self.idx_to_label,
                 'events_processed': self.events_processed,
                 'initialized': self.initialized,
+                'n_classes': self.n_classes,
             },
         }
         torch.save(checkpoint, Path(path))
@@ -131,15 +145,9 @@ class DARWINClassifier(base.Classifier):
         path: str | Path,
         device: str | torch.device = 'cpu',
     ) -> DARWINClassifier:
-        checkpoint = torch.load(
-            Path(path),
-            map_location=device,
-            weights_only=False,
-        )
+        checkpoint = torch.load(Path(path), map_location=device, weights_only=False)
 
         self.lstm.load_state_dict(checkpoint['lstm_state_dict'])
-        self.head.load_state_dict(checkpoint['head_state_dict'])
-        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
         runtime_state = checkpoint['runtime_state']
         self.w2v = runtime_state['w2v']
@@ -151,15 +159,42 @@ class DARWINClassifier(base.Classifier):
         self.init_buffer = runtime_state['init_buffer']
         self.adaptive_window = runtime_state['adaptive_window']
         self.vocab = runtime_state['vocab']
-        self.idx_to_act = runtime_state['idx_to_act']
+        self.idx_to_label = runtime_state['idx_to_label']
         self.events_processed = runtime_state['events_processed']
         self.initialized = runtime_state['initialized']
+        self.n_classes = runtime_state.get('n_classes', len(self.vocab))
+
+        head_state = checkpoint.get('head_state_dict')
+        if head_state is not None:
+            out_features, in_features = head_state['weight'].shape
+            self.head = nn.Linear(in_features, out_features)
+            self.head.load_state_dict(head_state)
+            self.n_classes = max(self.n_classes, out_features)
+        else:
+            self.head = None
+
+        opt_state = checkpoint.get('optimizer_state_dict')
+        if self.head is not None:
+            self.optimizer = self.optimizer_cls(
+                list(self.lstm.parameters()) + list(self.head.parameters())
+            )
+            if opt_state is not None:
+                self.optimizer.load_state_dict(opt_state)
+        else:
+            self.optimizer = None
+
         return self
+
+    def _clear(self, case_id: str) -> None:
+        self.header_table.pop(case_id, None)
+        self.previous_events.pop(case_id, None)
+        self.learn_table.pop(case_id, None)
+        self.active_predictions.pop(case_id, None)
 
     def _update_prefix_tree(
         self,
         case_id: str,
-        activity_name: str,
+        event_name: str,
         event_id: int | None = None,
         is_learn: bool = False,
     ) -> None:
@@ -168,7 +203,7 @@ class DARWINClassifier(base.Classifier):
         # Ignore already processed events
         if event_id not in self.previous_events.get(case_id, set()):
             current_node = self.header_table.get(case_id, self.prefix_tree)
-            next_node = PrefixTreeNode(activity_name=activity_name, parent=current_node)
+            next_node = PrefixTreeNode(event_name=event_name, parent=current_node)
             self.header_table[case_id] = next_node
 
             # Mark event as processed
@@ -178,47 +213,80 @@ class DARWINClassifier(base.Classifier):
         # Only update learn table during learning phase
         if is_learn:
             current_node = self.learn_table.get(case_id, self.prefix_tree)
-            next_node = PrefixTreeNode(activity_name=activity_name, parent=current_node)
+            next_node = PrefixTreeNode(event_name=event_name, parent=current_node)
             self.learn_table[case_id] = next_node
 
     def _get_prefix(self, node: PrefixTreeNode) -> list[str]:
-        """Reconstruct the activity sequence by backtracking the tree."""
+        """Reconstruct the event sequence by backtracking the tree."""
         path = []
         curr = node
         while curr.parent is not None:
-            if curr.activity_name is not None:
-                path.append(curr.activity_name)
+            if curr.event_name is not None:
+                path.append(curr.event_name)
             curr = curr.parent
         path.reverse()
         return path[-self.sequence_window :]
 
-    def _map_label(self, activity: str) -> int:
-        """Map activity names to categorical classification indices."""
-        if activity not in self.vocab:
-            idx = len(self.vocab)
-            if idx < self.n_classes:
-                self.vocab[activity] = idx
-                self.idx_to_act[idx] = activity
-            else:
-                return 0
-        return self.vocab[activity]
+    def _map_label(self, label: str) -> int | None:
+        """Map label to categorical classification index."""
+        if label not in self.vocab:
+            if not self.dynamic_n_classes:
+                raise KeyError(f'Unknown label in fixed mode: {label}')
 
-    def _get_embedding(self, activity: str) -> np.ndarray:
-        """Retrieve the Word2Vec embedding for an activity."""
-        if self.w2v is not None and activity in self.w2v.wv:
-            return self.w2v.wv[activity]
+            idx = len(self.vocab)
+            if self.max_n_classes is not None and idx >= self.max_n_classes:
+                raise KeyError(f'Exceeded maximum number of classes: {label}')
+
+            self.vocab[label] = idx
+            self.idx_to_label[idx] = label
+
+            if self.initialized and idx >= self.n_classes:
+                print(f'Expanding vocabulary: {label}')
+                print(f'Current vocabulary size: {len(self.vocab)}')
+                print(set(self.vocab.keys()))
+
+                self._expand_head()
+
+        return self.vocab[label]
+
+    def _expand_head(self) -> None:
+        new_n_classes = len(self.vocab)
+        if new_n_classes <= self.n_classes:
+            return
+
+        old_head = self.head
+        old_n_classes = old_head.out_features
+        hidden_dim = old_head.in_features
+
+        new_head = nn.Linear(hidden_dim, new_n_classes)
+        with torch.no_grad():
+            if old_n_classes > 0:
+                new_head.weight[:old_n_classes].copy_(old_head.weight)
+                new_head.bias[:old_n_classes].copy_(old_head.bias)
+
+        self.head = new_head
+        self.n_classes = new_n_classes
+
+        self.optimizer = self.optimizer_cls(
+            list(self.lstm.parameters()) + list(self.head.parameters())
+        )
+
+    def _get_embedding(self, event: str) -> np.ndarray:
+        """Retrieve the Word2Vec embedding for an event."""
+        if self.w2v is not None and event in self.w2v.wv:
+            return self.w2v.wv[event]
         return np.zeros(self.embedding_dim, dtype=np.float32)
 
-    def _to_tensor(self, activities_list: list[list[str]] | list[str]) -> torch.Tensor:
+    def _to_tensor(self, events_list: list[list[str]] | list[str]) -> torch.Tensor:
         """Prepare zero-padded tensors for LSTM input."""
         # Handle single sequence
-        if not activities_list or isinstance(activities_list[0], str):
-            activities_list = [activities_list]
+        if not events_list or isinstance(events_list[0], str):
+            events_list = [events_list]
 
         vectors_batch = []
-        for activities in activities_list:
-            history = activities[-self.sequence_window :]
-            vectors = [self._get_embedding(a) for a in history]
+        for events in events_list:
+            history = events[-self.sequence_window :]
+            vectors = [self._get_embedding(e) for e in history]
             pad = self.sequence_window - len(vectors)
             if pad > 0:
                 vectors = [
@@ -253,6 +321,19 @@ class DARWINClassifier(base.Classifier):
             total_examples=len(sequences),
             epochs=max(1, self.epochs),
         )
+
+        if self.head is None:
+            self.n_classes = len(self.vocab)
+
+            if self.n_classes == 0:
+                raise ValueError('Cannot initialize head with zero classes')
+
+            self.head = nn.Linear(self.lstm.hidden_size, self.n_classes)
+
+        if self.optimizer is None:
+            self.optimizer = self.optimizer_cls(
+                list(self.lstm.parameters()) + list(self.head.parameters())
+            )
 
         # LSTM fine-tuning
         self.lstm.train()
@@ -295,72 +376,77 @@ class DARWINClassifier(base.Classifier):
 
     def learn_one(self, x: dict, y: str):
         """Processes a single event and manages initialization or drift adaptation."""
-        case_id, act, event_id = x['case_id'], x['activity'], x['event_id']
+        case_id, event, event_id = x['case_id'], x['event'], x['event_id']
 
         y_idx = self._map_label(y)
 
-        self._update_prefix_tree(case_id, act, event_id, is_learn=True)
+        self._update_prefix_tree(case_id, event, event_id, is_learn=True)
 
         node = self.learn_table.get(case_id, self.prefix_tree)
 
-        # print(f'Learn> case_id={case_id}, current_activity="{act}", label="{y}"')
+        # print(f'Learn> case_id={case_id}, current_event="{event}", label="{y}"')
         # print(f'Learn sequence: {self._get_prefix(node)}\n')
 
         if not self.initialized:
-            self.init_buffer.append(WindowEntry(case_id, node, y_idx))
+            if y_idx is not None:
+                self.init_buffer.append(WindowEntry(case_id, node, y_idx))
             self.events_processed += 1
 
             if self.events_processed >= self.init_size:
-                self._adapt_model(self.init_buffer)
-                self.init_buffer = []
-                self.initialized = True
-                print('Initialization completed')
-                print(f'{self.events_processed} events processed')
-                print(f'Initial vocabulary size: {len(self.vocab)}')
-                print(set(self.vocab.keys()))
-                # for activity in self.vocab.keys():
-                #     if activity in self.w2v.wv:
-                #         vector = self.w2v.wv[activity][:5]
-                #         print(f'Activity: "{activity}", Vector: {vector}...')
+                if len(self.init_buffer) > 0:
+                    self._adapt_model(self.init_buffer)
 
-            if act in self.end_events:
-                self.header_table.pop(case_id, None)
+                    self.init_buffer = []
+                    self.initialized = True
+
+                    print('Initialization completed')
+                    print(f'{self.events_processed} events processed')
+                    print(f'Initial vocabulary size: {len(self.vocab)}')
+                    print(set(self.vocab.keys()))
+                    # for event in self.vocab.keys():
+                    #     if event in self.w2v.wv:
+                    #         vector = self.w2v.wv[event][:5]
+                    #         print(f'Event: "{event}", Vector: {vector}...')
+                else:
+                    print('Initialization skipped due to empty buffer')
+
+            if event in self.end_events:
+                self._clear(case_id)
 
             return self
 
         if case_id in self.active_predictions:
             if self.drift_detector is not None:
-                error = 0 if self.active_predictions[case_id] == y_idx else 1
-                self.drift_detector.update(error)
-                self.adaptive_window.append(WindowEntry(case_id, node, y_idx))
+                # Only if label is known
+                if y_idx is not None:
+                    error = 0 if self.active_predictions[case_id] == y_idx else 1
+                    self.drift_detector.update(error)
+                    self.adaptive_window.append(WindowEntry(case_id, node, y_idx))
 
-                if self.drift_detector.drift_detected:
-                    self._adapt_model(self.adaptive_window)
-                    self.adaptive_window = []
+                    if self.drift_detector.drift_detected:
+                        self._adapt_model(self.adaptive_window)
+                        self.adaptive_window = []
 
             del self.active_predictions[case_id]
 
-        if act in self.end_events:
-            self.header_table.pop(case_id, None)
-            self.previous_events.pop(case_id, None)
-            self.learn_table.pop(case_id, None)
-            self.active_predictions.pop(case_id, None)
+        if event in self.end_events:
+            self._clear(case_id)
 
         return self
 
     def _get_logits(
-        self, case_id: str, act: str, event_id: int | None
+        self, case_id: str, event: str, event_id: int | None
     ) -> torch.Tensor | None:
 
-        self._update_prefix_tree(case_id, act, event_id, is_learn=False)
+        self._update_prefix_tree(case_id, event, event_id, is_learn=False)
 
-        if not self.initialized or not act:
+        if not self.initialized:
             return None
 
         node = self.header_table.get(case_id, self.prefix_tree)
         prediction_sequence = self._get_prefix(node)
 
-        # print(f'Predict> case_id={case_id}, current_activity="{act}"')
+        # print(f'Predict> case_id={case_id}, current_event="{event}"')
         # print(f'Prediction sequence: {prediction_sequence}\n')
 
         tensor = self._to_tensor(prediction_sequence)
@@ -375,10 +461,10 @@ class DARWINClassifier(base.Classifier):
         return logits
 
     def predict_proba_one(self, x: dict) -> dict[str, float]:
-        """Returns the probability distribution over known activities."""
-        case_id, act, event_id = x['case_id'], x['activity'], x['event_id']
+        """Returns the probability distribution over known labels."""
+        case_id, event, event_id = x['case_id'], x['event'], x['event_id']
 
-        logits = self._get_logits(case_id, act, event_id)
+        logits = self._get_logits(case_id, event, event_id)
 
         if logits is None:
             return {}
@@ -386,16 +472,16 @@ class DARWINClassifier(base.Classifier):
         probabilities = torch.softmax(logits, dim=1).flatten().tolist()
 
         return {
-            self.idx_to_act[i]: prob
+            self.idx_to_label[i]: prob
             for i, prob in enumerate(probabilities)
-            if i in self.idx_to_act
+            if i in self.idx_to_label
         }
 
     def predict_one(self, x: dict) -> str | None:
-        """Predicts the next activity for an ongoing trace."""
-        case_id, act, event_id = x['case_id'], x['activity'], x['event_id']
+        """Predicts the label for an ongoing trace."""
+        case_id, event, event_id = x['case_id'], x['event'], x['event_id']
 
-        logits = self._get_logits(case_id, act, event_id)
+        logits = self._get_logits(case_id, event, event_id)
 
         if logits is None:
             return None
@@ -404,4 +490,4 @@ class DARWINClassifier(base.Classifier):
 
         self.active_predictions[case_id] = y_idx
 
-        return self.idx_to_act.get(y_idx)
+        return self.idx_to_label.get(y_idx)

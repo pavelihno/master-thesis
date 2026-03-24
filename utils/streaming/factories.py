@@ -71,8 +71,6 @@ def create_model(config: dict):
         loss_fn = create_loss_fn(
             params.pop('loss_fn', {'type': 'cross_entropy'})
         )
-        # TODO: early stopping
-        params.pop('early_stopping', None)
 
         # TODO: learning rate reducer
         params.pop('lr_reducer', None)

@@ -10,7 +10,7 @@ _TRACE_SKIP = {'concept:name'}
 
 
 def _event_data(event: BEvent) -> dict[str, Any]:
-    """Event-level data attributes (activity name and timestamp excluded)."""
+    """Event-level data attributes (event name and timestamp excluded)."""
     return {k: v for k, v in event.event_attributes.items() if k not in _EVENT_SKIP}
 
 
@@ -59,7 +59,7 @@ class ControlFlowTransformer(StreamingTransformer):
     """
     Control-flow only encoding.
 
-    Stores a counter of activity occurrences per trace.
+    Stores a counter of event occurrences per trace.
     """
 
     def __init__(self, include_prefix_len: bool = True):
@@ -162,9 +162,9 @@ class IndexBasedTransformer(StreamingTransformer):
     """
     Index-based encoding.
 
-    Stores last max_events activity names per trace in a deque.
+    Stores last max_events event names per trace in a deque.
     - Static part: trace-level attributes encoded once
-    - Dynamic part: activity name per position
+    - Dynamic part: event name per position
     """
 
     def __init__(self, max_events: int = 10, include_prefix_len: bool = True):
@@ -172,14 +172,14 @@ class IndexBasedTransformer(StreamingTransformer):
 
         self._max_events = max_events
         self._trace_attrs: dict[str, dict] = {}
-        self._activity_deques: dict[str, deque] = {}
+        self._event_deques: dict[str, deque] = {}
 
     def update(self, trace_id: str, event: BEvent) -> None:
         if trace_id not in self._trace_attrs:
             self._trace_attrs[trace_id] = _trace_data(event)
-            self._activity_deques[trace_id] = deque(maxlen=self._max_events)
+            self._event_deques[trace_id] = deque(maxlen=self._max_events)
             self._prefix_lens[trace_id] = 0
-        self._activity_deques[trace_id].append(event.get_event_name())
+        self._event_deques[trace_id].append(event.get_event_name())
         self._prefix_lens[trace_id] += 1
 
     def get_features(self, trace_id: str) -> dict[str, Any]:
@@ -189,7 +189,7 @@ class IndexBasedTransformer(StreamingTransformer):
             _encode_value(features, f'trace_{k}', v)
 
         for i, name in enumerate(
-            reversed(self._activity_deques.get(trace_id, deque()))
+            reversed(self._event_deques.get(trace_id, deque()))
         ):
             features[f'act_{i}'] = name
 
@@ -200,7 +200,7 @@ class IndexBasedTransformer(StreamingTransformer):
 
     def clear(self, trace_id: str) -> None:
         self._trace_attrs.pop(trace_id, None)
-        self._activity_deques.pop(trace_id, None)
+        self._event_deques.pop(trace_id, None)
         self._prefix_lens.pop(trace_id, None)
 
 
@@ -208,7 +208,7 @@ class DimensionTransformer(StreamingTransformer):
     """
     Dimension encoding.
 
-    Stores last max_events (activity_name, event_data) tuples per trace in a deque.
+    Stores last max_events (event_name, event_data) tuples per trace in a deque.
     Full combination of control-flow and data features.
     """
 
@@ -257,19 +257,19 @@ class DARWINTransformer(StreamingTransformer):
     """
     Transformer for DARWIN-style streaming models.
 
-    Stores the most recent activity name per trace and emits:
-    {'case_id': trace_id, 'activity': last_activity_name}
+    Stores the most recent event name per trace and emits:
+    {'case_id': trace_id, 'event': last_event_name, 'event_id': global_event_id}
     """
 
     def __init__(self) -> None:
         super().__init__(include_prefix_len=False)
-        self._last_activity: dict[str, str] = {}
+        self._last_event: dict[str, str] = {}
         self._event_id: int = 0
 
     def update(self, trace_id: str, event: BEvent) -> None:
-        if trace_id not in self._last_activity:
+        if trace_id not in self._last_event:
             self._prefix_lens[trace_id] = 0
-        self._last_activity[trace_id] = event.get_event_name()
+        self._last_event[trace_id] = event.get_event_name()
         self._prefix_lens[trace_id] += 1
         self._event_id += 1
 
@@ -277,9 +277,9 @@ class DARWINTransformer(StreamingTransformer):
         return {
             'case_id': trace_id,
             'event_id': self._event_id,
-            'activity': self._last_activity.get(trace_id, ''),
+            'event': self._last_event.get(trace_id, ''),
         }
 
     def clear(self, trace_id: str) -> None:
-        self._last_activity.pop(trace_id, None)
+        self._last_event.pop(trace_id, None)
         self._prefix_lens.pop(trace_id, None)
