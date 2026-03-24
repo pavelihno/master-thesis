@@ -264,16 +264,19 @@ class DARWINTransformer(StreamingTransformer):
     def __init__(self) -> None:
         super().__init__(include_prefix_len=False)
         self._last_activity: dict[str, str] = {}
+        self._event_id: int = 0
 
     def update(self, trace_id: str, event: BEvent) -> None:
         if trace_id not in self._last_activity:
             self._prefix_lens[trace_id] = 0
         self._last_activity[trace_id] = event.get_event_name()
         self._prefix_lens[trace_id] += 1
+        self._event_id += 1
 
     def get_features(self, trace_id: str) -> dict[str, Any]:
         return {
             'case_id': trace_id,
+            'event_id': self._event_id,
             'activity': self._last_activity.get(trace_id, ''),
         }
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -67,6 +68,7 @@ class DARWINClassifier(base.Classifier):
             dropout=self.dropout if lstm_layers > 1 else 0.0,
             batch_first=True,
         )
+        # TODO: dynamic n_classes handling (new activity can be introduced)
         self.head = nn.Linear(hidden_dim, n_classes)
 
         self.optimizer = optimizer_cls(
@@ -79,9 +81,13 @@ class DARWINClassifier(base.Classifier):
         self.drift_detector = drift_detector
         self.n_classes = n_classes
 
-        # Data Synopsis D = (Hash Table H, Prefix Tree T)
+        # Prefix tree and header table for the most recent event of each case
         self.prefix_tree = PrefixTreeNode(activity_name=None, parent=None)
         self.header_table: dict[str, PrefixTreeNode] = {}
+        self.previous_events: dict[str, set[int]] = defaultdict(set)
+
+        # Separate table for learning
+        self.learn_table: dict[str, PrefixTreeNode] = {}
 
         # Hash table A
         self.active_predictions: dict[str, int] = {}
@@ -107,6 +113,8 @@ class DARWINClassifier(base.Classifier):
                 'w2v': self.w2v,
                 'prefix_tree': self.prefix_tree,
                 'header_table': self.header_table,
+                'learn_table': self.learn_table,
+                'previous_events': self.previous_events,
                 'active_predictions': self.active_predictions,
                 'init_buffer': self.init_buffer,
                 'adaptive_window': self.adaptive_window,
@@ -137,6 +145,8 @@ class DARWINClassifier(base.Classifier):
         self.w2v = runtime_state['w2v']
         self.prefix_tree = runtime_state['prefix_tree']
         self.header_table = runtime_state['header_table']
+        self.learn_table = runtime_state['learn_table']
+        self.previous_events = runtime_state['previous_events']
         self.active_predictions = runtime_state['active_predictions']
         self.init_buffer = runtime_state['init_buffer']
         self.adaptive_window = runtime_state['adaptive_window']
@@ -144,20 +154,32 @@ class DARWINClassifier(base.Classifier):
         self.idx_to_act = runtime_state['idx_to_act']
         self.events_processed = runtime_state['events_processed']
         self.initialized = runtime_state['initialized']
-
         return self
 
-    def _update_prefix_tree(self, case_id: str, activity_name: str) -> PrefixTreeNode:
+    def _update_prefix_tree(
+        self,
+        case_id: str,
+        activity_name: str,
+        event_id: int | None = None,
+        is_learn: bool = False,
+    ) -> None:
         """Update the prefix tree and header table with a new event."""
-        current_node = self.header_table.get(case_id, self.prefix_tree)
-        next_node = current_node.children.get(activity_name)
 
-        if next_node is None:
+        # Ignore already processed events
+        if event_id not in self.previous_events.get(case_id, set()):
+            current_node = self.header_table.get(case_id, self.prefix_tree)
             next_node = PrefixTreeNode(activity_name=activity_name, parent=current_node)
-            current_node.children[activity_name] = next_node
+            self.header_table[case_id] = next_node
 
-        self.header_table[case_id] = next_node
-        return next_node
+            # Mark event as processed
+            if event_id is not None:
+                self.previous_events[case_id].add(event_id)
+
+        # Only update learn table during learning phase
+        if is_learn:
+            current_node = self.learn_table.get(case_id, self.prefix_tree)
+            next_node = PrefixTreeNode(activity_name=activity_name, parent=current_node)
+            self.learn_table[case_id] = next_node
 
     def _get_prefix(self, node: PrefixTreeNode) -> list[str]:
         """Reconstruct the activity sequence by backtracking the tree."""
@@ -273,10 +295,16 @@ class DARWINClassifier(base.Classifier):
 
     def learn_one(self, x: dict, y: str):
         """Processes a single event and manages initialization or drift adaptation."""
-        case_id, act = x['case_id'], x['activity']
+        case_id, act, event_id = x['case_id'], x['activity'], x['event_id']
 
         y_idx = self._map_label(y)
-        node = self._update_prefix_tree(case_id, act)
+
+        self._update_prefix_tree(case_id, act, event_id, is_learn=True)
+
+        node = self.learn_table.get(case_id, self.prefix_tree)
+
+        # print(f'Learn> case_id={case_id}, current_activity="{act}", label="{y}"')
+        # print(f'Learn sequence: {self._get_prefix(node)}\n')
 
         if not self.initialized:
             self.init_buffer.append(WindowEntry(case_id, node, y_idx))
@@ -314,18 +342,28 @@ class DARWINClassifier(base.Classifier):
 
         if act in self.end_events:
             self.header_table.pop(case_id, None)
+            self.previous_events.pop(case_id, None)
+            self.learn_table.pop(case_id, None)
             self.active_predictions.pop(case_id, None)
 
         return self
 
-    def _get_logits(self, case_id: str, act: str) -> torch.Tensor | None:
+    def _get_logits(
+        self, case_id: str, act: str, event_id: int | None
+    ) -> torch.Tensor | None:
+
+        self._update_prefix_tree(case_id, act, event_id, is_learn=False)
+
         if not self.initialized or not act:
             return None
 
-        # Predict based on current state
         node = self.header_table.get(case_id, self.prefix_tree)
-        full_seq = self._get_prefix(node) + [act]
-        tensor = self._to_tensor(full_seq)
+        prediction_sequence = self._get_prefix(node)
+
+        # print(f'Predict> case_id={case_id}, current_activity="{act}"')
+        # print(f'Prediction sequence: {prediction_sequence}\n')
+
+        tensor = self._to_tensor(prediction_sequence)
 
         self.lstm.eval()
         self.head.eval()
@@ -340,9 +378,8 @@ class DARWINClassifier(base.Classifier):
         """Returns the probability distribution over known activities."""
         case_id, act, event_id = x['case_id'], x['activity'], x['event_id']
 
-        self._update_prefix_tree(case_id, act, event_id)
+        logits = self._get_logits(case_id, act, event_id)
 
-        logits = self._get_logits(case_id, act)
         if logits is None:
             return {}
 
@@ -358,9 +395,8 @@ class DARWINClassifier(base.Classifier):
         """Predicts the next activity for an ongoing trace."""
         case_id, act, event_id = x['case_id'], x['activity'], x['event_id']
 
-        self._update_prefix_tree(case_id, act, event_id)
+        logits = self._get_logits(case_id, act, event_id)
 
-        logits = self._get_logits(case_id, act)
         if logits is None:
             return None
 
