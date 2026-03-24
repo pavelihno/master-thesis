@@ -188,9 +188,7 @@ class IndexBasedTransformer(StreamingTransformer):
         for k, v in self._trace_attrs.get(trace_id, {}).items():
             _encode_value(features, f'trace_{k}', v)
 
-        for i, name in enumerate(
-            reversed(self._event_deques.get(trace_id, deque()))
-        ):
+        for i, name in enumerate(reversed(self._event_deques.get(trace_id, deque()))):
             features[f'act_{i}'] = name
 
         if self._include_prefix_len:
@@ -276,8 +274,8 @@ class DARWINTransformer(StreamingTransformer):
     def get_features(self, trace_id: str) -> dict[str, Any]:
         return {
             'case_id': trace_id,
-            'event_id': self._event_id,
             'event': self._last_event.get(trace_id, ''),
+            'event_id': self._event_id,
         }
 
     def clear(self, trace_id: str) -> None:

@@ -67,8 +67,8 @@ class DARWINClassifier(base.Classifier):
             self.n_classes = 0
         else:
             if n_classes is None or n_classes <= 0:
-                raise ValueError('In fixed mode, n_classes must be a positive integer')
-            self.max_n_classes = None
+                raise ValueError('In fixed mode n_classes must be a positive integer')
+            self.max_n_classes = n_classes
             self.n_classes = n_classes
 
         self.w2v = None
@@ -230,22 +230,22 @@ class DARWINClassifier(base.Classifier):
     def _map_label(self, label: str) -> int | None:
         """Map label to categorical classification index."""
         if label not in self.vocab:
-            if not self.dynamic_n_classes:
-                raise KeyError(f'Unknown label in fixed mode: {label}')
-
             idx = len(self.vocab)
-            if self.max_n_classes is not None and idx >= self.max_n_classes:
+
+            if idx >= self.max_n_classes:
                 raise KeyError(f'Exceeded maximum number of classes: {label}')
 
             self.vocab[label] = idx
             self.idx_to_label[idx] = label
 
-            if self.initialized and idx >= self.n_classes:
-                print(f'Expanding vocabulary: {label}')
-                print(f'Current vocabulary size: {len(self.vocab)}')
-                print(set(self.vocab.keys()))
+            if self.dynamic_n_classes:
+                if self.initialized and idx >= self.n_classes:
+                    print(f'Expanding vocabulary: {label}')
+                    print(f'Current vocabulary size: {len(self.vocab)}')
+                    print(set(self.vocab.keys()))
+                    print(set(self.vocab.keys()), '\n')
 
-                self._expand_head()
+                    self._expand_head()
 
         return self.vocab[label]
 
@@ -402,7 +402,8 @@ class DARWINClassifier(base.Classifier):
                     print('Initialization completed')
                     print(f'{self.events_processed} events processed')
                     print(f'Initial vocabulary size: {len(self.vocab)}')
-                    print(set(self.vocab.keys()))
+                    print(set(self.vocab.keys()), '\n')
+
                     # for event in self.vocab.keys():
                     #     if event in self.w2v.wv:
                     #         vector = self.w2v.wv[event][:5]
