@@ -92,6 +92,9 @@ class NextActivityEmitterMap(EmitterMap):
         return event.get_event_name()
 
 
+class OutcomeEmitterMap(EmitterMap):
+    pass
+
 class PredictorMap(BaseMap):
     def __init__(self, model):
         self._model = model

@@ -53,6 +53,8 @@ class DARWINClassifier(base.Classifier):
         self.embedding_dim = embedding_dim
         self.w2v_window = w2v_window
         self.sequence_window = sequence_window
+        self.lstm_layers = lstm_layers
+        self.hidden_dim = hidden_dim
         self.init_size = init_size
         self.batch_size = batch_size
         self.dropout = dropout

@@ -7,13 +7,17 @@ from utils.experiment import ensure_output_dir, load_config
 from utils.streaming.experiment import (
     build_run_summary,
     get_config_hash,
-    load_saved_model,
     make_json_safe,
     save_model,
     save_plots,
     write_results,
 )
-from utils.streaming.factories import create_model, create_pipeline, create_transformer
+from utils.streaming.factories import (
+    create_dataset,
+    create_model,
+    create_pipeline,
+    create_transformer,
+)
 
 
 def run_config_file(config_path: str) -> dict:
@@ -37,8 +41,6 @@ def run_config(
     print(f'Run ID: {run_id}')
     print('=' * 60)
 
-    dataset_path = config['dataset']['dataset_path']
-
     print(f'Task: {config["task"]["type"]}')
     print(f'Mode: {config["task"].get("mode")}')
     print(f'Dataset: {config["dataset"]["dataset_name"]}')
@@ -47,26 +49,17 @@ def run_config(
 
     transformer = create_transformer(config['transformer'])
     model = create_model(config['model'])
-
-    pretrain_path = config['model'].get('pretrain_path')
-    if pretrain_path:
-        pretrain_path = Path(pretrain_path)
-        if not pretrain_path.exists():
-            raise FileNotFoundError(f'pretrain_path not found: {pretrain_path}')
-        print(f'Pretrain: {pretrain_path}')
-        model = load_saved_model(pretrain_path, model)
-
-    end_events_config = config['dataset'].get('end_events')
-    end_events = set(end_events_config) if end_events_config else None
+    dataset_kwargs, dataset_source, end_events = create_dataset(config['dataset'])
 
     pipeline = create_pipeline(
         config['task'],
         model=model,
         transformer=transformer,
         end_events=end_events,
+        source_mode=dataset_source,
     )
 
-    results_df, model, elapsed_seconds = pipeline.run(dataset_path=dataset_path)
+    results_df, model, elapsed_seconds = pipeline.run(**dataset_kwargs)
 
     last_row = results_df.iloc[-1]
     print(

@@ -76,13 +76,13 @@ class TaskPipeline(ABC):
         model: Estimator,
         transformer: StreamingTransformer,
         end_events: set[str] | None = None,
-        mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
+        pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
         source_mode: SourceMode = SourceMode.LOG,
     ):
         self.model = model
         self.transformer = transformer
         self.end_events = end_events
-        self.mode = mode
+        self.pipeline_mode = pipeline_mode
         self.source_mode = source_mode
 
     @abstractmethod
@@ -119,7 +119,7 @@ class TaskPipeline(ABC):
 
         start_time = time.perf_counter()
 
-        if self.mode == PipelineMode.PREDICT_AND_LEARN:
+        if self.pipeline_mode == PipelineMode.PREDICT_AND_LEARN:
             source.pipe(
                 emitter,
                 print_operator('EMIT> {0}') if debug else EmptyMap(),
@@ -128,7 +128,7 @@ class TaskPipeline(ABC):
                 learner,
             ).sink(sink)
 
-        elif self.mode == PipelineMode.PREDICT_ONLY:
+        elif self.pipeline_mode == PipelineMode.PREDICT_ONLY:
             source.pipe(
                 emitter,
                 print_operator('EMIT> {0}') if debug else EmptyMap(),
@@ -137,7 +137,7 @@ class TaskPipeline(ABC):
             ).sink(sink)
 
         else:
-            raise ValueError(f'Unknown pipeline mode: {self.mode}')
+            raise ValueError(f'Unknown pipeline task mode: {self.pipeline_mode}')
 
         elapsed_time = time.perf_counter() - start_time
 
@@ -152,13 +152,19 @@ class NextActivityPredictionPipeline(TaskPipeline):
         model,
         transformer: StreamingTransformer,
         end_events: set[str] | None = None,
-        mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
+        pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
         source_mode: SourceMode = SourceMode.LOG,
     ):
-        super().__init__(model, transformer, end_events, mode, source_mode=source_mode)
+        super().__init__(
+            model, transformer, end_events, pipeline_mode, source_mode=source_mode
+        )
 
     def get_emitter(self):
         return NextActivityEmitterMap(self.transformer, end_events=self.end_events)
 
     def get_sink(self):
         return ClassificationEvaluatorSink()
+
+
+class OutcomePredictionPipeline(TaskPipeline):
+    pass
