@@ -1,3 +1,13 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+
+dataset:
+  dataset_name: synthetic_process
+  source: bevents
+  traces:
+    - [ABCDEF, 1000]
+
 transformer:
   type: darwin
 
@@ -5,20 +15,47 @@ model:
   type: darwin
   params:
     w2v_window: 5
-    sequence_window: 4 # 3 - 7
-    embedding_dim: [16, 32] # 2^4 - 2^10
-    lstm_layers: [1, 2, 3]
-    hidden_dim: [10, 150] # 10 - 150
-    dropout: [0.0, 0.4] # 0.0 - 1.0
-    batch_size: [32, 64] # 2^5 - 2^10
-    epochs: [1, 10]
+
+    sequence_window: # 3 - 7
+      search: choice
+      options: [3, 4, 5, 6, 7]
+
+    embedding_dim: # 2^4 - 2^10
+      search: choice
+      options: [16, 32, 64, 128, 256, 512, 1024]
+
+    lstm_layers: # 1, 2, 3
+      search: choice
+      options: [1, 2, 3]
+
+    hidden_dim: # 10 - 150
+      search: int
+      low: 10
+      high: 150
+      log: true
+
+    dropout: # 0.0 - 1.0
+      search: float
+      low: 0.0
+      high: 1.0
+
+    batch_size: # 2^5 - 2^10
+      search: choice
+      options: [32, 64, 128, 256, 512, 1024]
+
+    epochs: 10
     dynamic_n_classes: true
     max_n_classes: 20
     init_size: 5000
 
     optimizer:
       type: nadam
-      lr: [0.00001, 0.0001, 0.001, 0.01, 0.1] # 0.00001 - 0.1
+      lr: # 10^-5 - 10^-1
+        search: float
+        low: -5
+        high: -1
+        exp: true
+        base: 10
 
     loss_fn:
       type: cross_entropy
@@ -27,8 +64,6 @@ model:
       type: none
 
 search:
-  method: grid
-  max_trials: 40
-  metric: f1_macro
-  maximize: true
-  init_validation_split: 0.2
+  metric: macro_f1
+  max_trials: 150
+  seed: 123

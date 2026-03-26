@@ -1,28 +1,71 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+
+dataset:
+  dataset_name: synthetic_process
+  source: bevents
+  traces:
+    - [ABCDEF, 1000]
+
 transformer:
-  type: [index, dim]
-  max_events: [4, 6, 8]
+  type:
+    search: choice
+    options: [index, dim]
+
+  max_events:
+    search: choice
+    options: [4, 6, 8]
+
   include_prefix_len: false
 
 model:
   type: aht
   params:
     drift_detector:
-      type: adwin
-      delta: [0.0001, 0.001, 0.01]
+      type: none
 
-    grace_period: [50, 100, 200]
-    delta: [0.0001, 0.001, 0.01]
-    tau: [0.01, 0.05]
+    grace_period:
+      search: int
+      low: 50
+      high: 200
+
+    delta:
+      search: float
+      low: -4
+      high: -2
+      exp: true
+      base: 10
+
+    tau:
+      search: float
+      low: 0.01
+      high: 0.1
+
     split_criterion: info_gain
 
-    leaf_prediction: [mc, nba]
-    nb_threshold: 10
+    leaf_prediction:
+      search: choice
+      options: [mc, nba]
 
-    switch_significance: 0.05
-    max_depth: [10, 20, 30]
+    nb_threshold:
+      search: int
+      low: 0
+      high: 20
+
+    switch_significance:
+      search: float
+      low: 0.01
+      high: 0.1
+
+    max_depth:
+      search: int
+      low: 10
+      high: 30
+
     seed: 42
 
 search:
-  method: grid
-  metric: f1_macro
-  maximize: true
+  metric: macro_f1
+  max_trials: 200
+  seed: 123

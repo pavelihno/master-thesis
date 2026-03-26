@@ -401,17 +401,18 @@ class DARWINClassifier(base.Classifier):
                     self.init_buffer = []
                     self.initialized = True
 
-                    print('Initialization completed')
-                    print(f'{self.events_processed} events processed')
-                    print(f'Initial vocabulary size: {len(self.vocab)}')
-                    print(set(self.vocab.keys()), '\n')
+                    # print('Initialization completed')
+                    # print(f'{self.events_processed} events processed')
+                    # print(f'Initial vocabulary size: {len(self.vocab)}')
+                    # print(set(self.vocab.keys()), '\n')
 
                     # for event in self.vocab.keys():
                     #     if event in self.w2v.wv:
                     #         vector = self.w2v.wv[event][:5]
                     #         print(f'Event: "{event}", Vector: {vector}...')
                 else:
-                    print('Initialization skipped due to empty buffer')
+                    pass
+                    # print('Initialization skipped due to empty buffer')
 
             if event in self.end_events:
                 self._clear(case_id)
