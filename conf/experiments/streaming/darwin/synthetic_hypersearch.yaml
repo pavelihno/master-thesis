@@ -46,7 +46,7 @@ model:
     epochs: 10
     dynamic_n_classes: true
     max_n_classes: 20
-    init_size: 5000
+    init_size: 100
 
     optimizer:
       type: nadam
@@ -64,6 +64,7 @@ model:
       type: none
 
 search:
-  metric: macro_f1
-  max_trials: 150
+  metric: loss
+  maximize: false
+  max_trials: 100
   seed: 123

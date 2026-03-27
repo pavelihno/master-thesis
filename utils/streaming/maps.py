@@ -95,6 +95,7 @@ class NextActivityEmitterMap(EmitterMap):
 class OutcomeEmitterMap(EmitterMap):
     pass
 
+
 class PredictorMap(BaseMap):
     def __init__(self, model):
         self._model = model
@@ -110,6 +111,14 @@ class PredictorMap(BaseMap):
         else:
             # No prediction if no features
             y_pred = None
+
+        loss = (
+            self._model.loss_history[-1]
+            if hasattr(self._model, 'loss_history') and self._model.loss_history
+            else None
+        )
+
+        metadata = {**metadata, 'loss': loss}
 
         return [(trace_id, features, y_true, y_pred, metadata)]
 
@@ -144,7 +153,13 @@ class LearnerMap(BaseMap):
         else:
             self._pending_features.pop(trace_id, None)
 
-        metadata = {**metadata, 'drift_detected': drift_detected}
+        loss = (
+            self._model.loss_history[-1]
+            if hasattr(self._model, 'loss_history') and self._model.loss_history
+            else None
+        )
+
+        metadata = {**metadata, 'drift_detected': drift_detected, 'loss': loss}
 
         return [(trace_id, features, y_true, y_pred, metadata)]
 

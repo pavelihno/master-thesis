@@ -54,8 +54,9 @@ class EvaluatorSink(CollectorSink):
         trace_id, features, y_true, y_pred, metadata = item
 
         drift_detected = metadata.pop('drift_detected', False)
-        trace_n = metadata.get('trace_n', -1)
-        prefix_len = metadata.get('prefix_len', -1)
+        trace_n = metadata.pop('trace_n', -1)
+        prefix_len = metadata.pop('prefix_len', -1)
+        loss = metadata.pop('loss', None)
 
         if drift_detected:
             self._n_drifts += 1
@@ -89,6 +90,7 @@ class EvaluatorSink(CollectorSink):
                 'drift_detected': drift_detected,
                 'trace_n': trace_n,
                 'prefix_len': prefix_len,
+                'loss': loss,
                 **metric_vals,
             }
         )
