@@ -1,0 +1,76 @@
+hyperparam_search: true
+
+task:
+  type: next_activity
+  mode: predict_and_learn
+
+dataset:
+  dataset_name: BPIC_20_DD
+  source: log
+  dataset_path: datasets/raw/BPIC_20_DD.xes
+  end_events: ["Payment Handled"]
+
+transformer:
+  type:
+    search: choice
+    options: [index, dim]
+  max_events:
+    search: choice
+    options: [4, 6, 8, 10]
+  include_prefix_len: false
+
+model:
+  type: srp
+  params:
+    n_models:
+      search: choice
+      options: [20, 30, 50, 75, 100]
+
+    subspace_size:
+      search: choice
+      options: [0.4, 0.6, 0.8]
+
+    training_method:
+      search: choice
+      options: [subspaces, resampling, patches]
+
+    lam:
+      search: choice
+      options: [4, 6, 8, 10]
+
+    disable_detector:
+      search: choice
+      options: [off, drift, warning]
+
+    disable_weighted_vote:
+      search: choice
+      options: [false, true]
+
+    drift_detector:
+      type: adwin
+      delta:
+        search: float
+        low: -6
+        high: -3
+        exp: true
+        base: 10
+
+    warning_detector:
+      type: adwin
+      delta:
+        search: float
+        low: -5
+        high: -2
+        exp: true
+        base: 10
+
+    seed: 42
+
+search:
+  metric: macro_f1
+  max_trials: 220
+  maximize: true
+  seed: 123
+
+output:
+  folder: experiments/outputs/streaming/BPIC_20_DD

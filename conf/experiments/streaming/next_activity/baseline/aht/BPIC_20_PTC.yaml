@@ -1,0 +1,33 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+
+dataset:
+  dataset_name: BPIC_20_PTC
+  source: log
+  dataset_path: datasets/raw/BPIC_20_PTC.xes
+  end_events:
+  - Payment Handled
+
+transformer:
+  type: dim
+  include_prefix_len: false
+  max_events: 4
+
+model:
+  type: aht
+  params:
+    drift_detector:
+      type: none
+    delta: 0.00010237438618889403
+    grace_period: 96
+    leaf_prediction: mc
+    max_depth: 30
+    nb_threshold: 13
+    seed: 42
+    split_criterion: info_gain
+    switch_significance: 0.08515835457725245
+    tau: 0.0894989741860326
+
+output:
+  folder: experiments/outputs/streaming/BPIC_20_PTC

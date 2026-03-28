@@ -29,16 +29,18 @@ def run_search(
     if search_name is None:
         dataset_name = config.get('dataset', {}).get('dataset_name', 'dataset')
         model_type = config.get('model', {}).get('type', 'model')
-        search_name = f'{model_type}_{dataset_name}_hypersearch_{timestamp}'
+        search_name = f'{model_type}_hypersearch_{timestamp}'
 
     if report_dir is None:
         report_dir = config.get('output', {}).get('folder')
         if report_dir:
-            report_path = Path(report_dir) / 'hyperparam_search'
+            report_path = Path(report_dir)
         else:
             report_path = Path('experiments/outputs/streaming/hyperparam_search')
     else:
         report_path = Path(report_dir)
+
+    report_path = report_path / search_name
 
     report_path.mkdir(parents=True, exist_ok=True)
 
@@ -98,7 +100,7 @@ def run_search(
     preview_columns = [c for c in summary_columns if c in sorted_df.columns]
     print(sorted_df[preview_columns].to_string(index=False))
 
-    trials_csv = report_path / f'{search_name}_trials.csv'
+    trials_csv = report_path / 'trials.csv'
     sorted_df.to_csv(trials_csv, index=False)
 
     best_row = trial_rows[0]
@@ -106,7 +108,7 @@ def run_search(
     best_model_cfg = best_row['model_cfg']
     best_transformer_cfg = best_row['transformer_cfg']
 
-    best_config_yaml = report_path / f'{search_name}_best_config.yaml'
+    best_config_yaml = report_path / 'best_config.yaml'
     best_config = save_cfg_yaml(
         config,
         model_cfg=best_model_cfg,
@@ -114,7 +116,7 @@ def run_search(
         save_path=best_config_yaml,
     )
 
-    top_models_txt = report_path / f'{search_name}_top_models.txt'
+    top_models_txt = report_path / 'top_models.txt'
     top_rows, _ = save_top_models(
         hyperopt_results,
         config,
@@ -122,7 +124,7 @@ def run_search(
         save_path=top_models_txt,
     )
 
-    best_metrics_json = report_path / f'{search_name}_best_metrics.json'
+    best_metrics_json = report_path / 'best_metrics.json'
     with open(best_metrics_json, 'w', encoding='utf-8') as f:
         json.dump(
             {

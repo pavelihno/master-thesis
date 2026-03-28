@@ -1,0 +1,33 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+
+dataset:
+  dataset_name: Helpdesk
+  source: log
+  dataset_path: datasets/raw/Helpdesk.xes
+  end_events:
+  - Closed
+
+transformer:
+  type: index
+  include_prefix_len: false
+  max_events: 10
+
+model:
+  type: aht
+  params:
+    drift_detector:
+      type: none
+    delta: 0.0002
+    grace_period: 87
+    leaf_prediction: nb
+    max_depth: 20
+    nb_threshold: 30
+    seed: 42
+    split_criterion: info_gain
+    switch_significance: 0.0965735485540318
+    tau: 0.025
+
+output:
+  folder: experiments/outputs/streaming/Helpdesk
