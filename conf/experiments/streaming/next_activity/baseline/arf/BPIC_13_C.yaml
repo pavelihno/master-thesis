@@ -1,0 +1,40 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+
+dataset:
+  dataset_name: BPIC_13_C
+  source: log
+  dataset_path: datasets/raw/BPIC_13_C.xes
+  end_events:
+  - Completed
+
+transformer:
+  include_prefix_len: false
+  max_events: 8
+  type: index
+
+model:
+  params:
+    delta: 0.0005422533117777606
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 1.8931361154549384e-05
+      type: adwin
+    grace_period: 237
+    lambda_value: 10
+    leaf_prediction: nba
+    max_depth: 10
+    max_features: log2
+    n_models: 30
+    nb_threshold: 13
+    seed: 42
+    split_criterion: gini
+    tau: 0.1497226305498029
+    warning_detector:
+      delta: 0.009744664878613075
+      type: adwin
+  type: arf
+
+output:
+  folder: experiments/outputs/streaming/BPIC_13_C

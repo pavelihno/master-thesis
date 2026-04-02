@@ -1,0 +1,36 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_20_PTC
+  source: log
+  dataset_path: datasets/raw/BPIC_20_PTC.xes
+  end_events:
+  - Payment Handled
+transformer:
+  include_prefix_len: false
+  max_events: 4
+  type: index
+model:
+  params:
+    delta: 0.04490726249235134
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 0.0009633935256083563
+      type: adwin
+    grace_period: 138
+    lambda_value: 8
+    leaf_prediction: mc
+    max_depth: 30
+    max_features: 0.5
+    n_models: 30
+    nb_threshold: 11
+    seed: 42
+    split_criterion: info_gain
+    tau: 0.121586611173746
+    warning_detector:
+      delta: 0.009561505888974815
+      type: adwin
+  type: arf
+output:
+  folder: experiments/outputs/streaming/BPIC_20_PTC

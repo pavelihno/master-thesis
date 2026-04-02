@@ -1,0 +1,36 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_20_RFP
+  source: log
+  dataset_path: datasets/raw/BPIC_20_RFP.xes
+  end_events:
+  - Payment Handled
+transformer:
+  include_prefix_len: false
+  max_events: 6
+  type: index
+model:
+  params:
+    delta: 0.0004104477433744148
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 4.6268503767770105e-05
+      type: adwin
+    grace_period: 111
+    lambda_value: 8
+    leaf_prediction: mc
+    max_depth: 20
+    max_features: log2
+    n_models: 30
+    nb_threshold: 13
+    seed: 42
+    split_criterion: info_gain
+    tau: 0.03990577048482248
+    warning_detector:
+      delta: 0.009143286829823764
+      type: adwin
+  type: arf
+output:
+  folder: experiments/outputs/streaming/BPIC_20_RFP

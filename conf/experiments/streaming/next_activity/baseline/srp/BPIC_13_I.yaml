@@ -1,0 +1,31 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_13_I
+  source: log
+  dataset_path: datasets/raw/BPIC_13_I.xes
+  end_events:
+  - Completed
+transformer:
+  include_prefix_len: false
+  max_events: 10
+  type: index
+model:
+  params:
+    disable_detector: 'off'
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 4.27777970502591e-05
+      type: adwin
+    lam: 6
+    n_models: 75
+    seed: 42
+    subspace_size: 0.6
+    training_method: patches
+    warning_detector:
+      delta: 0.0007678806917571789
+      type: adwin
+  type: srp
+output:
+  folder: experiments/outputs/streaming/BPIC_13_I

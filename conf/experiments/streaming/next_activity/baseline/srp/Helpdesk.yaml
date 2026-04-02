@@ -1,0 +1,31 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: Helpdesk
+  source: log
+  dataset_path: datasets/raw/Helpdesk.xes
+  end_events:
+  - Closed
+transformer:
+  include_prefix_len: false
+  max_events: 8
+  type: index
+model:
+  params:
+    disable_detector: 'off'
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 3.973225984035035e-05
+      type: adwin
+    lam: 8
+    n_models: 75
+    seed: 42
+    subspace_size: 0.8
+    training_method: subspaces
+    warning_detector:
+      delta: 0.0007886150257990101
+      type: adwin
+  type: srp
+output:
+  folder: experiments/outputs/streaming/Helpdesk

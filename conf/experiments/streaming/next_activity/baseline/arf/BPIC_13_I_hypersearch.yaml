@@ -5,16 +5,16 @@ task:
   mode: predict_and_learn
 
 dataset:
-  dataset_name: BPIC_20_DD
+  dataset_name: BPIC_13_I
   source: log
-  dataset_path: datasets/raw/BPIC_20_DD.xes
-  end_events: ["Payment Handled"]
+  dataset_path: datasets/raw/BPIC_13_I.xes
+  end_events: ["Completed"]
 
 transformer:
   type: index
   max_events:
     search: choice
-    options: [4, 6, 8]
+    options: [6, 8, 10]
   include_prefix_len: false
 
 model:
@@ -26,42 +26,46 @@ model:
 
     max_features:
       search: choice
-      options: [sqrt, log2, 0.5]
+      options: [sqrt, log2]
 
     lambda_value:
       search: choice
-      options: [6, 8, 10]
+      options: [6, 8]
 
     disable_weighted_vote: false
 
     grace_period:
       search: int
       low: 50
-      high: 150
+      high: 200
 
     max_depth:
       search: choice
-      options: [30, 40]
+      options: [20, 30]
 
-    split_criterion: info_gain
+    split_criterion:
+      search: choice
+      options: [info_gain, gini]
 
     delta:
       search: float
-      low: -4
-      high: -1
+      low: -5
+      high: -2
       exp: true
       base: 10
 
     tau:
       search: float
-      low: 0.08
-      high: 0.18
+      low: 0.01
+      high: 0.15
 
-    leaf_prediction: nba
+    leaf_prediction:
+      search: choice
+      options: [mc, nb]
 
     nb_threshold:
       search: int
-      low: 10
+      low: 5
       high: 25
 
     drift_detector:
@@ -86,9 +90,9 @@ model:
 
 search:
   metric: macro_f1
-  max_trials: 50
+  max_trials: 15
   maximize: true
   seed: 123
 
 output:
-  folder: experiments/outputs/streaming/BPIC_20_DD
+  folder: experiments/outputs/streaming/BPIC_13_I

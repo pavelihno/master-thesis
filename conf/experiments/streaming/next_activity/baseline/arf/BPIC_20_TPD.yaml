@@ -1,0 +1,36 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_20_TPD
+  source: log
+  dataset_path: datasets/raw/BPIC_20_TPD.xes
+  end_events:
+  - Payment Handled
+transformer:
+  include_prefix_len: false
+  max_events: 6
+  type: index
+model:
+  params:
+    delta: 0.0007665504694113083
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 0.00029505034281402705
+      type: adwin
+    grace_period: 145
+    lambda_value: 8
+    leaf_prediction: mc
+    max_depth: 20
+    max_features: sqrt
+    n_models: 50
+    nb_threshold: 21
+    seed: 42
+    split_criterion: info_gain
+    tau: 0.15104207909750478
+    warning_detector:
+      delta: 0.0005704178428919877
+      type: adwin
+  type: arf
+output:
+  folder: experiments/outputs/streaming/BPIC_20_TPD

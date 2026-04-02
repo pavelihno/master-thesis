@@ -1,0 +1,33 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+
+dataset:
+  dataset_name: BPIC_13_I
+  source: log
+  dataset_path: datasets/raw/BPIC_13_I.xes
+  end_events:
+  - Completed
+
+transformer:
+  type: dim
+  max_events: 4
+  include_prefix_len: false
+
+model:
+  type: aht
+  params:
+    drift_detector:
+      type: none
+    delta: 0.00001
+    grace_period: 234
+    leaf_prediction: mc
+    max_depth: 30
+    nb_threshold: 25
+    seed: 42
+    split_criterion: gini
+    switch_significance: 0.11364643643188355
+    tau: 0.11
+
+output:
+  folder: experiments/outputs/streaming/BPIC_13_I

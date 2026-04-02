@@ -1,0 +1,36 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: Helpdesk
+  source: log
+  dataset_path: datasets/raw/Helpdesk.xes
+  end_events:
+  - Closed
+transformer:
+  include_prefix_len: false
+  max_events: 8
+  type: index
+model:
+  params:
+    delta: 0.008268900950111223
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 3.254477301965952e-05
+      type: adwin
+    grace_period: 67
+    lambda_value: 8
+    leaf_prediction: nb
+    max_depth: 15
+    max_features: sqrt
+    n_models: 20
+    nb_threshold: 29
+    seed: 42
+    split_criterion: info_gain
+    tau: 0.022174185993296923
+    warning_detector:
+      delta: 0.0025447167562856698
+      type: adwin
+  type: arf
+output:
+  folder: experiments/outputs/streaming/Helpdesk
