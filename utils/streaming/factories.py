@@ -12,8 +12,13 @@ from river.tree import HoeffdingAdaptiveTreeClassifier
 from models.darwin import DARWINClassifier
 from utils.streaming.drift_detector import NoDriftDetector
 from utils.streaming.experiment import load_saved_model
+from utils.streaming.extractors import (
+    BinaryOutcomeExtractor,
+    MultiClassOutcomeExtractor,
+)
 from utils.streaming.pipelines import (
     NextActivityPredictionPipeline,
+    OutcomePredictionPipeline,
     PipelineMode,
     SourceMode,
 )
@@ -118,9 +123,7 @@ def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
     elif source_mode == SourceMode.BEVENTS:
         trace_specs = config.get('traces')
         if not trace_specs:
-            raise ValueError('traces must be provided e.g. '
-                "['ABCDEF': 10000]"
-            )
+            raise ValueError("traces must be provided e.g. ['ABCDEF': 10000]")
 
         process_name = config.get('dataset_name', 'synthetic_process')
 
@@ -195,6 +198,27 @@ def create_loss_fn(config: dict):
         raise ValueError(f"Unknown criterion type: '{criterion_type}'.")
 
 
+def create_outcome_extractor(config: dict):
+    """Create an outcome extractor for streaming outcome prediction."""
+    regime = config.get('regime', None)
+
+    if regime == 'binary':
+        positive_outcomes = set(config.get('positive_outcomes', []))
+        negative_outcomes = set(config.get('negative_outcomes', []))
+        return BinaryOutcomeExtractor(
+            positive_outcomes=positive_outcomes,
+            negative_outcomes=negative_outcomes,
+        )
+
+    elif regime == 'multiclass':
+        outcome_mapping = dict(config.get('outcome_mapping', {}))
+        return MultiClassOutcomeExtractor(outcome_mapping=outcome_mapping)
+
+    raise ValueError(
+        f"Unknown outcome regime: '{regime}'. Use 'binary' or 'multiclass'."
+    )
+
+
 def create_pipeline(
     config: dict,
     model,
@@ -215,6 +239,17 @@ def create_pipeline(
             end_events=end_events,
             pipeline_mode=pipeline_mode,
             source_mode=source_mode,
+        )
+    elif task_type == 'outcome':
+        outcome_extractor = create_outcome_extractor(config)
+
+        return OutcomePredictionPipeline(
+            model=model,
+            transformer=transformer,
+            end_events=end_events,
+            pipeline_mode=pipeline_mode,
+            source_mode=source_mode,
+            outcome_extractor=outcome_extractor,
         )
     else:
         raise ValueError(f"Unknown task type: '{task_type}'.")

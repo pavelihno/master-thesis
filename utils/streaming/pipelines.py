@@ -10,14 +10,22 @@ from pybeamline.sources import string_test_source, xes_log_source_from_file
 from pybeamline.stream.stream import Stream
 from river.base.estimator import Estimator
 
+from utils.streaming.extractors import OutcomeExtractor
 from utils.streaming.maps import (
     EmitterMap,
     EmptyMap,
     LearnerMap,
     NextActivityEmitterMap,
+    NextActivityLearnerMap,
+    OutcomeEmitterMap,
+    OutcomeLearnerMap,
     PredictorMap,
 )
-from utils.streaming.sinks import ClassificationEvaluatorSink, EvaluatorSink
+from utils.streaming.sinks import (
+    EvaluatorSink,
+    NextActivityEvaluatorSink,
+    OutcomeEvaluatorSink,
+)
 from utils.streaming.transformers import StreamingTransformer
 
 
@@ -89,11 +97,13 @@ class TaskPipeline(ABC):
     def get_emitter(self) -> EmitterMap:
         pass
 
+    @abstractmethod
     def get_predictor(self) -> PredictorMap:
-        return PredictorMap(self.model)
+        pass
 
+    @abstractmethod
     def get_learner(self) -> LearnerMap:
-        return LearnerMap(self.model)
+        pass
 
     @abstractmethod
     def get_sink(self) -> EvaluatorSink:
@@ -162,9 +172,43 @@ class NextActivityPredictionPipeline(TaskPipeline):
     def get_emitter(self):
         return NextActivityEmitterMap(self.transformer, end_events=self.end_events)
 
+    def get_predictor(self):
+        return PredictorMap(self.model)
+
+    def get_learner(self):
+        return NextActivityLearnerMap(self.model)
+
     def get_sink(self):
-        return ClassificationEvaluatorSink()
+        return NextActivityEvaluatorSink()
 
 
 class OutcomePredictionPipeline(TaskPipeline):
-    pass
+    def __init__(
+        self,
+        model,
+        transformer: StreamingTransformer,
+        end_events: set[str] | None = None,
+        pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
+        source_mode: SourceMode = SourceMode.LOG,
+        outcome_extractor: OutcomeExtractor | None = None,
+    ):
+        super().__init__(
+            model, transformer, end_events, pipeline_mode, source_mode=source_mode
+        )
+        self.outcome_extractor = outcome_extractor
+
+    def get_emitter(self):
+        return OutcomeEmitterMap(
+            self.transformer,
+            end_events=self.end_events,
+            outcome_extractor=self.outcome_extractor,
+        )
+
+    def get_predictor(self):
+        return PredictorMap(self.model)
+
+    def get_learner(self):
+        return OutcomeLearnerMap(self.model)
+
+    def get_sink(self):
+        return OutcomeEvaluatorSink()
