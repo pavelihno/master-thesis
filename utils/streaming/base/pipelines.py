@@ -10,6 +10,7 @@ from pybeamline.sources import string_test_source, xes_log_source_from_file
 from pybeamline.stream.stream import Stream
 from river.base.estimator import Estimator
 
+from utils.streaming.base.bucketers import Bucketer
 from utils.streaming.base.emitters import (
     EmitterMap,
     NextActivityEmitter,
@@ -83,7 +84,7 @@ class BEventSource(Source):
 class TaskPipeline(ABC):
     def __init__(
         self,
-        model: Estimator,
+        model: Estimator | Bucketer,
         transformer: StreamingTransformer,
         end_events: set[str] | None = None,
         pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
@@ -161,7 +162,7 @@ class TaskPipeline(ABC):
 class NextActivityPredictionPipeline(TaskPipeline):
     def __init__(
         self,
-        model,
+        model: Estimator | Bucketer,
         transformer: StreamingTransformer,
         end_events: set[str] | None = None,
         pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
@@ -187,7 +188,7 @@ class NextActivityPredictionPipeline(TaskPipeline):
 class OutcomePredictionPipeline(TaskPipeline):
     def __init__(
         self,
-        model,
+        model: Estimator | Bucketer,
         transformer: StreamingTransformer,
         end_events: set[str] | None = None,
         pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
