@@ -3,13 +3,13 @@ import random
 import pandas as pd
 from pybeamline.sources import xes_log_source_from_file
 
-from utils.streaming.sinks import TraceCollectorSink
-from utils.streaming.transformers import StreamingTransformer
+from utils.streaming.base.sinks import TraceCollector
+from utils.streaming.base.transformers import StreamingTransformer
 
 
 def load_traces(dataset_path: str) -> dict[str, list]:
     """Read an XES file and return a dict mapping trace_id -> list of BEvents."""
-    sink = TraceCollectorSink()
+    sink = TraceCollector()
     xes_log_source_from_file(dataset_path).sink(sink)
     return sink.to_dict()
 

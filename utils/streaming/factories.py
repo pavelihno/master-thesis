@@ -10,25 +10,25 @@ from river.forest import ARFClassifier
 from river.tree import HoeffdingAdaptiveTreeClassifier
 
 from models.darwin import DARWINClassifier
-from utils.streaming.drift_detector import NoDriftDetector
-from utils.streaming.experiment import load_saved_model
-from utils.streaming.extractors import (
+from utils.streaming.base.drift_detectors import NoDriftDetector
+from utils.streaming.base.extractors import (
     BinaryOutcomeExtractor,
     MultiClassOutcomeExtractor,
 )
-from utils.streaming.pipelines import (
+from utils.streaming.base.pipelines import (
     NextActivityPredictionPipeline,
     OutcomePredictionPipeline,
     PipelineMode,
     SourceMode,
 )
-from utils.streaming.transformers import (
+from utils.streaming.base.transformers import (
     ControlFlowTransformer,
     DARWINTransformer,
     DataTransformer,
     DimensionTransformer,
     IndexBasedTransformer,
 )
+from utils.streaming.experiment import load_saved_model
 
 
 def create_transformer(config: dict):

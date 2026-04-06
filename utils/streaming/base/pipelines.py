@@ -10,23 +10,25 @@ from pybeamline.sources import string_test_source, xes_log_source_from_file
 from pybeamline.stream.stream import Stream
 from river.base.estimator import Estimator
 
-from utils.streaming.extractors import OutcomeExtractor
-from utils.streaming.maps import (
+from utils.streaming.base.emitters import (
     EmitterMap,
-    EmptyMap,
+    NextActivityEmitter,
+    OutcomeEmitter,
+)
+from utils.streaming.base.extractors import OutcomeExtractor
+from utils.streaming.base.learners import (
     LearnerMap,
-    NextActivityEmitterMap,
-    NextActivityLearnerMap,
-    OutcomeEmitterMap,
-    OutcomeLearnerMap,
-    PredictorMap,
+    NextActivityLearner,
+    OutcomeLearner,
 )
-from utils.streaming.sinks import (
+from utils.streaming.base.maps import EmptyMap
+from utils.streaming.base.predictors import PredictorMap
+from utils.streaming.base.sinks import (
     EvaluatorSink,
-    NextActivityEvaluatorSink,
-    OutcomeEvaluatorSink,
+    NextActivityEvaluator,
+    OutcomeEvaluator,
 )
-from utils.streaming.transformers import StreamingTransformer
+from utils.streaming.base.transformers import StreamingTransformer
 
 
 class PipelineMode(Enum):
@@ -170,16 +172,16 @@ class NextActivityPredictionPipeline(TaskPipeline):
         )
 
     def get_emitter(self):
-        return NextActivityEmitterMap(self.transformer, end_events=self.end_events)
+        return NextActivityEmitter(self.transformer, end_events=self.end_events)
 
     def get_predictor(self):
         return PredictorMap(self.model)
 
     def get_learner(self):
-        return NextActivityLearnerMap(self.model)
+        return NextActivityLearner(self.model)
 
     def get_sink(self):
-        return NextActivityEvaluatorSink()
+        return NextActivityEvaluator()
 
 
 class OutcomePredictionPipeline(TaskPipeline):
@@ -198,7 +200,7 @@ class OutcomePredictionPipeline(TaskPipeline):
         self.outcome_extractor = outcome_extractor
 
     def get_emitter(self):
-        return OutcomeEmitterMap(
+        return OutcomeEmitter(
             self.transformer,
             end_events=self.end_events,
             outcome_extractor=self.outcome_extractor,
@@ -208,7 +210,7 @@ class OutcomePredictionPipeline(TaskPipeline):
         return PredictorMap(self.model)
 
     def get_learner(self):
-        return OutcomeLearnerMap(self.model)
+        return OutcomeLearner(self.model)
 
     def get_sink(self):
-        return OutcomeEvaluatorSink()
+        return OutcomeEvaluator()

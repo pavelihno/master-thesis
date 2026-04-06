@@ -77,7 +77,7 @@ class EvaluatorSink(CollectorSink):
         pass
 
 
-class ClassificationEvaluatorSink(EvaluatorSink):
+class ClassificationEvaluator(EvaluatorSink):
     def _make_metrics(self) -> dict:
         return {
             'accuracy': river_metrics.Accuracy(),
@@ -85,7 +85,7 @@ class ClassificationEvaluatorSink(EvaluatorSink):
         }
 
 
-class RegressionEvaluatorSink(EvaluatorSink):
+class RegressionEvaluator(EvaluatorSink):
     def _make_metrics(self) -> dict:
         return {
             'mae': river_metrics.MAE(),
@@ -93,7 +93,7 @@ class RegressionEvaluatorSink(EvaluatorSink):
         }
 
 
-class NextActivityEvaluatorSink(ClassificationEvaluatorSink):
+class NextActivityEvaluator(ClassificationEvaluator):
     def __init__(self):
         super().__init__()
 
@@ -148,7 +148,7 @@ class NextActivityEvaluatorSink(ClassificationEvaluatorSink):
         self._pending_predictions.clear()
 
 
-class OutcomeEvaluatorSink(ClassificationEvaluatorSink):
+class OutcomeEvaluator(ClassificationEvaluator):
     def __init__(self):
         super().__init__()
 
@@ -224,7 +224,7 @@ class OutcomeEvaluatorSink(ClassificationEvaluatorSink):
         self._pending_predictions.clear()
 
 
-class TraceCollectorSink(BaseSink):
+class TraceCollector(BaseSink):
     """Groups BEvents by trace_id into a dict."""
 
     def __init__(self):
