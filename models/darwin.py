@@ -519,6 +519,13 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         self.vocab: dict[Any, int] = {}  # label -> index
         self.idx_to_label: dict[int, Any] = {}  # index -> label
 
+    @property
+    def _multiclass(self) -> bool:
+        if self.dynamic_n_classes:
+            return True
+        upper = self.max_n_classes if self.max_n_classes is not None else self.n_classes
+        return bool(upper is not None and upper > 2)
+
     def _init_head(self) -> None:
         if self.head is not None:
             return
@@ -612,7 +619,15 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         self.n_classes = task_state.get('n_classes', len(self.vocab))
         self.idx_to_label = task_state['idx_to_label']
 
-    def learn_one(self, x: dict, y: Any) -> None:
+    def predict_proba_one(self, x: dict) -> dict[Any, float]:
+        logits = self._get_logits(x['case_id'], x['event'], x['event_id'])
+        if logits is None or len(self.idx_to_label) == 0:
+            return {}
+
+        probs = torch.softmax(logits, dim=1).reshape(-1).tolist()
+        return {self.idx_to_label[i]: float(probs[i]) for i in range(len(probs))}
+
+    def learn_one(self, x: dict, y: Any):
         return DARWINBase.learn_one(self, x, y)
 
     def predict_one(self, x: dict) -> Any | None:
@@ -690,7 +705,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
     def _load_checkpoint_data(self, checkpoint: dict) -> None:
         task_state = checkpoint.get('task_state', {})
 
-    def learn_one(self, x: dict, y: Any) -> None:
+    def learn_one(self, x: dict, y: Any):
         return DARWINBase.learn_one(self, x, y)
 
     def predict_one(self, x: dict) -> Any | None:
