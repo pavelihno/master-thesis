@@ -15,12 +15,14 @@ from utils.streaming.base.emitters import (
     EmitterMap,
     NextActivityEmitter,
     OutcomeEmitter,
+    RemainingTimeEmitter,
 )
 from utils.streaming.base.extractors import OutcomeExtractor
 from utils.streaming.base.learners import (
     LearnerMap,
     NextActivityLearner,
     OutcomeLearner,
+    RemainingTimeLearner,
 )
 from utils.streaming.base.maps import EmptyMap
 from utils.streaming.base.predictors import PredictorMap
@@ -28,8 +30,10 @@ from utils.streaming.base.sinks import (
     EvaluatorSink,
     NextActivityEvaluator,
     OutcomeEvaluator,
+    RemainingTimeEvaluator,
 )
 from utils.streaming.base.transformers import StreamingTransformer
+from utils.streaming.time import TimeTarget
 
 
 class PipelineMode(Enum):
@@ -215,3 +219,31 @@ class OutcomePredictionPipeline(TaskPipeline):
 
     def get_sink(self):
         return OutcomeEvaluator()
+
+
+class RemainingTimePredictionPipeline(TaskPipeline):
+    def __init__(
+        self,
+        model: Estimator | Bucketer,
+        transformer: StreamingTransformer,
+        end_events: set[str] | None = None,
+        pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
+        source_mode: SourceMode = SourceMode.LOG,
+        target: TimeTarget = TimeTarget.SECONDS,
+    ):
+        super().__init__(
+            model, transformer, end_events, pipeline_mode, source_mode=source_mode
+        )
+        self.target = target
+
+    def get_emitter(self):
+        return RemainingTimeEmitter(self.transformer, end_events=self.end_events)
+
+    def get_predictor(self):
+        return PredictorMap(self.model)
+
+    def get_learner(self):
+        return RemainingTimeLearner(self.model, target=self.target)
+
+    def get_sink(self):
+        return RemainingTimeEvaluator(target=self.target)

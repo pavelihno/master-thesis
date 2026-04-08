@@ -19,6 +19,7 @@ from utils.streaming.base.pipelines import (
     NextActivityPredictionPipeline,
     OutcomePredictionPipeline,
     PipelineMode,
+    RemainingTimePredictionPipeline,
     SourceMode,
 )
 from utils.streaming.base.transformers import (
@@ -29,6 +30,7 @@ from utils.streaming.base.transformers import (
     IndexBasedTransformer,
 )
 from utils.streaming.experiment import load_saved_model
+from utils.streaming.time import TimeTarget
 
 
 def create_transformer(config: dict):
@@ -250,6 +252,17 @@ def create_pipeline(
             pipeline_mode=pipeline_mode,
             source_mode=source_mode,
             outcome_extractor=outcome_extractor,
+        )
+    elif task_type == 'remaining_time':
+        target = TimeTarget(config.get('time_target'))
+
+        return RemainingTimePredictionPipeline(
+            model=model,
+            transformer=transformer,
+            end_events=end_events,
+            pipeline_mode=pipeline_mode,
+            source_mode=source_mode,
+            target=target,
         )
     else:
         raise ValueError(f"Unknown task type: '{task_type}'.")

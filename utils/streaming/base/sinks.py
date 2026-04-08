@@ -7,6 +7,8 @@ from pybeamline.bevent import BEvent
 from pybeamline.stream.base_sink import BaseSink
 from river import metrics as river_metrics
 
+from utils.streaming.time import TimeTarget, convert_time, parse_time
+
 
 class EmptySink(BaseSink):
     def consume(self, item) -> None:
@@ -70,6 +72,7 @@ class EvaluatorSink(CollectorSink):
             'prefix_len': metadata.pop('prefix_len', -1),
             'loss': metadata.pop('loss', None),
             'is_end': metadata.pop('is_end', False),
+            'event_time': metadata.pop('event_time', None),
         }
 
     @abstractmethod
@@ -219,6 +222,83 @@ class OutcomeEvaluator(ClassificationEvaluator):
                 )
 
             self._pending_predictions.pop(trace_id, None)
+
+    def close(self) -> None:
+        self._pending_predictions.clear()
+
+
+class RemainingTimeEvaluator(RegressionEvaluator):
+    def __init__(self, target: TimeTarget = TimeTarget.SECONDS):
+        super().__init__()
+
+        self._target = target
+
+        # trace_id -> [(prefix_len, prefix_time, y_pred)]
+        self._pending_predictions: dict[str, list[tuple[int, Any, Any]]] = defaultdict(
+            list
+        )
+
+    def _get_record(
+        self, trace_id, y_true, y_pred, drift_detected, trace_n, prefix_len, loss
+    ):
+        return {
+            'trace_id': trace_id,
+            'y_true': y_true,
+            'y_pred': y_pred,
+            'n_pred': self._n_pred,
+            'n_drifts': self._n_drifts,
+            'drift_detected': drift_detected,
+            'trace_n': trace_n,
+            'prefix_len': prefix_len,
+            'loss': loss,
+            **self._current_metric_values(),
+        }
+
+    def consume(self, item: tuple[str, dict, Any, Any, dict]) -> None:
+        trace_id, features, y_true, y_pred, metadata = item
+
+        metadata = self._get_metadata(metadata)
+        prefix_len = metadata['prefix_len']
+        is_end = metadata['is_end']
+        trace_n = metadata['trace_n']
+        loss = metadata['loss']
+        drift_detected = metadata['drift_detected']
+        event_time = parse_time(metadata['event_time'])
+
+        if drift_detected:
+            self._n_drifts += 1
+
+        if not is_end:
+            self._pending_predictions[trace_id].append((prefix_len, event_time, y_pred))
+            return
+
+        end_time = event_time
+        for _prefix_len, _prefix_time, _y_pred in self._pending_predictions[trace_id]:
+            if end_time is not None and _prefix_time is not None:
+                _y_true = convert_time(
+                    end_time - _prefix_time,
+                    target=self._target,
+                )
+            else:
+                _y_true = None
+
+            if _y_true is not None and _y_pred is not None:
+                self._n_pred += 1
+                self._update_metrics(_y_true, _y_pred)
+
+            self.records.append(
+                self._get_record(
+                    trace_id=trace_id,
+                    y_true=_y_true,
+                    y_pred=_y_pred,
+                    drift_detected=drift_detected,
+                    trace_n=trace_n,
+                    prefix_len=_prefix_len,
+                    loss=loss,
+                )
+            )
+
+        self._pending_predictions.pop(trace_id, None)
 
     def close(self) -> None:
         self._pending_predictions.clear()

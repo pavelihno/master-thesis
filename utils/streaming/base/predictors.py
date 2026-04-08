@@ -26,7 +26,6 @@ class PredictorMap(BaseMap):
 
         # Predict only if features are provided
         if features:
-            # TODO: include prefix_len by wrapping model for predicting
             y_pred = self._model.predict_one(features)
         else:
             y_pred = None

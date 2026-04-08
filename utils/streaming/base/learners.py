@@ -5,6 +5,7 @@ from typing import Any
 from pybeamline.stream.base_map import BaseMap
 
 from utils.streaming.base.maps import catch_and_reraise
+from utils.streaming.time import TimeTarget, convert_time, parse_time
 
 
 class LearnerMap(BaseMap):
@@ -85,10 +86,8 @@ class OutcomeLearner(LearnerMap):
         if y_true is not None:
             trace_features = self._pending_features.pop(trace_id, [])
             for pending_prefix_len, pending_features in trace_features:
-                # TODO: include prefix_len by wrapping model for learning
-
                 # print(
-                #     f'LEARN> trace_id={trace_id}, prefix_len={pending_prefix_len}, features={pending_features}, y_true={y_true}'
+                #     f'LEARN>trace_id={trace_id}, prefix_len={pending_prefix_len}, features={pending_features}, y_true={y_true}'
                 # )
 
                 self._model.learn_one(pending_features, y_true)
@@ -110,5 +109,56 @@ class OutcomeLearner(LearnerMap):
         return [(trace_id, features, y_true, y_pred, metadata)]
 
 
+class RemainingTimeLearner(LearnerMap):
+    def __init__(self, model, target: TimeTarget = TimeTarget.SECONDS):
+        super().__init__(model)
 
+        self._target = target
 
+        # Features and event times before target is available
+        self._pending_features: dict[str, list[tuple[int, dict, Any]]] = defaultdict(
+            list
+        )
+
+    @catch_and_reraise
+    def transform(
+        self, item: tuple[str, dict, Any, Any, dict]
+    ) -> list[tuple[str, dict, Any, Any, dict]] | None:
+        trace_id, features, y_true, y_pred, metadata = item
+
+        prefix_len = metadata.get('prefix_len', 0)
+        is_end = metadata.get('is_end', False)
+        event_time = parse_time(metadata.get('event_time'))
+
+        drift_detected = False
+
+        # Store prefix features and event timestamps
+        if features and event_time is not None:
+            self._pending_features[trace_id].append((prefix_len, features, event_time))
+
+        # Learn once the trace has ended
+        if is_end and event_time is not None:
+            end_time = event_time
+            trace_features = self._pending_features.pop(trace_id, [])
+
+            for pending_prefix_len, pending_features, prefix_time in trace_features:
+                remaining_time = convert_time(
+                    end_time - prefix_time,
+                    target=self._target,
+                )
+
+                # print(
+                #     f'LEARN>trace_id={trace_id}, prefix_len={pending_prefix_len}, features={pending_features}, y_true={remaining_time}'
+                # )
+
+                self._model.learn_one(pending_features, remaining_time)
+                drift_detected = drift_detected or self._is_drift_detected()
+
+        elif is_end:
+            print(f'Learner warning: Trace {trace_id} ended without valid event time')
+            self._pending_features.pop(trace_id, None)
+
+        loss = self._get_loss()
+        metadata = {**metadata, 'drift_detected': drift_detected, 'loss': loss}
+
+        return [(trace_id, features, y_true, y_pred, metadata)]
