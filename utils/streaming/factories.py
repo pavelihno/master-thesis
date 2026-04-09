@@ -9,7 +9,7 @@ from river.ensemble import SRPClassifier
 from river.forest import ARFClassifier
 from river.tree import HoeffdingAdaptiveTreeClassifier
 
-from models.darwin import DARWINClassifier
+from models.streaming.darwin import DARWINClassifier, DARWINRegressor
 from utils.streaming.base.extractors import (
     BinaryOutcomeExtractor,
     MultiClassOutcomeExtractor,
@@ -74,7 +74,10 @@ def create_model(config: dict):
         )
     elif model_type == 'aht':
         model = HoeffdingAdaptiveTreeClassifier(**params, drift_detector=drift_detector)
-    elif model_type == 'darwin':
+    elif model_type == 'darwin_classifier' or model_type == 'darwin_regressor':
+        darwin_cls = (
+            DARWINClassifier if model_type == 'darwin_classifier' else DARWINRegressor
+        )
         optimizer_cls = create_optimizer_cls(
             params.pop('optimizer', {'type': 'adam', 'lr': 0.001})
         )
@@ -83,7 +86,7 @@ def create_model(config: dict):
         # TODO: learning rate reducer
         params.pop('lr_reducer', None)
 
-        model = DARWINClassifier(
+        model = darwin_cls(
             **params,
             optimizer_cls=optimizer_cls,
             loss_fn=loss_fn,

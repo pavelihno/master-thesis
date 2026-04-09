@@ -14,7 +14,7 @@ transformer:
   type: darwin
 
 model:
-  type: darwin
+  type: darwin_classifier
   params:
     w2v_window: 5
 
