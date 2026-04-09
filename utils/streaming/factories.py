@@ -4,13 +4,12 @@ from pathlib import Path
 import torch.nn as nn
 import torch.optim as optim
 from pybeamline.sources import BEvent
-from river.drift import ADWIN
+from river.drift import ADWIN, KSWIN, NoDrift
 from river.ensemble import SRPClassifier
 from river.forest import ARFClassifier
 from river.tree import HoeffdingAdaptiveTreeClassifier
 
 from models.darwin import DARWINClassifier
-from utils.streaming.base.drift_detectors import NoDriftDetector
 from utils.streaming.base.extractors import (
     BinaryOutcomeExtractor,
     MultiClassOutcomeExtractor,
@@ -152,12 +151,14 @@ def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
 def create_drift_detector(config: dict):
     """Create a drift detector from a config dict."""
     config = dict(config)
-    detector_type = config.pop('type', 'none')
+    detector_type = config.pop('type', 'none').lower()
 
     if detector_type == 'adwin':
         return ADWIN(**config)
+    elif detector_type == 'kswin':
+        return KSWIN(**config)
     elif detector_type == 'none':
-        return NoDriftDetector()
+        return NoDrift()
     else:
         raise ValueError(f"Unknown drift detector type: '{detector_type}'.")
 
