@@ -255,27 +255,31 @@ class DARWINTransformer(StreamingTransformer):
     """
     Transformer for DARWIN-style streaming models.
 
-    Stores the most recent event name per trace and emits:
-    {'case_id': trace_id, 'event': last_event_name, 'event_id': global_event_id}
+    Stores the most recent event per trace.
     """
 
     def __init__(self) -> None:
         super().__init__(include_prefix_len=False)
-        self._last_event: dict[str, str] = {}
-        self._event_id: int = 0
+        self._last_event: dict[str, tuple[BEvent, int]] = {}
+        self._event_id: int = 1
 
     def update(self, trace_id: str, event: BEvent) -> None:
         if trace_id not in self._last_event:
             self._prefix_lens[trace_id] = 0
-        self._last_event[trace_id] = event.get_event_name()
+
+        self._last_event[trace_id] = (event, self._event_id)
         self._prefix_lens[trace_id] += 1
         self._event_id += 1
 
     def get_features(self, trace_id: str) -> dict[str, Any]:
+        _event, _event_id = self._last_event.get(trace_id, (None, 0))
+        if _event is None:
+            return {}
+
         return {
             'case_id': trace_id,
-            'event': self._last_event.get(trace_id, ''),
-            'event_id': self._event_id,
+            'event_id': _event_id,
+            'event_name': _event.get_event_name()
         }
 
     def clear(self, trace_id: str) -> None:

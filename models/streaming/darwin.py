@@ -255,10 +255,10 @@ class DARWINBase(ABC):
         path.reverse()
         return path[-self.sequence_window :]
 
-    def _get_embedding(self, event: str) -> np.ndarray:
+    def _get_embedding(self, event_name: str) -> np.ndarray:
         """Retrieve the Word2Vec embedding for an event."""
-        if self.w2v is not None and event in self.w2v.wv:
-            return self.w2v.wv[event]
+        if self.w2v is not None and event_name in self.w2v.wv:
+            return self.w2v.wv[event_name]
         return np.zeros(self.embedding_dim, dtype=np.float32)
 
     def _to_tensor(self, events_list: list[list[str]] | list[str]) -> torch.Tensor:
@@ -361,15 +361,15 @@ class DARWINBase(ABC):
 
     def learn_one(self, x: dict, y: Any):
         """Process one event and update the online learner state."""
-        case_id, event, event_id = x['case_id'], x['event'], x['event_id']
+        case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
 
         y_target = self._encode_target(y)
 
-        self._update_prefix_tree(case_id, event, event_id, is_learn=True)
+        self._update_prefix_tree(case_id, event_name, event_id, is_learn=True)
 
         node = self.learn_table.get(case_id, self.prefix_tree)
 
-        # print(f'Learn> case_id={case_id}, current_event="{event}", label="{y}"')
+        # print(f'Learn> case_id={case_id}, current_event="{event_name}", label="{y}"')
         # print(f'Learn sequence: {self._get_prefix(node)}\n')
 
         if not self.initialized:
@@ -389,15 +389,15 @@ class DARWINBase(ABC):
                     # print(f'Initial vocabulary size: {len(self.vocab)}')
                     # print(set(self.vocab.keys()), '\n')
 
-                    # for event in self.vocab.keys():
-                    #     if event in self.w2v.wv:
-                    #         vector = self.w2v.wv[event][:5]
-                    #         print(f'Event: "{event}", Vector: {vector}...')
+                    # for event_name in self.vocab.keys():
+                    #     if event_name in self.w2v.wv:
+                    #         vector = self.w2v.wv[event_name][:5]
+                    #         print(f'Event: "{event_name}", Vector: {vector}...')
                 else:
                     pass
                     # print('Initialization skipped due to empty buffer')
 
-            if event in self.end_events:
+            if event_name in self.end_events:
                 self._clear(case_id)
 
             return self
@@ -419,16 +419,16 @@ class DARWINBase(ABC):
 
             del self.active_predictions[case_id]
 
-        if event in self.end_events:
+        if event_name in self.end_events:
             self._clear(case_id)
 
         return self
 
     def _get_logits(
-        self, case_id: str, event: str, event_id: int | None
+        self, case_id: str, event_name: str, event_id: int | None
     ) -> torch.Tensor | None:
 
-        self._update_prefix_tree(case_id, event, event_id, is_learn=False)
+        self._update_prefix_tree(case_id, event_name, event_id, is_learn=False)
 
         if not self.initialized:
             return None
@@ -436,7 +436,7 @@ class DARWINBase(ABC):
         node = self.header_table.get(case_id, self.prefix_tree)
         prediction_sequence = self._get_prefix(node)
 
-        # print(f'Predict> case_id={case_id}, current_event="{event}"')
+        # print(f'Predict> case_id={case_id}, current_event="{event_name}"')
         # print(f'Prediction sequence: {prediction_sequence}\n')
 
         tensor = self._to_tensor(prediction_sequence)
@@ -452,9 +452,9 @@ class DARWINBase(ABC):
 
     def predict_one(self, x: dict) -> Any | None:
         """Predict target for an ongoing case."""
-        case_id, event, event_id = x['case_id'], x['event'], x['event_id']
+        case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
 
-        logits = self._get_logits(case_id, event, event_id)
+        logits = self._get_logits(case_id, event_name, event_id)
 
         if logits is None:
             return None
@@ -620,7 +620,10 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         self.idx_to_label = task_state['idx_to_label']
 
     def predict_proba_one(self, x: dict) -> dict[Any, float]:
-        logits = self._get_logits(x['case_id'], x['event'], x['event_id'])
+        case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
+
+        logits = self._get_logits(case_id, event_name, event_id)
+
         if logits is None or len(self.idx_to_label) == 0:
             return {}
 
