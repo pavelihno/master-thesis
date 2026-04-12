@@ -22,4 +22,3 @@ def catch_and_reraise(method):
 class EmptyMap(BaseMap):
     def transform(self, item):
         return [item]
-

@@ -65,6 +65,10 @@ class EvaluatorSink(CollectorSink):
     def consume(self, item: tuple[str, dict, Any, Any, dict]) -> None:
         pass
 
+    @abstractmethod
+    def close(self) -> None:
+        pass
+
     def _get_metadata(self, metadata: dict) -> dict[str, Any]:
         return {
             'drift_detected': metadata.pop('drift_detected', False),
@@ -74,10 +78,6 @@ class EvaluatorSink(CollectorSink):
             'is_end': metadata.pop('is_end', False),
             'event_time': metadata.pop('event_time', None),
         }
-
-    @abstractmethod
-    def close(self) -> None:
-        pass
 
 
 class ClassificationEvaluator(EvaluatorSink):

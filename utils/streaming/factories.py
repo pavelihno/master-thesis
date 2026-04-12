@@ -168,7 +168,6 @@ def create_drift_detector(config: dict):
 
 def create_optimizer_cls(config: dict) -> Callable:
     """Return an optimizer callable from a config dict."""
-
     config = dict(config)
     optimizer_type = config.pop('type', 'adam').lower()
 
@@ -234,6 +233,7 @@ def create_pipeline(
 ):
     """Create a task pipeline from a config dict."""
     task_type = config.get('type', None)
+    max_events = config.get('max_events', None)
 
     pipeline_mode = PipelineMode(config.get('mode'))
     source_mode = SourceMode(source_mode)
@@ -245,6 +245,7 @@ def create_pipeline(
             end_events=end_events,
             pipeline_mode=pipeline_mode,
             source_mode=source_mode,
+            max_events=max_events,
         )
     elif task_type == 'outcome':
         outcome_extractor = create_outcome_extractor(config)
@@ -256,6 +257,7 @@ def create_pipeline(
             pipeline_mode=pipeline_mode,
             source_mode=source_mode,
             outcome_extractor=outcome_extractor,
+            max_events=max_events,
         )
     elif task_type == 'remaining_time':
         target = TimeTarget(config.get('time_target'))
@@ -267,6 +269,7 @@ def create_pipeline(
             pipeline_mode=pipeline_mode,
             source_mode=source_mode,
             target=target,
+            max_events=max_events,
         )
     else:
         raise ValueError(f"Unknown task type: '{task_type}'.")

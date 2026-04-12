@@ -6,7 +6,9 @@ from enum import Enum
 import pandas as pd
 from pybeamline.bevent import BEvent
 from pybeamline.mappers.print_operator import print_operator
-from pybeamline.sources import string_test_source, xes_log_source_from_file
+from pybeamline.sources import (
+    string_test_source,
+)
 from pybeamline.stream.stream import Stream
 from river.base.estimator import Estimator
 
@@ -33,6 +35,7 @@ from utils.streaming.base.sinks import (
     RemainingTimeEvaluator,
 )
 from utils.streaming.base.transformers import StreamingTransformer
+from utils.streaming.pybeamline import xes_log_source_from_file
 from utils.streaming.time import TimeTarget
 
 
@@ -49,28 +52,35 @@ class SourceMode(Enum):
 
 class Source(ABC):
     @abstractmethod
-    def get_source(self, **kwargs):
+    def get_source(self, max_events: int | None = None, **kwargs):
         pass
 
 
 class LogSource(Source):
-    def get_source(self, **kwargs):
+    def get_source(self, max_events: int | None = None, **kwargs):
         dataset_path = kwargs.get('dataset_path')
         if dataset_path is None:
             raise ValueError('dataset_path must be provided for LogSource')
-        return xes_log_source_from_file(dataset_path)
+
+        return xes_log_source_from_file(dataset_path, max_events=max_events)
 
 
 class StringSource(Source):
-    def get_source(self, **kwargs):
+    def get_source(self, max_events: int | None = None, **kwargs):
         string = kwargs.get('string')
         if string is None:
             raise ValueError('string must be provided for StringSource')
-        return string_test_source([string])
+
+        data = [string]
+
+        if max_events is not None:
+            data = data[:max_events]
+
+        return string_test_source(data)
 
 
 class BEventSource(Source):
-    def get_source(self, **kwargs):
+    def get_source(self, max_events: int | None = None, **kwargs):
         bevents = kwargs.get('bevents')
         if bevents is None:
             raise ValueError('bevents must be provided for BEventsSource')
@@ -81,6 +91,9 @@ class BEventSource(Source):
         invalid_items = [event for event in bevents if not isinstance(event, BEvent)]
         if invalid_items:
             raise TypeError('bevents must contain only BEvent instances')
+
+        if max_events is not None:
+            bevents = bevents[:max_events]
 
         return Stream.from_iterable(bevents)
 
@@ -93,12 +106,14 @@ class TaskPipeline(ABC):
         end_events: set[str] | None = None,
         pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
         source_mode: SourceMode = SourceMode.LOG,
+        max_events: int | None = None,
     ):
         self.model = model
         self.transformer = transformer
         self.end_events = end_events
         self.pipeline_mode = pipeline_mode
         self.source_mode = source_mode
+        self.max_events = max_events
 
     @abstractmethod
     def get_emitter(self) -> EmitterMap:
@@ -132,7 +147,7 @@ class TaskPipeline(ABC):
         else:
             raise ValueError(f'Unknown source mode: {self.source_mode}')
 
-        source = source_obj.get_source(**kwargs)
+        source = source_obj.get_source(max_events=self.max_events, **kwargs)
 
         start_time = time.perf_counter()
 
@@ -171,9 +186,15 @@ class NextActivityPredictionPipeline(TaskPipeline):
         end_events: set[str] | None = None,
         pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
         source_mode: SourceMode = SourceMode.LOG,
+        max_events: int | None = None,
     ):
         super().__init__(
-            model, transformer, end_events, pipeline_mode, source_mode=source_mode
+            model,
+            transformer,
+            end_events,
+            pipeline_mode,
+            source_mode=source_mode,
+            max_events=max_events,
         )
 
     def get_emitter(self):
@@ -198,9 +219,15 @@ class OutcomePredictionPipeline(TaskPipeline):
         pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
         source_mode: SourceMode = SourceMode.LOG,
         outcome_extractor: OutcomeExtractor | None = None,
+        max_events: int | None = None,
     ):
         super().__init__(
-            model, transformer, end_events, pipeline_mode, source_mode=source_mode
+            model,
+            transformer,
+            end_events,
+            pipeline_mode,
+            source_mode=source_mode,
+            max_events=max_events,
         )
         self.outcome_extractor = outcome_extractor
 
@@ -230,9 +257,15 @@ class RemainingTimePredictionPipeline(TaskPipeline):
         pipeline_mode: PipelineMode = PipelineMode.PREDICT_AND_LEARN,
         source_mode: SourceMode = SourceMode.LOG,
         target: TimeTarget = TimeTarget.SECONDS,
+        max_events: int | None = None,
     ):
         super().__init__(
-            model, transformer, end_events, pipeline_mode, source_mode=source_mode
+            model,
+            transformer,
+            end_events,
+            pipeline_mode,
+            source_mode=source_mode,
+            max_events=max_events,
         )
         self.target = target
 
