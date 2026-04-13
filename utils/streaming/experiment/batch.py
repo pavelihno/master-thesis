@@ -5,22 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-
-def _load_config(config_path: Path) -> dict | None:
-    try:
-        import yaml
-
-        with open(config_path, encoding='utf-8') as file:
-            return yaml.safe_load(file) or {}
-    except Exception:
-        return None
-
-
-def _read_config_metadata(config_path: Path) -> tuple[str | None, str | None]:
-    config = _load_config(config_path) or {}
-    dataset_name = config.get('dataset', {}).get('dataset_name')
-    model_name = config.get('model', {}).get('type')
-    return dataset_name, model_name
+from utils.streaming.experiment.naming import load_yaml_config, read_run_info
 
 
 def find_config_files(
@@ -46,7 +31,7 @@ def find_config_files(
 
         filtered_files: list[Path] = []
         for file_path in config_files:
-            config = _load_config(file_path) or {}
+            config = load_yaml_config(file_path) or {}
             config_model = str(config.get('model', {}).get('type', '')).lower()
             config_dataset = str(
                 config.get('dataset', {}).get('dataset_name', '')
@@ -63,7 +48,7 @@ def find_config_files(
     if exclude_hyperparam_search:
         filtered_files = []
         for file_path in config_files:
-            config = _load_config(file_path) or {}
+            config = load_yaml_config(file_path) or {}
             if config.get('hyperparam_search', False):
                 continue
             filtered_files.append(file_path)
@@ -92,8 +77,8 @@ def run_config_process(
         '--results-csv',
         str(results_path),
     ]
-    if not save_artifacts:
-        command.append('--no-save-artifacts')
+    if save_artifacts:
+        command.append('--save-artifacts')
 
     completed = subprocess.run(command, capture_output=True, text=True)
 
@@ -117,7 +102,6 @@ def run_config_process(
 def save_comparison_reports(
     results: list[dict],
     report_dir: Path,
-    report_name: str,
 ) -> Path:
     report_dir.mkdir(parents=True, exist_ok=True)
 
@@ -127,7 +111,7 @@ def save_comparison_reports(
         metrics = result.get('metrics') or {}
         config_path = Path(result['config_path'])
 
-        cfg_dataset, cfg_model_name = _read_config_metadata(config_path)
+        cfg_dataset, cfg_model_name = read_run_info(config_path)
         dataset_name = cfg_dataset
         model_name = cfg_model_name
 
@@ -147,6 +131,13 @@ def save_comparison_reports(
         if result['ok'] and results_csv_path:
             prediction_path = Path(results_csv_path)
             prediction_df = pd.read_csv(prediction_path)
+            if (
+                'dataset_name' not in prediction_df.columns
+                and 'dataset' in prediction_df.columns
+            ):
+                prediction_df = prediction_df.rename(
+                    columns={'dataset': 'dataset_name'}
+                )
             if 'dataset_name' not in prediction_df.columns:
                 prediction_df['dataset_name'] = dataset_name
             if 'model' not in prediction_df.columns:
@@ -157,6 +148,24 @@ def save_comparison_reports(
 
     results_df = pd.DataFrame(summary_rows)
 
+    summary_columns = [
+        'run_id',
+        'config_path',
+        'config_hash',
+        'status',
+        'error',
+        'dataset_name',
+        'model_name',
+        'n_pred',
+        'accuracy',
+        'macro_f1',
+        'n_drifts',
+        'time_s',
+    ]
+    results_df = results_df[
+        [column for column in summary_columns if column in results_df.columns]
+    ]
+
     sort_columns = [
         column
         for column in ['dataset_name', 'model_name', 'feature_encoding', 'macro_f1']
@@ -166,21 +175,17 @@ def save_comparison_reports(
         ascending = [column != 'macro_f1' for column in sort_columns]
         results_df = results_df.sort_values(sort_columns, ascending=ascending)
 
-    summary_filename = (
-        f'{report_name}_comparison_summary.csv'
-        if not report_name.lower().endswith('.csv')
-        else report_name
-    )
-    summary_path = report_dir / summary_filename
+    summary_path = report_dir / 'summary.csv'
     results_df.to_csv(summary_path, index=False)
 
-    prediction_path = report_dir / f'{report_name}_predictions.csv'
+    prediction_path = report_dir / 'predictions.csv'
     if prediction_frames:
         predictions_df = pd.concat(prediction_frames, ignore_index=True)
     else:
         predictions_df = pd.DataFrame()
     predictions_df.to_csv(prediction_path, index=False)
 
+    print(f'\n{"=" * 60}')
     print(f'Comparison CSV (summary)    -> {summary_path}')
     print(f'Comparison CSV (predictions) -> {prediction_path}')
     return summary_path

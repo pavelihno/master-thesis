@@ -1,7 +1,6 @@
 import argparse
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
 from pathlib import Path
 
 from utils.streaming.experiment.batch import (
@@ -9,6 +8,10 @@ from utils.streaming.experiment.batch import (
     print_batch_summary,
     run_config_process,
     save_comparison_reports,
+)
+from utils.streaming.experiment.naming import (
+    build_output_folder_name,
+    read_run_info,
 )
 
 
@@ -37,8 +40,13 @@ def run_batch(
 
     if workers == 1:
         for config_path in config_files:
+            dataset_name, model_name = read_run_info(config_path)
             print(f'\n{"=" * 60}')
-            print(f'Running: {config_path.name}')
+            print(
+                f'Running: {config_path}\n'
+                f'Dataset: {dataset_name or "unknown"}\n'
+                f'Model: {model_name or "unknown"}'
+            )
             print('=' * 60)
             result = run_config_process(
                 config_path,
@@ -56,18 +64,24 @@ def run_batch(
     else:
         print(f'Launching up to {workers} experiments in parallel.\n')
         with ThreadPoolExecutor(max_workers=workers) as pool:
-            futures = {
-                pool.submit(
+            futures = {}
+            for config_path in config_files:
+                dataset_name, model_name = read_run_info(config_path)
+                print(
+                    f'Running: {config_path}\n'
+                    f'Dataset: {dataset_name or "unknown"}\n'
+                    f'Model: {model_name or "unknown"}'
+                )
+                future = pool.submit(
                     run_config_process,
-                    c,
+                    config_path,
                     runner_path,
                     python_executable,
                     metrics_dir,
                     results_dir,
                     save_artifacts,
-                ): c
-                for c in config_files
-            }
+                )
+                futures[future] = config_path
             for future in as_completed(futures):
                 result = future.result()
                 status = 'OK' if result['ok'] else 'FAILED'
@@ -88,13 +102,13 @@ def parse_args() -> argparse.Namespace:
         '--model',
         type=str,
         default=None,
-        help='Model subfolder to run.',
+        help='Filter configs by model.type value.',
     )
     parser.add_argument(
         '--dataset',
         type=str,
         default=None,
-        help='Filter config names by dataset substring.',
+        help='Filter configs by dataset.dataset_name value.',
     )
     parser.add_argument(
         '--base-path',
@@ -112,13 +126,13 @@ def parse_args() -> argparse.Namespace:
         '--report-dir',
         type=str,
         default='experiments/outputs/streaming/comparisons',
-        help='Directory for the combined CSV report.',
+        help='Base directory for batch output folders.',
     )
     parser.add_argument(
         '--comparison-name',
         type=str,
         default=None,
-        help='Optional combined CSV filename prefix.',
+        help='Optional run output folder name under --report-dir.',
     )
     return parser.parse_args()
 
@@ -145,9 +159,14 @@ def main() -> None:
         save_artifacts=False,
     )
 
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    comparison_name = args.comparison_name or f'streaming_comparison_{timestamp}'
-    save_comparison_reports(results, Path(args.report_dir), comparison_name)
+    run_folder_name = build_output_folder_name(
+        custom_name=args.comparison_name,
+        dataset_name=args.dataset,
+        model_name=args.model,
+    )
+
+    output_dir = Path(args.report_dir) / run_folder_name
+    save_comparison_reports(results, output_dir)
 
     exit_code = print_batch_summary(results)
     sys.exit(exit_code)

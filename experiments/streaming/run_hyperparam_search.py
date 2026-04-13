@@ -1,12 +1,15 @@
 import argparse
 import json
-from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 
 from utils.experiment import load_config
-from utils.streaming.experiment import make_json_safe
+from utils.streaming.experiment import (
+    build_output_folder_name,
+    get_dataset_and_model,
+    make_json_safe,
+)
 from utils.streaming.hyperparam import (
     extract_trial_rows,
     run_hyperopt,
@@ -24,12 +27,15 @@ def run_search(
 ) -> dict:
 
     config = load_config(config_path)
+    dataset_name, model_name = get_dataset_and_model(config)
 
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    if search_name is None:
-        dataset_name = config.get('dataset', {}).get('dataset_name', 'dataset')
-        model_type = config.get('model', {}).get('type', 'model')
-        search_name = f'{model_type}_hypersearch_{timestamp}'
+    search_name = build_output_folder_name(
+        custom_name=search_name,
+        dataset_name=dataset_name,
+        model_name=model_name,
+        suffix='hypersearch',
+        fallback_name='search',
+    )
 
     if report_dir is None:
         report_dir = config.get('output', {}).get('folder')

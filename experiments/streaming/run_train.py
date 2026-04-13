@@ -1,12 +1,13 @@
 import argparse
 import json
-from datetime import datetime
 from pathlib import Path
 
 from utils.experiment import ensure_output_dir, load_config
 from utils.streaming.experiment import (
     build_run_summary,
     get_config_hash,
+    get_dataset_and_model,
+    get_timestamp,
     make_json_safe,
     prepare_results_frame,
     save_model,
@@ -34,9 +35,10 @@ def run_config(
     metrics_json_path: str | None = None,
     results_csv_path: str | None = None,
 ) -> dict:
-    model_type = config['model']['type'].lower()
+    dataset_name, model_name = get_dataset_and_model(config)
+    model_type = (model_name or 'model').lower()
     config_hash = get_config_hash(config)
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    timestamp = get_timestamp()
     run_id = f'{model_type}_{config_hash}_{timestamp}'
 
     print('=' * 60)
@@ -45,9 +47,9 @@ def run_config(
 
     print(f'Task: {config["task"]["type"]}')
     print(f'Mode: {config["task"].get("mode")}')
-    print(f'Dataset: {config["dataset"]["dataset_name"]}')
+    print(f'Dataset: {dataset_name}')
     print(f'Transformer: {config["transformer"]["type"]}')
-    print(f'Model: {config["model"]["type"]}')
+    print(f'Model: {model_name}')
 
     transformer = create_transformer(config['transformer'])
     model = create_model(config['model'])
@@ -62,7 +64,6 @@ def run_config(
     )
 
     results_df, model, elapsed_seconds = pipeline.run(**dataset_kwargs)
-    prepared_results_df = prepare_results_frame(config, results_df)
 
     last_row = results_df.iloc[-1]
     print(
@@ -78,16 +79,14 @@ def run_config(
     if save_artifacts:
         output_folder = ensure_output_dir(config) / run_id
         output_folder.mkdir(parents=True, exist_ok=True)
-        write_results(
-            output_folder, run_id, config_path, timestamp, config, prepared_results_df
-        )
+        write_results(output_folder, run_id, config_path, timestamp, config, results_df)
         save_model(output_folder, model)
         save_plots(output_folder, results_df, config['dataset'].get('drift_points'))
 
     if results_csv_path:
         results_path = Path(results_csv_path)
         results_path.parent.mkdir(parents=True, exist_ok=True)
-        prepared_results_df.to_csv(results_path, index=False)
+        prepare_results_frame(config, results_df).to_csv(results_path, index=False)
 
     run_summary = build_run_summary(
         run_id=run_id,

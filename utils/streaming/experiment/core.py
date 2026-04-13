@@ -6,8 +6,6 @@ from typing import Any
 
 import yaml
 
-from utils.streaming.evaluation import plot_stream_metric
-
 
 def get_config_hash(config: dict, length: int = 8) -> str:
     stable_config = {
@@ -31,7 +29,7 @@ def make_json_safe(value: Any) -> Any:
 
 def prepare_results_frame(config: dict, results_df):
     prepared_df = results_df.copy()
-    prepared_df['dataset'] = config.get('dataset', {}).get('dataset_name')
+    prepared_df['dataset_name'] = config.get('dataset', {}).get('dataset_name')
     prepared_df['model'] = config.get('model', {}).get('type')
     return prepared_df
 
@@ -86,7 +84,8 @@ def write_results(
     results_df,
 ) -> None:
     results_path = output_dir / 'results.csv'
-    prepare_results_frame(config, results_df).to_csv(results_path, index=False)
+
+    results_df.to_csv(results_path, index=False)
 
     last_row = results_df.iloc[-1]
     summary_path = output_dir / 'summary.txt'
@@ -128,26 +127,3 @@ def load_saved_model(model_path: Path, model=None):
 
     with open(model_path, 'rb') as file:
         return pickle.load(file)
-
-
-def save_plots(
-    output_dir: Path,
-    results_df,
-    drift_points: list[int] | None = None,
-) -> None:
-    plots_dir = output_dir / 'plots'
-    plots_dir.mkdir(exist_ok=True)
-
-    for metric_name in ['accuracy', 'macro_f1']:
-        for window_size in [100, 200]:
-            for centered in [True, False]:
-                suffix = 'centered' if centered else 'trailing'
-                plot_path = plots_dir / f'{metric_name}_w{window_size}_{suffix}.png'
-                plot_stream_metric(
-                    results_df,
-                    metric=metric_name,
-                    window=window_size,
-                    center_window=centered,
-                    save_path=plot_path,
-                    actual_drift_points=drift_points,
-                )
