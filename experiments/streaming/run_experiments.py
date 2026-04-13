@@ -15,7 +15,7 @@ from utils.streaming.experiment.batch import (
 def run_batch(
     config_files: list[Path],
     workers: int = 1,
-    save_artifacts: bool = True,
+    save_artifacts: bool = False,
 ) -> list[dict]:
     runner_path = Path(__file__).with_name('run_train.py')
     python_executable = sys.executable
@@ -30,16 +30,8 @@ def run_batch(
     metrics_dir = Path('experiments/outputs/streaming/.tmp_metrics')
     metrics_dir.mkdir(parents=True, exist_ok=True)
 
-    def _is_hyperparam_search(p: Path) -> bool:
-        import yaml
-
-        with open(p, encoding='utf-8') as f:
-            return bool(yaml.safe_load(f).get('hyperparam_search', False))
-
-    skipped = [c for c in config_files if _is_hyperparam_search(c)]
-    config_files = [c for c in config_files if not _is_hyperparam_search(c)]
-    if skipped:
-        print(f'Skipping {len(skipped)} config(s) with hyperparam_search=true ')
+    results_dir = Path('experiments/outputs/streaming/.tmp_results')
+    results_dir.mkdir(parents=True, exist_ok=True)
 
     results: list[dict] = []
 
@@ -53,6 +45,7 @@ def run_batch(
                 runner_path,
                 python_executable,
                 metrics_dir,
+                results_dir,
                 save_artifacts,
             )
             status = 'OK' if result['ok'] else 'FAILED'
@@ -70,6 +63,7 @@ def run_batch(
                     runner_path,
                     python_executable,
                     metrics_dir,
+                    results_dir,
                     save_artifacts,
                 ): c
                 for c in config_files
@@ -115,21 +109,16 @@ def parse_args() -> argparse.Namespace:
         help='Parallel workers (-1 uses all CPUs).',
     )
     parser.add_argument(
-        '--no-save-artifacts',
-        action='store_true',
-        help='Run without saving per-run artifacts.',
-    )
-    parser.add_argument(
         '--report-dir',
         type=str,
         default='experiments/outputs/streaming/comparisons',
-        help='Directory for comparison reports.',
+        help='Directory for the combined CSV report.',
     )
     parser.add_argument(
         '--comparison-name',
         type=str,
         default=None,
-        help='Optional report prefix.',
+        help='Optional combined CSV filename prefix.',
     )
     return parser.parse_args()
 
@@ -137,20 +126,23 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
 
+    base_path = Path(args.base_path)
+
     config_files = find_config_files(
-        args.base_path,
+        base_path,
         model_name=args.model,
         dataset_name=args.dataset,
+        exclude_hyperparam_search=True,
     )
 
     if not config_files:
-        print('No configs found. Check conf/experiments/streaming/.')
+        print(f'No configs found. Check {base_path}.')
         sys.exit(1)
 
     results = run_batch(
         config_files,
         workers=args.workers,
-        save_artifacts=not args.no_save_artifacts,
+        save_artifacts=False,
     )
 
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')

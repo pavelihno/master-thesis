@@ -29,6 +29,13 @@ def make_json_safe(value: Any) -> Any:
     return str(value)
 
 
+def prepare_results_frame(config: dict, results_df):
+    prepared_df = results_df.copy()
+    prepared_df['dataset'] = config.get('dataset', {}).get('dataset_name')
+    prepared_df['model'] = config.get('model', {}).get('type')
+    return prepared_df
+
+
 def build_run_summary(
     *,
     run_id: str,
@@ -79,7 +86,7 @@ def write_results(
     results_df,
 ) -> None:
     results_path = output_dir / 'results.csv'
-    results_df.to_csv(results_path, index=False)
+    prepare_results_frame(config, results_df).to_csv(results_path, index=False)
 
     last_row = results_df.iloc[-1]
     summary_path = output_dir / 'summary.txt'

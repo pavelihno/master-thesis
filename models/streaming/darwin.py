@@ -116,7 +116,7 @@ class DARWINBase(ABC):
         pass
 
     @abstractmethod
-    def _get_prediction(self, logits: torch.Tensor) -> tuple[Any, Any]:
+    def _get_pred(self, logits: torch.Tensor) -> tuple[Any, Any]:
         """Return user prediction and drift-comparison value."""
         pass
 
@@ -424,7 +424,7 @@ class DARWINBase(ABC):
 
         return self
 
-    def _get_logits(
+    def _get_pred_logits(
         self, case_id: str, event_name: str, event_id: int | None
     ) -> torch.Tensor | None:
 
@@ -454,12 +454,12 @@ class DARWINBase(ABC):
         """Predict target for an ongoing case."""
         case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
 
-        logits = self._get_logits(case_id, event_name, event_id)
+        logits = self._get_pred_logits(case_id, event_name, event_id)
 
         if logits is None:
             return None
 
-        y_pred, y_pred_target = self._get_prediction(logits)
+        y_pred, y_pred_target = self._get_pred(logits)
 
         self.active_predictions[case_id] = y_pred_target
 
@@ -547,7 +547,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
     def _encode_target(self, y: Any) -> int | None:
         return self._map_label(y)
 
-    def _get_prediction(self, logits: torch.Tensor) -> tuple[Any, int]:
+    def _get_pred(self, logits: torch.Tensor) -> tuple[Any, int]:
         y_idx = int(torch.argmax(logits, dim=1).item())
         return self.idx_to_label.get(y_idx), y_idx
 
@@ -572,10 +572,10 @@ class DARWINClassifier(base.Classifier, DARWINBase):
 
             if self.dynamic_n_classes:
                 if self.initialized and idx >= self.n_classes:
-                    print(f'Expanding vocabulary: {label}')
-                    print(f'Current vocabulary size: {len(self.vocab)}')
-                    print(set(self.vocab.keys()))
-                    print(set(self.vocab.keys()), '\n')
+                    # print(f'Expanding vocabulary: {label}')
+                    # print(f'Current vocabulary size: {len(self.vocab)}')
+                    # print(set(self.vocab.keys()))
+                    # print(set(self.vocab.keys()), '\n')
 
                     self._expand_head()
 
@@ -622,7 +622,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
     def predict_proba_one(self, x: dict) -> dict[Any, float]:
         case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
 
-        logits = self._get_logits(case_id, event_name, event_id)
+        logits = self._get_pred_logits(case_id, event_name, event_id)
 
         if logits is None or len(self.idx_to_label) == 0:
             return {}
@@ -688,7 +688,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             return None
         return float(y)
 
-    def _get_prediction(self, logits: torch.Tensor) -> tuple[float, float]:
+    def _get_pred(self, logits: torch.Tensor) -> tuple[float, float]:
         y_pred = float(logits.reshape(-1)[0].item())
         return y_pred, y_pred
 

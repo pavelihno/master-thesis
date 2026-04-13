@@ -8,6 +8,7 @@ from utils.streaming.experiment import (
     build_run_summary,
     get_config_hash,
     make_json_safe,
+    prepare_results_frame,
     save_model,
     save_plots,
     write_results,
@@ -31,6 +32,7 @@ def run_config(
     *,
     save_artifacts: bool = True,
     metrics_json_path: str | None = None,
+    results_csv_path: str | None = None,
 ) -> dict:
     model_type = config['model']['type'].lower()
     config_hash = get_config_hash(config)
@@ -60,10 +62,12 @@ def run_config(
     )
 
     results_df, model, elapsed_seconds = pipeline.run(**dataset_kwargs)
+    prepared_results_df = prepare_results_frame(config, results_df)
 
     last_row = results_df.iloc[-1]
     print(
         f'\nn_pred={int(last_row.get("n_pred", 0))}, '
+        f'trace_n={int(last_row.get("trace_n", 0))}, '
         f'accuracy={last_row.get("accuracy", 0):.4f}, '
         f'macro_f1={last_row.get("macro_f1", 0):.4f}, '
         f'n_drifts={int(last_row.get("n_drifts", 0))}, '
@@ -74,9 +78,16 @@ def run_config(
     if save_artifacts:
         output_folder = ensure_output_dir(config) / run_id
         output_folder.mkdir(parents=True, exist_ok=True)
-        write_results(output_folder, run_id, config_path, timestamp, config, results_df)
+        write_results(
+            output_folder, run_id, config_path, timestamp, config, prepared_results_df
+        )
         save_model(output_folder, model)
         save_plots(output_folder, results_df, config['dataset'].get('drift_points'))
+
+    if results_csv_path:
+        results_path = Path(results_csv_path)
+        results_path.parent.mkdir(parents=True, exist_ok=True)
+        prepared_results_df.to_csv(results_path, index=False)
 
     run_summary = build_run_summary(
         run_id=run_id,
@@ -113,6 +124,12 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help='Optional JSON path for structured run metrics.',
     )
+    parser.add_argument(
+        '--results-csv',
+        type=str,
+        default=None,
+        help='Optional CSV path for per-row prediction results.',
+    )
     return parser.parse_args()
 
 
@@ -125,6 +142,7 @@ def main():
             config_path=args.config_path,
             save_artifacts=not args.no_save_artifacts,
             metrics_json_path=args.metrics_json,
+            results_csv_path=args.results_csv,
         )
     except Exception as exc:
         if args.metrics_json:
