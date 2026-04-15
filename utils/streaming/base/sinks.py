@@ -73,6 +73,7 @@ class EvaluatorSink(CollectorSink):
         return {
             'drift_detected': metadata.pop('drift_detected', False),
             'trace_n': metadata.pop('trace_n', -1),
+            'event_n': metadata.pop('event_n', -1),
             'prefix_len': metadata.pop('prefix_len', -1),
             'loss': metadata.pop('loss', None),
             'is_end': metadata.pop('is_end', False),
@@ -108,6 +109,7 @@ class NextActivityEvaluator(ClassificationEvaluator):
         metadata = self._get_metadata(metadata)
         drift_detected = metadata['drift_detected']
         trace_n = metadata['trace_n']
+        event_n = metadata['event_n']
         prefix_len = metadata['prefix_len']
         loss = metadata['loss']
 
@@ -135,12 +137,13 @@ class NextActivityEvaluator(ClassificationEvaluator):
         self.records.append(
             {
                 'trace_id': trace_id,
+                'trace_n': trace_n,
+                'event_n': event_n,
                 'y_true': y_true,
                 'y_pred': prev_y_pred,
                 'n_pred': self._n_pred,
                 'n_drifts': self._n_drifts,
                 'drift_detected': drift_detected,
-                'trace_n': trace_n,
                 'prefix_len': prefix_len,
                 'loss': loss,
                 **metric_vals,
@@ -155,19 +158,30 @@ class OutcomeEvaluator(ClassificationEvaluator):
     def __init__(self):
         super().__init__()
 
-        self._pending_predictions: dict[str, list[tuple[int, Any]]] = defaultdict(list)
+        self._pending_predictions: dict[str, list[tuple[int, int, Any]]] = defaultdict(
+            list
+        )
 
     def _get_record(
-        self, trace_id, y_true, y_pred, drift_detected, trace_n, prefix_len, loss
+        self,
+        trace_id,
+        y_true,
+        y_pred,
+        drift_detected,
+        trace_n,
+        event_n,
+        prefix_len,
+        loss,
     ):
         return {
             'trace_id': trace_id,
+            'trace_n': trace_n,
+            'event_n': event_n,
             'y_true': y_true,
             'y_pred': y_pred,
             'n_pred': self._n_pred,
             'n_drifts': self._n_drifts,
             'drift_detected': drift_detected,
-            'trace_n': trace_n,
             'prefix_len': prefix_len,
             'loss': loss,
             **self._current_metric_values(),
@@ -177,6 +191,7 @@ class OutcomeEvaluator(ClassificationEvaluator):
         trace_id, features, y_true, y_pred, metadata = item
 
         metadata = self._get_metadata(metadata)
+        event_n = metadata['event_n']
         prefix_len = metadata['prefix_len']
         is_end = metadata['is_end']
         trace_n = metadata['trace_n']
@@ -185,7 +200,7 @@ class OutcomeEvaluator(ClassificationEvaluator):
 
         if y_true is not None:
             # Evaluate all pending predictions for the same trace
-            for _prefix_len, _y_pred in self._pending_predictions[trace_id]:
+            for _prefix_len, _event_n, _y_pred in self._pending_predictions[trace_id]:
                 if _y_pred is not None:
                     self._update_metrics(y_true, _y_pred)
 
@@ -196,6 +211,7 @@ class OutcomeEvaluator(ClassificationEvaluator):
                         y_pred=_y_pred,
                         drift_detected=drift_detected,
                         trace_n=trace_n,
+                        event_n=_event_n,
                         prefix_len=_prefix_len,
                         loss=loss,
                     )
@@ -205,10 +221,10 @@ class OutcomeEvaluator(ClassificationEvaluator):
 
         else:
             # Store prediction for later evaluation
-            self._pending_predictions[trace_id].append((prefix_len, y_pred))
+            self._pending_predictions[trace_id].append((prefix_len, event_n, y_pred))
 
         if is_end:
-            for _prefix_len, _y_pred in self._pending_predictions[trace_id]:
+            for _prefix_len, _event_n, _y_pred in self._pending_predictions[trace_id]:
                 self.records.append(
                     self._get_record(
                         trace_id=trace_id,
@@ -216,6 +232,7 @@ class OutcomeEvaluator(ClassificationEvaluator):
                         y_pred=_y_pred,
                         drift_detected=drift_detected,
                         trace_n=trace_n,
+                        event_n=_event_n,
                         prefix_len=_prefix_len,
                         loss=loss,
                     )
@@ -233,22 +250,31 @@ class RemainingTimeEvaluator(RegressionEvaluator):
 
         self._target = target
 
-        # trace_id -> [(prefix_len, prefix_time, y_pred)]
-        self._pending_predictions: dict[str, list[tuple[int, Any, Any]]] = defaultdict(
-            list
+        # trace_id -> [(prefix_len, event_n, prefix_time, y_pred)]
+        self._pending_predictions: dict[str, list[tuple[int, int, Any, Any]]] = (
+            defaultdict(list)
         )
 
     def _get_record(
-        self, trace_id, y_true, y_pred, drift_detected, trace_n, prefix_len, loss
+        self,
+        trace_id,
+        y_true,
+        y_pred,
+        drift_detected,
+        trace_n,
+        event_n,
+        prefix_len,
+        loss,
     ):
         return {
             'trace_id': trace_id,
+            'trace_n': trace_n,
+            'event_n': event_n,
             'y_true': y_true,
             'y_pred': y_pred,
             'n_pred': self._n_pred,
             'n_drifts': self._n_drifts,
             'drift_detected': drift_detected,
-            'trace_n': trace_n,
             'prefix_len': prefix_len,
             'loss': loss,
             **self._current_metric_values(),
@@ -259,6 +285,7 @@ class RemainingTimeEvaluator(RegressionEvaluator):
 
         metadata = self._get_metadata(metadata)
         prefix_len = metadata['prefix_len']
+        event_n = metadata['event_n']
         is_end = metadata['is_end']
         trace_n = metadata['trace_n']
         loss = metadata['loss']
@@ -269,11 +296,15 @@ class RemainingTimeEvaluator(RegressionEvaluator):
             self._n_drifts += 1
 
         if not is_end:
-            self._pending_predictions[trace_id].append((prefix_len, event_time, y_pred))
+            self._pending_predictions[trace_id].append(
+                (prefix_len, event_n, event_time, y_pred)
+            )
             return
 
         end_time = event_time
-        for _prefix_len, _prefix_time, _y_pred in self._pending_predictions[trace_id]:
+        for _prefix_len, _event_n, _prefix_time, _y_pred in self._pending_predictions[
+            trace_id
+        ]:
             if end_time is not None and _prefix_time is not None:
                 _y_true = convert_time(
                     end_time - _prefix_time,
@@ -293,6 +324,7 @@ class RemainingTimeEvaluator(RegressionEvaluator):
                     y_pred=_y_pred,
                     drift_detected=drift_detected,
                     trace_n=trace_n,
+                    event_n=_event_n,
                     prefix_len=_prefix_len,
                     loss=loss,
                 )

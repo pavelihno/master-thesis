@@ -18,21 +18,28 @@ class EmitterMap(BaseMap):
         self._transformer = transformer
         self._end_events: set[str] = end_events or set()
         self._trace_n: int = 0
+        self._event_n: int = 0
         self._trace_index: dict[str, int] = {}
 
     @abstractmethod
     def transform(self, event: BEvent) -> list[tuple[str, dict, Any, Any, dict]] | None:
         pass
 
+    def _next_event_n(self) -> int:
+        self._event_n += 1
+        return self._event_n
+
     def _build_metadata(
         self,
         event: BEvent,
         trace_n: int,
+        event_n: int,
         prefix_len: int,
         is_end: bool,
     ) -> dict[str, Any]:
         return {
             'trace_n': trace_n,
+            'event_n': event_n,
             'prefix_len': prefix_len,
             'event_time': str(event.get_event_time()),
             'is_end': is_end,
@@ -57,6 +64,7 @@ class NextActivityEmitter(EmitterMap):
         self._transformer.update(trace_id, event)
         prefix_len = self._transformer.prefix_len(trace_id)
         trace_n = self._trace_index[trace_id]
+        event_n = self._next_event_n()
 
         if is_end:
             features = {}
@@ -65,7 +73,11 @@ class NextActivityEmitter(EmitterMap):
             features = self._transformer.get_features(trace_id)
 
         metadata = self._build_metadata(
-            event, trace_n=trace_n, prefix_len=prefix_len, is_end=is_end
+            event,
+            trace_n=trace_n,
+            event_n=event_n,
+            prefix_len=prefix_len,
+            is_end=is_end,
         )
 
         return [(trace_id, features, y_true, None, metadata)]
@@ -115,13 +127,18 @@ class OutcomeEmitter(EmitterMap):
 
         prefix_len = self._transformer.prefix_len(trace_id)
         trace_n = self._trace_index[trace_id]
+        event_n = self._next_event_n()
 
         if is_end:
             self._transformer.clear(trace_id)
             self._outcomes.pop(trace_id, None)
 
         metadata = self._build_metadata(
-            event, trace_n=trace_n, prefix_len=prefix_len, is_end=is_end
+            event,
+            trace_n=trace_n,
+            event_n=event_n,
+            prefix_len=prefix_len,
+            is_end=is_end,
         )
 
         return [(trace_id, features, y_true, None, metadata)]
@@ -143,6 +160,7 @@ class RemainingTimeEmitter(EmitterMap):
         self._transformer.update(trace_id, event)
         prefix_len = self._transformer.prefix_len(trace_id)
         trace_n = self._trace_index[trace_id]
+        event_n = self._next_event_n()
 
         if is_end:
             y_true = event.get_event_time()
@@ -153,7 +171,11 @@ class RemainingTimeEmitter(EmitterMap):
             features = self._transformer.get_features(trace_id)
 
         metadata = self._build_metadata(
-            event, trace_n=trace_n, prefix_len=prefix_len, is_end=is_end
+            event,
+            trace_n=trace_n,
+            event_n=event_n,
+            prefix_len=prefix_len,
+            is_end=is_end,
         )
 
         return [(trace_id, features, y_true, None, metadata)]
