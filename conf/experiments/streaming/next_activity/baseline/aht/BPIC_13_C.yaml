@@ -30,4 +30,4 @@ model:
     tau: 0.08
 
 output:
-  folder: experiments/outputs/streaming/BPIC_13_C
+  folder: experiments/outputs/streaming/baseline

@@ -30,4 +30,4 @@ model:
     tau: 0.025
 
 output:
-  folder: experiments/outputs/streaming/Helpdesk
+  folder: experiments/outputs/streaming/baseline

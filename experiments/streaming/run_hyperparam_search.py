@@ -70,7 +70,7 @@ def run_search(
             'trial_idx': idx,
             'search_metric': metric_name,
             'score': float(trial_row['score']),
-            'loss': float(trial_row['loss']),
+            'loss': float(trial_row['loss'] or 0),
             'time_s': float(trial_row.get('elapsed_time', 0.0)),
             'model_cfg': make_json_safe(trial_row.get('model_cfg')),
             'transformer_cfg': make_json_safe(trial_row.get('transformer_cfg')),

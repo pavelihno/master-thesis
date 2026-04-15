@@ -77,7 +77,7 @@ def build_run_summary(
         'n_pred': n_preds,
         'accuracy': float(last_row.get('accuracy', 0)),
         'macro_f1': float(last_row.get('macro_f1', 0)),
-        'loss': float(last_row.get('loss', 0)),
+        'loss': float(last_row.get('loss', 0) or 0),
         'n_drifts': int(last_row.get('n_drifts', 0)),
         'time_s': float(elapsed_seconds),
         'output_dir': output_dir,

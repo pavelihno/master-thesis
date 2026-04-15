@@ -30,4 +30,4 @@ model:
     tau: 0.17820581201697874
 
 output:
-  folder: experiments/outputs/streaming/BPIC_20_TPD
+  folder: experiments/outputs/streaming/baseline

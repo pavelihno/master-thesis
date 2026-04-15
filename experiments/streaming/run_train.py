@@ -4,6 +4,7 @@ from pathlib import Path
 
 from utils.experiment import ensure_output_dir, load_config
 from utils.streaming.experiment import (
+    build_output_folder_name,
     build_run_summary,
     get_config_hash,
     get_dataset_and_model,
@@ -35,10 +36,15 @@ def run_config(
     results_csv_path: str | None = None,
 ) -> dict:
     dataset_name, model_name = get_dataset_and_model(config)
-    model_type = (model_name or 'model').lower()
     config_hash = get_config_hash(config)
     timestamp = get_timestamp()
-    run_id = f'{model_type}_{config_hash}_{timestamp}'
+    run_id = build_output_folder_name(
+        dataset_name=dataset_name,
+        model_name=model_name,
+        config_hash=config_hash,
+        fallback_name='run',
+        timestamp=timestamp,
+    )
 
     print('=' * 60)
     print(f'Run ID: {run_id}')
@@ -81,6 +87,7 @@ def run_config(
     )
 
     output_folder = None
+
     if save_artifacts:
         output_folder = ensure_output_dir(config) / run_id
         output_folder.mkdir(parents=True, exist_ok=True)

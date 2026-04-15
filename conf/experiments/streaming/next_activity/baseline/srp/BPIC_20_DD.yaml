@@ -28,4 +28,4 @@ model:
       type: adwin
   type: srp
 output:
-  folder: experiments/outputs/streaming/BPIC_20_DD
+  folder: experiments/outputs/streaming/baseline

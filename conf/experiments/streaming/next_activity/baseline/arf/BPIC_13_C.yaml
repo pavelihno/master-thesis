@@ -37,4 +37,4 @@ model:
   type: arf
 
 output:
-  folder: experiments/outputs/streaming/BPIC_13_C
+  folder: experiments/outputs/streaming/baseline

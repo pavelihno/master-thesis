@@ -3,9 +3,9 @@ task:
   mode: predict_and_learn
 
 dataset:
-  dataset_name: BPIC_20_DD
+  dataset_name: BPIC_20_TPD
   source: log
-  dataset_path: datasets/raw/BPIC_20_DD.xes
+  dataset_path: datasets/raw/BPIC_20_TPD.xes
   end_events:
   - Payment Handled
 
@@ -18,20 +18,20 @@ model:
     batch_size: 32
     drift_detector:
       type: adwin
-    dropout: 0.004972467443543571
+    dropout: 0.2330326972360676
     dynamic_n_classes: true
-    embedding_dim: 256
+    embedding_dim: 128
     epochs: 30
-    hidden_dim: 19
-    init_size: 5644
+    hidden_dim: 30
+    init_size: 8659
     loss_fn:
       type: cross_entropy
     lstm_layers: 2
-    max_n_classes: 30
+    max_n_classes: 55
     optimizer:
-      lr: 0.004338773867927196
+      lr: 0.0028338559044976093
       type: nadam
-    sequence_window: 5
+    sequence_window: 6
     w2v_window: 5
 
 output:

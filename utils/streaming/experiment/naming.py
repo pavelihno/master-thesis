@@ -41,6 +41,7 @@ def build_output_folder_name(
     custom_name: str | None = None,
     dataset_name: str | None = None,
     model_name: str | None = None,
+    config_hash: str | None = None,
     suffix: str | None = None,
     fallback_name: str = 'all',
     timestamp: str | None = None,
@@ -55,6 +56,8 @@ def build_output_folder_name(
             parts.append(slugify(dataset_name))
         if model_name:
             parts.append(slugify(model_name))
+        if config_hash:
+            parts.append(slugify(config_hash))
         if suffix:
             parts.append(slugify(suffix))
 

@@ -33,4 +33,4 @@ model:
       type: adwin
   type: arf
 output:
-  folder: experiments/outputs/streaming/BPIC_20_PTC
+  folder: experiments/outputs/streaming/baseline
