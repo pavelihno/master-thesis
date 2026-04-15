@@ -91,9 +91,6 @@ class DARWINBase(ABC):
         # Separate table for learning
         self.learn_table: dict[str, PrefixTreeNode] = {}
 
-        # Hash table A
-        self.active_predictions: dict[str, Any] = {}
-
         # Initialization buffer
         self.init_buffer: list[WindowEntry] = []
 
@@ -158,7 +155,6 @@ class DARWINBase(ABC):
                 'header_table': self.header_table,
                 'learn_table': self.learn_table,
                 'previous_events': self.previous_events,
-                'active_predictions': self.active_predictions,
                 'init_buffer': self.init_buffer,
                 'adaptive_window': self.adaptive_window,
                 'events_processed': self.events_processed,
@@ -188,7 +184,6 @@ class DARWINBase(ABC):
         self.header_table = runtime_state['header_table']
         self.learn_table = runtime_state['learn_table']
         self.previous_events = runtime_state['previous_events']
-        self.active_predictions = runtime_state['active_predictions']
         self.init_buffer = runtime_state['init_buffer']
         self.adaptive_window = runtime_state['adaptive_window']
         self.events_processed = runtime_state['events_processed']
@@ -285,7 +280,6 @@ class DARWINBase(ABC):
         self.header_table.pop(case_id, None)
         self.previous_events.pop(case_id, None)
         self.learn_table.pop(case_id, None)
-        self.active_predictions.pop(case_id, None)
 
     def _adapt_model(self, samples: list[WindowEntry]) -> None:
         """Updates Word2Vec and fine-tunes the LSTM on the provided window."""
@@ -402,22 +396,22 @@ class DARWINBase(ABC):
 
             return self
 
-        if case_id in self.active_predictions:
-            if self.drift_detector is not None:
-                # Only if label is known
-                if y_target is not None:
-                    drift_signal = self._get_drift_signal(
-                        y_target,
-                        self.active_predictions[case_id],
-                    )
-                    self.drift_detector.update(drift_signal)
-                    self.adaptive_window.append(WindowEntry(case_id, node, y_target))
+        if self.drift_detector is not None:
+            y_pred = self.predict_one(x)
+            y_pred_target = self._encode_target(y_pred)
 
-                    if self.drift_detector.drift_detected:
-                        self._adapt_model(self.adaptive_window)
-                        self.adaptive_window = []
+            # Only if label is known
+            if y_target is not None:
+                drift_signal = self._get_drift_signal(
+                    y_target,
+                    y_pred_target,
+                )
+                self.drift_detector.update(drift_signal)
+                self.adaptive_window.append(WindowEntry(case_id, node, y_target))
 
-            del self.active_predictions[case_id]
+                if self.drift_detector.drift_detected:
+                    self._adapt_model(self.adaptive_window)
+                    self.adaptive_window = []
 
         if event_name in self.end_events:
             self._clear(case_id)
@@ -460,8 +454,6 @@ class DARWINBase(ABC):
             return None
 
         y_pred, y_pred_target = self._get_pred(logits)
-
-        self.active_predictions[case_id] = y_pred_target
 
         return y_pred
 
