@@ -156,9 +156,12 @@ def save_comparison_reports(
         'error',
         'dataset_name',
         'model_name',
-        'n_pred',
+        'n_preds',
+        'n_traces',
+        'n_events',
         'accuracy',
         'macro_f1',
+        'loss',
         'n_drifts',
         'time_s',
     ]

@@ -41,6 +41,7 @@ def build_run_summary(
     timestamp: str,
     config_hash: str,
     config: dict,
+    results_df,
     last_row,
     elapsed_seconds: float,
     output_dir: str | None,
@@ -49,6 +50,10 @@ def build_run_summary(
     drift_detector = model_params.get('drift_detector', {})
     warning_detector = model_params.get('warning_detector', {})
     safe_params = make_json_safe(model_params)
+
+    n_traces = int(results_df['trace_id'].nunique()) if 'trace_id' in results_df else 0
+    n_events = int(results_df['event_n'].max()) if 'event_n' in results_df else 0
+    n_preds = int(results_df['n_pred'].max()) if 'n_pred' in results_df else 0
 
     return {
         'run_id': run_id,
@@ -66,9 +71,13 @@ def build_run_summary(
         'warning_detector_type': warning_detector.get('type'),
         'model_params': safe_params,
         'model_params_json': json.dumps(safe_params, sort_keys=True),
-        'n_pred': int(last_row.get('n_pred', 0)),
+        'n_preds': n_preds,
+        'n_traces': n_traces,
+        'n_events': n_events,
+        'n_pred': n_preds,
         'accuracy': float(last_row.get('accuracy', 0)),
         'macro_f1': float(last_row.get('macro_f1', 0)),
+        'loss': float(last_row.get('loss', 0)),
         'n_drifts': int(last_row.get('n_drifts', 0)),
         'time_s': float(elapsed_seconds),
         'output_dir': output_dir,
@@ -82,6 +91,7 @@ def write_results(
     timestamp: str,
     config: dict,
     results_df,
+    elapsed_seconds: float,
 ) -> None:
     results_path = output_dir / 'results.csv'
 
@@ -90,6 +100,12 @@ def write_results(
     last_row = results_df.iloc[-1]
     summary_path = output_dir / 'summary.txt'
     with open(summary_path, 'w', encoding='utf-8') as file:
+        n_traces = (
+            int(results_df['trace_id'].nunique()) if 'trace_id' in results_df else 0
+        )
+        n_events = int(results_df['event_n'].max()) if 'event_n' in results_df else 0
+        n_preds = int(results_df['n_pred'].max()) if 'n_pred' in results_df else 0
+
         file.write(f'Run ID: {run_id}\n')
         file.write(f'Config     : {config_path}\n')
         file.write(f'Timestamp  : {timestamp}\n')
@@ -100,10 +116,13 @@ def write_results(
         file.write('\n')
         file.write('Summary Metrics:\n')
         file.write('-' * 60 + '\n')
-        file.write(f'Predictions: {int(last_row["n_pred"])}\n')
-        file.write(f'Accuracy: {last_row["accuracy"]:.4f}\n')
-        file.write(f'Macro F1: {last_row["macro_f1"]:.4f}\n')
-        file.write(f'Num Drifts: {int(last_row["n_drifts"])}\n')
+        file.write(f'n_preds={n_preds}\n')
+        file.write(f'n_traces={n_traces}\n')
+        file.write(f'n_events={n_events}\n')
+        file.write(f'n_drifts={int(last_row.get("n_drifts", 0))}\n')
+        file.write(f'accuracy={last_row.get("accuracy", 0):.4f}\n')
+        file.write(f'macro_f1={last_row.get("macro_f1", 0):.4f}\n')
+        file.write(f'time={elapsed_seconds:.2f}s\n')
 
     print(f'Results -> {results_path}')
     print(f'Summary -> {summary_path}')

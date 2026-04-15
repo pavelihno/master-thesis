@@ -57,7 +57,7 @@ def run_batch(
                 save_artifacts,
             )
             status = 'OK' if result['ok'] else 'FAILED'
-            print(f'[{status}] {config_path.name}')
+            print(f'[{status}] {config_path}')
             results.append(result)
             if not result['ok'] and result['stderr_tail']:
                 print(result['stderr_tail'])
@@ -86,7 +86,7 @@ def run_batch(
                 result = future.result()
                 status = 'OK' if result['ok'] else 'FAILED'
                 config_path = Path(result['config_path'])
-                print(f'[{status}] {config_path.name}')
+                print(f'[{status}] {config_path}')
                 results.append(result)
                 if not result['ok'] and result['stderr_tail']:
                     print(result['stderr_tail'])
