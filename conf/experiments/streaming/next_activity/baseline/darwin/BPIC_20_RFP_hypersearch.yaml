@@ -65,11 +65,6 @@ model:
 
     drift_detector:
       type: adwin
-      delta:
-        search: float
-        low: 0.0001
-        high: 0.1
-        log: true
 
 search:
   metric: macro_f1

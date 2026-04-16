@@ -18,7 +18,7 @@ model:
     batch_size: 32
     drift_detector:
       type: adwin
-    dropout: 0.18843092991715463
+    dropout: 0.31697640130531257
     dynamic_n_classes: true
     embedding_dim: 128
     epochs: 30
@@ -29,9 +29,9 @@ model:
     lstm_layers: 2
     max_n_classes: 30
     optimizer:
-      lr: 0.0069095386203015885
+      lr: 0.0229658615933049
       type: nadam
-    sequence_window: 3
+    sequence_window: 5
     w2v_window: 5
 
 output:

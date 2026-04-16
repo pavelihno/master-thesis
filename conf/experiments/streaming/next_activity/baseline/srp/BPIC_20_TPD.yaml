@@ -11,7 +11,7 @@ dataset:
 
 transformer:
   include_prefix_len: false
-  max_events: 4
+  max_events: 5
   type: index
 
 model:
@@ -20,15 +20,13 @@ model:
     disable_detector: 'off'
     disable_weighted_vote: false
     drift_detector:
-      delta: 2.3713961415751472e-05
       type: adwin
-    lam: 8
-    n_models: 50
+    lam: 1
+    n_models: 10
     seed: 42
-    subspace_size: 0.8
+    subspace_size: 0.4
     training_method: patches
     warning_detector:
-      delta: 0.0003195727435946093
       type: adwin
 
 output:

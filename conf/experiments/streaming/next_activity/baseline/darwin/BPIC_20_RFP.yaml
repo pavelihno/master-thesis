@@ -17,13 +17,12 @@ model:
   params:
     batch_size: 32
     drift_detector:
-      delta: 0.009741173669523104
       type: adwin
     dropout: 0.5248049414576589
     dynamic_n_classes: true
     embedding_dim: 128
     epochs: 30
-    hidden_dim: 82
+    hidden_dim: 100
     init_size: 3680
     loss_fn:
       type: cross_entropy
