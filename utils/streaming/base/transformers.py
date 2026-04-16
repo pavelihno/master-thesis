@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
 from collections import Counter, deque
+from datetime import datetime
 from typing import Any
 
 from pybeamline.bevent import BEvent
+
+from utils.streaming.time import TimeTarget, convert_time, parse_time
 
 
 _EVENT_SKIP = {'concept:name', 'time:timestamp'}
@@ -260,28 +263,110 @@ class DARWINTransformer(StreamingTransformer):
 
     def __init__(self) -> None:
         super().__init__(include_prefix_len=False)
-        self._last_event: dict[str, tuple[BEvent, int]] = {}
+
+        self._last_event: dict[str, tuple[str, int]] = {}
         self._event_id: int = 1
 
     def update(self, trace_id: str, event: BEvent) -> None:
         if trace_id not in self._last_event:
             self._prefix_lens[trace_id] = 0
 
-        self._last_event[trace_id] = (event, self._event_id)
+        self._last_event[trace_id] = (event.get_event_name(), self._event_id)
         self._prefix_lens[trace_id] += 1
         self._event_id += 1
 
     def get_features(self, trace_id: str) -> dict[str, Any]:
-        _event, _event_id = self._last_event.get(trace_id, (None, 0))
-        if _event is None:
+        event_name, event_id = self._last_event.get(trace_id, ('', 0))
+        if not event_name:
             return {}
 
         return {
             'case_id': trace_id,
-            'event_id': _event_id,
-            'event_name': _event.get_event_name()
+            'event_id': event_id,
+            'event_name': event_name,
+            'features': [],
         }
 
     def clear(self, trace_id: str) -> None:
         self._last_event.pop(trace_id, None)
+        self._prefix_lens.pop(trace_id, None)
+
+
+class DARWINTimeTransformer(StreamingTransformer):
+    """
+    Time-based transformer for DARWIN-style streaming models.
+
+    Stores the most recent event per trace along with timestamp-based features.
+     - Numerical: duration since case start, duration since last event
+     - Categorical: month, day, week, hour
+    """
+
+    def __init__(
+        self,
+        time_target: TimeTarget = TimeTarget.DAYS,
+        timestamp_key: str = 'time:timestamp',
+    ) -> None:
+        super().__init__(include_prefix_len=False)
+
+        self._timestamp_key = timestamp_key
+        self._time_target = time_target
+
+        self._last_event: dict[str, tuple[str, datetime | None, int]] = {}
+        self._start_time_delta: dict[str, float] = {}
+        self._last_event_time_delta: dict[str, float] = {}
+        self._event_id: int = 1
+
+    def _get_event_time(self, event: BEvent) -> datetime | None:
+        time_value = event.event_attributes.get(self._timestamp_key, None)
+        return parse_time(time_value)
+
+    def update(self, trace_id: str, event: BEvent) -> None:
+        event_name = event.get_event_name()
+        event_time = self._get_event_time(event)
+        last_event_time = None
+
+        if trace_id not in self._last_event:
+            self._prefix_lens[trace_id] = 0
+            self._start_time_delta[trace_id] = 0.0
+            last_event_time = event_time
+
+        else:
+            _, last_event_time, _ = self._last_event[trace_id]
+
+        if event_time is None or last_event_time is None:
+            last_event_time_delta = 0.0
+        else:
+            last_event_time_delta = convert_time(
+                event_time - last_event_time, target=self._time_target
+            )
+
+        self._start_time_delta[trace_id] += last_event_time_delta
+        self._last_event_time_delta[trace_id] = last_event_time_delta
+
+        self._last_event[trace_id] = (event_name, event_time, self._event_id)
+        self._prefix_lens[trace_id] += 1
+        self._event_id += 1
+
+    def get_features(self, trace_id: str) -> dict[str, Any]:
+        event_name, _, event_id = self._last_event.get(trace_id, ('', None, 0))
+        if not event_name:
+            return {}
+
+        start_time_delta = self._start_time_delta.get(trace_id, 0.0)
+        last_event_time_delta = self._last_event_time_delta.get(trace_id, 0.0)
+
+        return {
+            'case_id': trace_id,
+            'event_id': event_id,
+            'event_name': event_name,
+            'features': [
+                start_time_delta,
+                last_event_time_delta,
+            ],
+        }
+
+    def clear(self, trace_id: str) -> None:
+        self._last_event.pop(trace_id, None)
+        self._start_time_delta.pop(trace_id, None)
+        self._last_event_time_delta.pop(trace_id, None)
         self._prefix_lens.pop(trace_id, None)

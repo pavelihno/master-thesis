@@ -50,11 +50,14 @@ def parse_time(value: Any) -> datetime | None:
 
 
 def convert_time(
-    delta: timedelta | float | int,
+    delta: timedelta | float | int | None,
     target: TimeTarget = TimeTarget.SECONDS,
 ) -> float:
     """Convert a time delta to a selected unit."""
     unit = TimeTarget(target)
+
+    if delta is None:
+        return 0.0
 
     if isinstance(delta, timedelta):
         total_seconds = delta.total_seconds()
