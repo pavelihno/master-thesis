@@ -14,6 +14,10 @@ from utils.streaming.base.extractors import (
     BinaryOutcomeExtractor,
     MultiClassOutcomeExtractor,
 )
+from utils.streaming.base.feature_aggregators import (
+    AverageAggregator,
+    FeatureAggregator,
+)
 from utils.streaming.base.pipelines import (
     NextActivityPredictionPipeline,
     OutcomePredictionPipeline,
@@ -23,6 +27,7 @@ from utils.streaming.base.pipelines import (
 )
 from utils.streaming.base.transformers import (
     ControlFlowTransformer,
+    DARWINTimeTransformer,
     DARWINTransformer,
     DataTransformer,
     DimensionTransformer,
@@ -52,6 +57,8 @@ def create_transformer(config: dict):
         )
     elif transformer_type == 'darwin':
         return DARWINTransformer()
+    elif transformer_type == 'darwin_time':
+        return DARWINTimeTransformer()
     else:
         raise ValueError(f"Unknown transformer type: '{transformer_type}'.")
 
@@ -82,6 +89,7 @@ def create_model(config: dict):
             params.pop('optimizer', {'type': 'adam', 'lr': 0.001})
         )
         loss_fn = create_loss_fn(params.pop('loss_fn', {'type': 'cross_entropy'}))
+        feature_aggs = create_feature_aggregators(params.pop('feature_aggs', []))
 
         # TODO: learning rate reducer
         params.pop('lr_reducer', None)
@@ -91,6 +99,7 @@ def create_model(config: dict):
             optimizer_cls=optimizer_cls,
             loss_fn=loss_fn,
             drift_detector=drift_detector,
+            feature_aggs=feature_aggs,
         )
     else:
         raise ValueError(f"Unknown model type: '{model_type}'.")
@@ -201,6 +210,35 @@ def create_loss_fn(config: dict):
         return nn.BCEWithLogitsLoss(**config)
     else:
         raise ValueError(f"Unknown criterion type: '{criterion_type}'.")
+
+
+def create_feature_aggregators(config: list | None) -> list[FeatureAggregator]:
+    """
+    Create feature aggregators from an ordered config list.
+    """
+    if not config:
+        return []
+
+    if not isinstance(config, list):
+        raise TypeError('feature_aggs must be an ordered list')
+
+    aggregators = []
+    for i, agg_params in enumerate(config):
+        if isinstance(agg_params, dict):
+            agg_type = agg_params.pop('type', '').lower()
+        else:
+            raise TypeError(
+                f'Each feature_aggs item must be a dict (item #{i + 1})'
+            )
+
+        if agg_type == 'average':
+            aggregators.append(AverageAggregator())
+        else:
+            raise ValueError(
+                f"Unknown feature aggregator type: '{agg_type}' (item #{i + 1})"
+            )
+
+    return aggregators
 
 
 def create_outcome_extractor(config: dict):

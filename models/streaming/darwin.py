@@ -3,7 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Callable
-from dataclasses import dataclass
+from copy import deepcopy
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,10 @@ import torch.nn as nn
 from gensim.models import Word2Vec
 from river import base
 
+from utils.streaming.base.feature_aggregators import (
+    FeatureAggregator,
+)
+
 
 @dataclass
 class PrefixTreeNode:
@@ -20,15 +25,35 @@ class PrefixTreeNode:
 
     event_name: str | None
     parent: PrefixTreeNode | None
+    children: dict[str, PrefixTreeNode] = field(default_factory=dict)
+    feature_aggs: list[FeatureAggregator] = field(default_factory=list)
+
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return self is other
+
+    def __repr__(self):
+        if self.event_name is None:
+            return '[ROOT]'
+        return f'{self.parent} -> {self.event_name}'
 
 
-@dataclass
-class WindowEntry:
-    """A labeled prefix sequence extracted from the stream for learning."""
+@dataclass(frozen=True, slots=True)
+class WindowKey:
+    """Key for aggregated window samples."""
 
-    case_id: str
     prefix_node: PrefixTreeNode
     target: Any
+
+    def __hash__(self) -> int:
+        return hash((self.prefix_node, self.target))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, WindowKey):
+            return NotImplemented
+        return self.prefix_node is other.prefix_node and self.target == other.target
 
 
 class DARWINBase(ABC):
@@ -46,8 +71,8 @@ class DARWINBase(ABC):
         drift_detector: base.DriftDetector | None,
         init_size: int,
         epochs: int = 1,
-        early_stop_patience: int | None = None,
         end_events: set[str] | None = None,
+        feature_aggs: list[FeatureAggregator] | None = None,
     ):
         self.embedding_dim = embedding_dim
         self.w2v_window = w2v_window
@@ -58,8 +83,10 @@ class DARWINBase(ABC):
         self.batch_size = batch_size
         self.dropout = dropout
         self.epochs = epochs
-        self.early_stop_patience = early_stop_patience
         self.end_events = end_events or set()
+
+        self.feature_aggs = feature_aggs or []
+        self.feature_size = sum(agg.output_size for agg in self.feature_aggs)
 
         self.events_processed: int = 0
         self.initialized: bool = False
@@ -67,7 +94,7 @@ class DARWINBase(ABC):
         self.w2v = None
 
         self.lstm = nn.LSTM(
-            input_size=embedding_dim,
+            input_size=embedding_dim + self.feature_size,
             hidden_size=hidden_dim,
             num_layers=lstm_layers,
             dropout=self.dropout if lstm_layers > 1 else 0.0,
@@ -92,10 +119,10 @@ class DARWINBase(ABC):
         self.learn_table: dict[str, PrefixTreeNode] = {}
 
         # Initialization buffer
-        self.init_buffer: list[WindowEntry] = []
+        self.init_buffer: dict[WindowKey, int] = {}
 
-        # Window W
-        self.adaptive_window: list[WindowEntry] = []
+        # Adaptation buffer for drift handling
+        self.adaptive_window: dict[WindowKey, int] = {}
 
     @abstractmethod
     def _init_head(self) -> None:
@@ -184,8 +211,8 @@ class DARWINBase(ABC):
         self.header_table = runtime_state['header_table']
         self.learn_table = runtime_state['learn_table']
         self.previous_events = runtime_state['previous_events']
-        self.init_buffer = runtime_state['init_buffer']
-        self.adaptive_window = runtime_state['adaptive_window']
+        self.init_buffer = dict(runtime_state['init_buffer'])
+        self.adaptive_window = dict(runtime_state['adaptive_window'])
         self.events_processed = runtime_state['events_processed']
         self.initialized = runtime_state['initialized']
         self.drift_detector = runtime_state.get('drift_detector', self.drift_detector)
@@ -218,7 +245,8 @@ class DARWINBase(ABC):
         self,
         case_id: str,
         event_name: str,
-        event_id: int | None = None,
+        event_id: int,
+        features: list,
         is_learn: bool = False,
     ) -> None:
         """Update the prefix tree and header table with a new event."""
@@ -226,7 +254,7 @@ class DARWINBase(ABC):
         # Ignore already processed events
         if event_id not in self.previous_events.get(case_id, set()):
             current_node = self.header_table.get(case_id, self.prefix_tree)
-            next_node = PrefixTreeNode(event_name=event_name, parent=current_node)
+            next_node = self._build_node(current_node, event_name, features)
             self.header_table[case_id] = next_node
 
             # Mark event as processed
@@ -236,19 +264,54 @@ class DARWINBase(ABC):
         # Only update learn table during learning phase
         if is_learn:
             current_node = self.learn_table.get(case_id, self.prefix_tree)
-            next_node = PrefixTreeNode(event_name=event_name, parent=current_node)
+            next_node = self._build_node(current_node, event_name, features)
             self.learn_table[case_id] = next_node
 
-    def _get_prefix(self, node: PrefixTreeNode) -> list[str]:
-        """Reconstruct the event sequence by backtracking the tree."""
-        path = []
+    def _build_node(
+        self,
+        parent: PrefixTreeNode,
+        event_name: str,
+        features: list,
+    ) -> PrefixTreeNode:
+        """Return a prefix tree node for the given event name."""
+        child = parent.children.get(event_name)
+
+        # Create new prefix tree node
+        if child is None:
+            child = PrefixTreeNode(
+                event_name=event_name,
+                parent=parent,
+                feature_aggs=deepcopy(self.feature_aggs),
+            )
+            parent.children[event_name] = child
+
+        # event_sequence = self._get_event_sequence(child)
+        # print(f'Updating agg for sequence: {event_sequence}')
+
+        # Update feature aggregators
+        for agg, value in zip(child.feature_aggs, features, strict=True):
+            agg.update(value)
+            # print(f'Updated with value: {value}, new features: {agg.get_features()}')
+
+        return child
+
+    def _get_prefix_nodes(self, node: PrefixTreeNode) -> list[PrefixTreeNode]:
+        """Reconstruct prefix nodes by backtracking the tree."""
+        path: list[PrefixTreeNode] = []
         curr = node
         while curr.parent is not None:
-            if curr.event_name is not None:
-                path.append(curr.event_name)
+            path.append(curr)
             curr = curr.parent
         path.reverse()
         return path[-self.sequence_window :]
+
+    def _get_event_sequence(self, node: PrefixTreeNode) -> list[str]:
+        """Reconstruct the event sequence by backtracking the tree."""
+        return [
+            n.event_name
+            for n in self._get_prefix_nodes(node)
+            if n.event_name is not None
+        ]
 
     def _get_embedding(self, event_name: str) -> np.ndarray:
         """Retrieve the Word2Vec embedding for an event."""
@@ -256,24 +319,50 @@ class DARWINBase(ABC):
             return self.w2v.wv[event_name]
         return np.zeros(self.embedding_dim, dtype=np.float32)
 
-    def _to_tensor(self, events_list: list[list[str]] | list[str]) -> torch.Tensor:
+    def _get_node_features(self, node: PrefixTreeNode) -> np.ndarray:
+        """Flatten node feature aggregators into a fixed-size vector."""
+        if self.feature_size == 0:
+            return np.zeros(self.feature_size, dtype=np.float32)
+
+        values = []
+        for agg in node.feature_aggs:
+            agg_features = agg.get_features()
+            values.extend(float(v) for v in agg_features)
+
+        return np.asarray(values, dtype=np.float32)
+
+    def _to_tensor(
+        self,
+        prefix_nodes: list[list[PrefixTreeNode]] | list[PrefixTreeNode],
+    ) -> torch.Tensor:
         """Prepare zero-padded tensors for LSTM input."""
         # Handle single sequence
-        if not events_list or isinstance(events_list[0], str):
-            events_list = [events_list]
+        if not prefix_nodes or isinstance(prefix_nodes[0], PrefixTreeNode):
+            prefix_nodes = [prefix_nodes]
+
+        input_dim = self.embedding_dim + self.feature_size
+        zero_vector = np.zeros(input_dim, dtype=np.float32)
 
         vectors_batch = []
-        for events in events_list:
-            history = events[-self.sequence_window :]
-            vectors = [self._get_embedding(e) for e in history]
+        for nodes in prefix_nodes:
+            history = nodes[-self.sequence_window :]
+            vectors = []
+            for node in history:
+                event_name_vector = self._get_embedding(node.event_name)
+                feature_vector = self._get_node_features(node)
+
+                vector = np.concatenate([event_name_vector, feature_vector]).astype(
+                    np.float32, copy=False
+                )
+
+                vectors.append(vector)
+
             pad = self.sequence_window - len(vectors)
             if pad > 0:
-                vectors = [
-                    np.zeros(self.embedding_dim, dtype=np.float32)
-                ] * pad + vectors
+                vectors = [zero_vector.copy() for _ in range(pad)] + vectors
             vectors_batch.append(np.stack(vectors))
 
-        # (batch_size, sequence_window, embedding_dim)
+        # (batch_size, sequence_window, embedding_dim + feature_size)
         return torch.tensor(np.stack(vectors_batch), dtype=torch.float32)
 
     def _clear(self, case_id: str) -> None:
@@ -281,13 +370,20 @@ class DARWINBase(ABC):
         self.previous_events.pop(case_id, None)
         self.learn_table.pop(case_id, None)
 
-    def _adapt_model(self, samples: list[WindowEntry]) -> None:
+    def _adapt_model(self, window_sample_counts: dict[WindowKey, int]) -> None:
         """Updates Word2Vec and fine-tunes the LSTM on the provided window."""
-        if not samples:
+        window_size = int(sum(window_sample_counts.values()))
+        if window_size == 0:
             return
 
+        samples = [
+            window_key
+            for window_key, count in window_sample_counts.items()
+            for _ in range(count)
+        ]
+
         # Word2Vec update
-        sequences = [self._get_prefix(s.prefix_node) for s in samples]
+        sequences = [self._get_event_sequence(s.prefix_node) for s in samples]
         if self.w2v is None:
             self.w2v = Word2Vec(
                 sg=0,
@@ -318,18 +414,17 @@ class DARWINBase(ABC):
         self.lstm.train()
         self.head.train()
 
-        best_loss = float('inf')
-        early_stop_patience_counter = 0
-
         for _ in range(max(1, self.epochs)):
             epoch_loss_history = []
 
             for i in range(0, len(samples), self.batch_size):
                 batch = samples[i : i + self.batch_size]
-                batch_sequences = [self._get_prefix(s.prefix_node) for s in batch]
+                batch_prefix_nodes = [
+                    self._get_prefix_nodes(s.prefix_node) for s in batch
+                ]
                 batch_targets = self._prepare_target([s.target for s in batch])
 
-                tensor = self._to_tensor(batch_sequences)
+                tensor = self._to_tensor(batch_prefix_nodes)
                 out, _ = self.lstm(tensor)
                 logits = self.head(out[:, -1, :])
 
@@ -343,39 +438,48 @@ class DARWINBase(ABC):
             avg_epoch_loss = np.mean(epoch_loss_history)
             self.loss_history.append(avg_epoch_loss)
 
-            # Early stopping
-            if self.early_stop_patience is not None:
-                if avg_epoch_loss < best_loss:
-                    best_loss = avg_epoch_loss
-                    early_stop_patience_counter = 0
-                else:
-                    early_stop_patience_counter += 1
-                    if early_stop_patience_counter >= self.early_stop_patience:
-                        break
+        # Reset feature aggregators once per node
+        node_counts: dict[PrefixTreeNode, int] = defaultdict(int)
+        for window_key, count in window_sample_counts.items():
+            node_counts[window_key.prefix_node] += count
+
+        for node, total_count in node_counts.items():
+            # print(f"Resetting features for node: {node} with count: {total_count}")
+            for agg in node.feature_aggs:
+                agg.reset(total_count)
 
     def learn_one(self, x: dict, y: Any):
         """Process one event and update the online learner state."""
         case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
+        features = x.get('features', [])
 
         y_target = self._encode_target(y)
 
-        self._update_prefix_tree(case_id, event_name, event_id, is_learn=True)
+        self._update_prefix_tree(
+            case_id,
+            event_name,
+            event_id,
+            features=features,
+            is_learn=True,
+        )
 
         node = self.learn_table.get(case_id, self.prefix_tree)
 
         # print(f'Learn> case_id={case_id}, current_event="{event_name}", label="{y}"')
-        # print(f'Learn sequence: {self._get_prefix(node)}\n')
 
         if not self.initialized:
             if y_target is not None:
-                self.init_buffer.append(WindowEntry(case_id, node, y_target))
+                window_key = WindowKey(prefix_node=node, target=y_target)
+                self.init_buffer[window_key] = self.init_buffer.get(window_key, 0) + 1
+
             self.events_processed += 1
 
             if self.events_processed >= self.init_size:
-                if len(self.init_buffer) > 0:
+                init_buffer_size = int(sum(self.init_buffer.values()))
+                if init_buffer_size > 0:
                     self._adapt_model(self.init_buffer)
 
-                    self.init_buffer = []
+                    self.init_buffer = {}
                     self.initialized = True
 
                     # print('Initialization completed')
@@ -407,11 +511,14 @@ class DARWINBase(ABC):
                     y_pred_target,
                 )
                 self.drift_detector.update(drift_signal)
-                self.adaptive_window.append(WindowEntry(case_id, node, y_target))
+                window_key = WindowKey(prefix_node=node, target=y_target)
+                self.adaptive_window[window_key] = (
+                    self.adaptive_window.get(window_key, 0) + 1
+                )
 
                 if self.drift_detector.drift_detected:
                     self._adapt_model(self.adaptive_window)
-                    self.adaptive_window = []
+                    self.adaptive_window = {}
 
         if event_name in self.end_events:
             self._clear(case_id)
@@ -419,21 +526,31 @@ class DARWINBase(ABC):
         return self
 
     def _get_pred_logits(
-        self, case_id: str, event_name: str, event_id: int | None
+        self,
+        case_id: str,
+        event_name: str,
+        event_id: int,
+        features: list,
     ) -> torch.Tensor | None:
 
-        self._update_prefix_tree(case_id, event_name, event_id, is_learn=False)
+        self._update_prefix_tree(
+            case_id,
+            event_name,
+            event_id,
+            features=features,
+            is_learn=False,
+        )
 
         if not self.initialized:
             return None
 
         node = self.header_table.get(case_id, self.prefix_tree)
-        prediction_sequence = self._get_prefix(node)
+        prediction_nodes = self._get_prefix_nodes(node)
 
         # print(f'Predict> case_id={case_id}, current_event="{event_name}"')
-        # print(f'Prediction sequence: {prediction_sequence}\n')
+        # print(f'Prediction sequence: {prediction_nodes}\n')
 
-        tensor = self._to_tensor(prediction_sequence)
+        tensor = self._to_tensor(prediction_nodes)
 
         self.lstm.eval()
         self.head.eval()
@@ -447,8 +564,14 @@ class DARWINBase(ABC):
     def predict_one(self, x: dict) -> Any | None:
         """Predict target for an ongoing case."""
         case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
+        features = x.get('features', [])
 
-        logits = self._get_pred_logits(case_id, event_name, event_id)
+        logits = self._get_pred_logits(
+            case_id,
+            event_name,
+            event_id,
+            features=features,
+        )
 
         if logits is None:
             return None
@@ -473,8 +596,8 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         drift_detector: base.DriftDetector | None,
         init_size: int,
         epochs: int = 1,
-        early_stop_patience: int | None = None,
         end_events: set[str] | None = None,
+        feature_aggs: list[FeatureAggregator] | None = None,
         dynamic_n_classes: bool = False,
         n_classes: int | None = None,
         max_n_classes: int | None = None,
@@ -493,8 +616,8 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             drift_detector=drift_detector,
             init_size=init_size,
             epochs=epochs,
-            early_stop_patience=early_stop_patience,
             end_events=end_events,
+            feature_aggs=feature_aggs,
         )
 
         # Class number configuration
@@ -613,8 +736,14 @@ class DARWINClassifier(base.Classifier, DARWINBase):
 
     def predict_proba_one(self, x: dict) -> dict[Any, float]:
         case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
+        features = x.get('features', [])
 
-        logits = self._get_pred_logits(case_id, event_name, event_id)
+        logits = self._get_pred_logits(
+            case_id,
+            event_name,
+            event_id,
+            features=features,
+        )
 
         if logits is None or len(self.idx_to_label) == 0:
             return {}
@@ -644,8 +773,8 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         drift_detector: base.DriftDetector | None,
         init_size: int,
         epochs: int = 1,
-        early_stop_patience: int | None = None,
         end_events: set[str] | None = None,
+        feature_aggs: list[FeatureAggregator] | None = None,
     ):
         DARWINBase.__init__(
             self,
@@ -661,8 +790,8 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             drift_detector=drift_detector,
             init_size=init_size,
             epochs=epochs,
-            early_stop_patience=early_stop_patience,
             end_events=end_events,
+            feature_aggs=feature_aggs,
         )
 
     def _init_head(self) -> None:
