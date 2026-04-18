@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Callable
 from copy import deepcopy
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -17,43 +16,13 @@ from river import base
 from utils.streaming.base.feature_aggregators import (
     FeatureAggregator,
 )
-
-
-@dataclass
-class PrefixTreeNode:
-    """A node in the Prefix Tree (T) representing a process event."""
-
-    event_name: str | None
-    parent: PrefixTreeNode | None
-    children: dict[str, PrefixTreeNode] = field(default_factory=dict)
-    feature_aggs: list[FeatureAggregator] = field(default_factory=list)
-
-    def __hash__(self):
-        return id(self)
-
-    def __eq__(self, other):
-        return self is other
-
-    def __repr__(self):
-        if self.event_name is None:
-            return '[ROOT]'
-        return f'{self.parent} -> {self.event_name}'
-
-
-@dataclass(frozen=True, slots=True)
-class WindowKey:
-    """Key for aggregated window samples."""
-
-    prefix_node: PrefixTreeNode
-    target: Any
-
-    def __hash__(self) -> int:
-        return hash((self.prefix_node, self.target))
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, WindowKey):
-            return NotImplemented
-        return self.prefix_node is other.prefix_node and self.target == other.target
+from utils.streaming.base.sample_buffers import (
+    BinBuffer,
+    CountBuffer,
+    PrefixTreeNode,
+    SampleBuffer,
+    SimpleBuffer,
+)
 
 
 class DARWINBase(ABC):
@@ -73,6 +42,7 @@ class DARWINBase(ABC):
         epochs: int = 1,
         end_events: set[str] | None = None,
         feature_aggs: list[FeatureAggregator] | None = None,
+        sample_buffer: SampleBuffer | None = None,
     ):
         self.embedding_dim = embedding_dim
         self.w2v_window = w2v_window
@@ -115,14 +85,14 @@ class DARWINBase(ABC):
         self.header_table: dict[str, PrefixTreeNode] = {}
         self.previous_events: dict[str, set[int]] = defaultdict(set)
 
-        # Separate table for learning
+        # Separate header table for learning
         self.learn_table: dict[str, PrefixTreeNode] = {}
 
-        # Initialization buffer
-        self.init_buffer: dict[WindowKey, int] = {}
-
-        # Adaptation buffer for drift handling
-        self.adaptive_window: dict[WindowKey, int] = {}
+        # Sample buffer for:
+        # 1) initialization and 2) drift handling
+        self.sample_buffer = (
+            sample_buffer if sample_buffer is not None else SimpleBuffer()
+        )
 
     @abstractmethod
     def _init_head(self) -> None:
@@ -182,8 +152,7 @@ class DARWINBase(ABC):
                 'header_table': self.header_table,
                 'learn_table': self.learn_table,
                 'previous_events': self.previous_events,
-                'init_buffer': self.init_buffer,
-                'adaptive_window': self.adaptive_window,
+                'sample_buffer': self.sample_buffer,
                 'events_processed': self.events_processed,
                 'initialized': self.initialized,
                 'drift_detector': self.drift_detector,
@@ -211,8 +180,7 @@ class DARWINBase(ABC):
         self.header_table = runtime_state['header_table']
         self.learn_table = runtime_state['learn_table']
         self.previous_events = runtime_state['previous_events']
-        self.init_buffer = dict(runtime_state['init_buffer'])
-        self.adaptive_window = dict(runtime_state['adaptive_window'])
+        self.sample_buffer = runtime_state['sample_buffer']
         self.events_processed = runtime_state['events_processed']
         self.initialized = runtime_state['initialized']
         self.drift_detector = runtime_state.get('drift_detector', self.drift_detector)
@@ -370,20 +338,16 @@ class DARWINBase(ABC):
         self.previous_events.pop(case_id, None)
         self.learn_table.pop(case_id, None)
 
-    def _adapt_model(self, window_sample_counts: dict[WindowKey, int]) -> None:
+    def _adapt_model(self, sample_buffer: SampleBuffer) -> None:
         """Updates Word2Vec and fine-tunes the LSTM on the provided window."""
-        window_size = int(sum(window_sample_counts.values()))
-        if window_size == 0:
+        buffer_size = sample_buffer.size
+        if buffer_size == 0:
             return
 
-        samples = [
-            window_key
-            for window_key, count in window_sample_counts.items()
-            for _ in range(count)
-        ]
+        samples = sample_buffer.get_samples()
 
         # Word2Vec update
-        sequences = [self._get_event_sequence(s.prefix_node) for s in samples]
+        sequences = [self._get_event_sequence(s['prefix_node']) for s in samples]
         if self.w2v is None:
             self.w2v = Word2Vec(
                 sg=0,
@@ -420,9 +384,9 @@ class DARWINBase(ABC):
             for i in range(0, len(samples), self.batch_size):
                 batch = samples[i : i + self.batch_size]
                 batch_prefix_nodes = [
-                    self._get_prefix_nodes(s.prefix_node) for s in batch
+                    self._get_prefix_nodes(s['prefix_node']) for s in batch
                 ]
-                batch_targets = self._prepare_target([s.target for s in batch])
+                batch_targets = self._prepare_target([s['target'] for s in batch])
 
                 tensor = self._to_tensor(batch_prefix_nodes)
                 out, _ = self.lstm(tensor)
@@ -438,15 +402,12 @@ class DARWINBase(ABC):
             avg_epoch_loss = np.mean(epoch_loss_history)
             self.loss_history.append(avg_epoch_loss)
 
-        # Reset feature aggregators once per node
-        node_counts: dict[PrefixTreeNode, int] = defaultdict(int)
-        for window_key, count in window_sample_counts.items():
-            node_counts[window_key.prefix_node] += count
+        # Reset feature aggregators
+        unique_nodes = sample_buffer.get_unique_nodes()
 
-        for node, total_count in node_counts.items():
-            # print(f"Resetting features for node: {node} with count: {total_count}")
+        for node in unique_nodes:
             for agg in node.feature_aggs:
-                agg.reset(total_count)
+                agg.reset()
 
     def learn_one(self, x: dict, y: Any):
         """Process one event and update the online learner state."""
@@ -469,17 +430,16 @@ class DARWINBase(ABC):
 
         if not self.initialized:
             if y_target is not None:
-                window_key = WindowKey(prefix_node=node, target=y_target)
-                self.init_buffer[window_key] = self.init_buffer.get(window_key, 0) + 1
+                self.sample_buffer.add_sample(node, y_target)
 
             self.events_processed += 1
 
             if self.events_processed >= self.init_size:
-                init_buffer_size = int(sum(self.init_buffer.values()))
+                init_buffer_size = self.sample_buffer.size
                 if init_buffer_size > 0:
-                    self._adapt_model(self.init_buffer)
+                    self._adapt_model(self.sample_buffer)
 
-                    self.init_buffer = {}
+                    self.sample_buffer.clear()
                     self.initialized = True
 
                     # print('Initialization completed')
@@ -511,14 +471,12 @@ class DARWINBase(ABC):
                     y_pred_target,
                 )
                 self.drift_detector.update(drift_signal)
-                window_key = WindowKey(prefix_node=node, target=y_target)
-                self.adaptive_window[window_key] = (
-                    self.adaptive_window.get(window_key, 0) + 1
-                )
+
+                self.sample_buffer.add_sample(node, y_target)
 
                 if self.drift_detector.drift_detected:
-                    self._adapt_model(self.adaptive_window)
-                    self.adaptive_window = {}
+                    self._adapt_model(self.sample_buffer)
+                    self.sample_buffer.clear()
 
         if event_name in self.end_events:
             self._clear(case_id)
@@ -598,6 +556,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         epochs: int = 1,
         end_events: set[str] | None = None,
         feature_aggs: list[FeatureAggregator] | None = None,
+        sample_buffer: SampleBuffer | None = None,
         dynamic_n_classes: bool = False,
         n_classes: int | None = None,
         max_n_classes: int | None = None,
@@ -618,6 +577,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             epochs=epochs,
             end_events=end_events,
             feature_aggs=feature_aggs,
+            sample_buffer=sample_buffer if sample_buffer is not None else CountBuffer(),
         )
 
         # Class number configuration
@@ -775,6 +735,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         epochs: int = 1,
         end_events: set[str] | None = None,
         feature_aggs: list[FeatureAggregator] | None = None,
+        sample_buffer: SampleBuffer | None = None,
     ):
         DARWINBase.__init__(
             self,
@@ -792,6 +753,9 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             epochs=epochs,
             end_events=end_events,
             feature_aggs=feature_aggs,
+            sample_buffer=sample_buffer
+            if sample_buffer is not None
+            else BinBuffer(),
         )
 
     def _init_head(self) -> None:

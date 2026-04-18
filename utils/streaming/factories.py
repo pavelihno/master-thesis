@@ -25,6 +25,12 @@ from utils.streaming.base.pipelines import (
     RemainingTimePredictionPipeline,
     SourceMode,
 )
+from utils.streaming.base.sample_buffers import (
+    BinBuffer,
+    CountBuffer,
+    SampleBuffer,
+    SimpleBuffer,
+)
 from utils.streaming.base.transformers import (
     ControlFlowTransformer,
     DARWINTimeTransformer,
@@ -39,9 +45,9 @@ from utils.streaming.time import TimeTarget
 
 def create_transformer(config: dict):
     """Create a streaming transformer from a config dict."""
-    transformer_type = config.get('type', None)
-    max_events = config.get('max_events', None)
-    include_prefix_len = config.get('include_prefix_len', True)
+    transformer_type = config.pop('type', None)
+    max_events = config.pop('max_events', None)
+    include_prefix_len = config.pop('include_prefix_len', True)
 
     if transformer_type == 'cf':
         return ControlFlowTransformer(include_prefix_len=include_prefix_len)
@@ -65,8 +71,8 @@ def create_transformer(config: dict):
 
 def create_model(config: dict):
     """Create a river streaming classifier from a config dict."""
-    model_type = config.get('type', None)
-    params = dict(config.get('params', {}))
+    model_type = config.pop('type', None)
+    params = dict(config.pop('params', {}))
 
     drift_detector = create_drift_detector(params.pop('drift_detector', {}))
     warning_detector = create_drift_detector(params.pop('warning_detector', {}))
@@ -90,6 +96,7 @@ def create_model(config: dict):
         )
         loss_fn = create_loss_fn(params.pop('loss_fn', {'type': 'cross_entropy'}))
         feature_aggs = create_feature_aggregators(params.pop('feature_aggs', []))
+        sample_buffer = create_sample_buffer(params.pop('sample_buffer', None))
 
         # TODO: learning rate reducer
         params.pop('lr_reducer', None)
@@ -100,11 +107,12 @@ def create_model(config: dict):
             loss_fn=loss_fn,
             drift_detector=drift_detector,
             feature_aggs=feature_aggs,
+            sample_buffer=sample_buffer,
         )
     else:
         raise ValueError(f"Unknown model type: '{model_type}'.")
 
-    pretrain_path = config.get('pretrain_path')
+    pretrain_path = config.pop('pretrain_path', None)
     if pretrain_path:
         pretrain_path = Path(pretrain_path)
         if not pretrain_path.exists():
@@ -115,18 +123,18 @@ def create_model(config: dict):
 
 
 def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
-    source_mode = SourceMode(config.get('source', None))
+    source_mode = SourceMode(config.pop('source', None))
 
     if source_mode == SourceMode.LOG:
-        dataset_path = config.get('dataset_path')
+        dataset_path = config.pop('dataset_path', None)
         if not dataset_path:
             raise ValueError('dataset_path must be provided for LogSource')
 
         run_kwargs = {'dataset_path': dataset_path}
-        end_events = set(config.get('end_events', []))
+        end_events = set(config.pop('end_events', []))
 
     elif source_mode == SourceMode.STRING:
-        stream_string = config.get('trace')
+        stream_string = config.pop('trace', None)
         if not stream_string:
             raise ValueError('trace must be provided for StringSource')
 
@@ -134,12 +142,11 @@ def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
         end_events = set(stream_string.split()[-1:])
 
     elif source_mode == SourceMode.BEVENTS:
-        trace_specs = config.get('traces')
+        trace_specs = config.pop('traces', None)
         if not trace_specs:
             raise ValueError("traces must be provided e.g. ['ABCDEF': 10000]")
 
-        process_name = config.get('dataset_name', 'synthetic_process')
-
+        process_name = config.pop('dataset_name', 'synthetic_process')
         case_id = 0
         bevents = []
         end_events = set()
@@ -227,9 +234,7 @@ def create_feature_aggregators(config: list | None) -> list[FeatureAggregator]:
         if isinstance(agg_params, dict):
             agg_type = agg_params.pop('type', '').lower()
         else:
-            raise TypeError(
-                f'Each feature_aggs item must be a dict (item #{i + 1})'
-            )
+            raise TypeError(f'Each feature_aggs item must be a dict (item #{i + 1})')
 
         if agg_type == 'average':
             aggregators.append(AverageAggregator())
@@ -241,20 +246,39 @@ def create_feature_aggregators(config: list | None) -> list[FeatureAggregator]:
     return aggregators
 
 
+def create_sample_buffer(config: dict) -> SampleBuffer | None:
+    """Create a sample buffer from a config dict."""
+    if not config:
+        return None
+
+    buffer_type = config.pop('type', None)
+
+    if buffer_type == 'simple':
+        return SimpleBuffer()
+    elif buffer_type == 'count':
+        return CountBuffer()
+    elif buffer_type == 'bin':
+        return BinBuffer(**config)
+    elif buffer_type is None:
+        return None
+    else:
+        raise ValueError(f"Unknown sample buffer type: '{buffer_type}'.")
+
+
 def create_outcome_extractor(config: dict):
     """Create an outcome extractor for streaming outcome prediction."""
-    regime = config.get('regime', None)
+    regime = config.pop('regime', None)
 
     if regime == 'binary':
-        positive_outcomes = set(config.get('positive_outcomes', []))
-        negative_outcomes = set(config.get('negative_outcomes', []))
+        positive_outcomes = set(config.pop('positive_outcomes', []))
+        negative_outcomes = set(config.pop('negative_outcomes', []))
         return BinaryOutcomeExtractor(
             positive_outcomes=positive_outcomes,
             negative_outcomes=negative_outcomes,
         )
 
     elif regime == 'multiclass':
-        outcome_mapping = dict(config.get('outcome_mapping', {}))
+        outcome_mapping = dict(config.pop('outcome_mapping', {}))
         return MultiClassOutcomeExtractor(outcome_mapping=outcome_mapping)
 
     raise ValueError(
@@ -270,10 +294,10 @@ def create_pipeline(
     source_mode: SourceMode | str = SourceMode.LOG,
 ):
     """Create a task pipeline from a config dict."""
-    task_type = config.get('type', None)
-    max_events = config.get('max_events', None)
+    task_type = config.pop('type', None)
+    max_events = config.pop('max_events', None)
 
-    pipeline_mode = PipelineMode(config.get('mode'))
+    pipeline_mode = PipelineMode(config.pop('mode', None))
     source_mode = SourceMode(source_mode)
 
     if task_type == 'next_activity':
@@ -298,7 +322,7 @@ def create_pipeline(
             max_events=max_events,
         )
     elif task_type == 'remaining_time':
-        target = TimeTarget(config.get('time_target'))
+        target = TimeTarget(config.pop('time_target', None))
 
         return RemainingTimePredictionPipeline(
             model=model,

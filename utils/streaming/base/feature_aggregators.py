@@ -20,7 +20,7 @@ class FeatureAggregator(ABC):
         pass
 
     @abstractmethod
-    def reset(self, count: int) -> None:
+    def reset(self) -> None:
         """Reset the aggregator state."""
         pass
 
@@ -56,19 +56,9 @@ class AverageAggregator(NumericalFeatureAggregator):
     def get_features(self) -> list[float]:
         return [self._average]
 
-    def reset(self, count: int) -> None:
-        if count <= 0:
-            return
-
-        _old_average = self._average
-
-        self._count = max(0, self._count - count)
-
-        if self._count == 0:
-            self._sum = 0.0
-            return
-
-        self._sum = _old_average * self._count
+    def reset(self) -> None:
+        self._sum = 0.0
+        self._count = 0
 
 
 class CategoricalFeatureAggregator(FeatureAggregator, ABC):
