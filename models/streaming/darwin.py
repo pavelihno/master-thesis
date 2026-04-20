@@ -17,7 +17,6 @@ from utils.streaming.base.feature_aggregators import (
     FeatureAggregator,
 )
 from utils.streaming.base.sample_buffers import (
-    BinBuffer,
     CountBuffer,
     PrefixTreeNode,
     SampleBuffer,
@@ -313,9 +312,9 @@ class DARWINBase(ABC):
 
         vectors_batch = []
         for nodes in prefix_nodes:
-            history = nodes[-self.sequence_window :]
+            window_nodes = nodes[-self.sequence_window :]
             vectors = []
-            for node in history:
+            for node in window_nodes:
                 event_name_vector = self._get_embedding(node.event_name)
                 feature_vector = self._get_node_features(node)
 
@@ -345,6 +344,13 @@ class DARWINBase(ABC):
             return
 
         samples = sample_buffer.get_samples()
+        # print(f'\nAdapting model with {len(samples)} samples from buffer')
+
+        # print('Sampled sequences and targets:')
+        # for s in samples:
+        #     sequence = self._get_event_sequence(s['prefix_node'])
+        #     target = s['target']
+        #     print(f'Sequence: {sequence}, Target: {target}')
 
         # Word2Vec update
         sequences = [self._get_event_sequence(s['prefix_node']) for s in samples]
@@ -461,8 +467,14 @@ class DARWINBase(ABC):
             return self
 
         if self.drift_detector is not None:
-            y_pred = self.predict_one(x)
-            y_pred_target = self._encode_target(y_pred)
+            logits = self._get_pred_logits(
+                case_id,
+                event_name,
+                event_id,
+                features=features,
+                is_learn=True,
+            )
+            y_pred, y_pred_target = self._get_pred(logits)
 
             # Only if label is known
             if y_target is not None:
@@ -489,24 +501,16 @@ class DARWINBase(ABC):
         event_name: str,
         event_id: int,
         features: list,
+        is_learn: bool = False,
     ) -> torch.Tensor | None:
 
-        self._update_prefix_tree(
-            case_id,
-            event_name,
-            event_id,
-            features=features,
-            is_learn=False,
+        node = (
+            self.header_table.get(case_id, self.prefix_tree)
+            if not is_learn
+            else self.learn_table.get(case_id, self.prefix_tree)
         )
 
-        if not self.initialized:
-            return None
-
-        node = self.header_table.get(case_id, self.prefix_tree)
         prediction_nodes = self._get_prefix_nodes(node)
-
-        # print(f'Predict> case_id={case_id}, current_event="{event_name}"')
-        # print(f'Prediction sequence: {prediction_nodes}\n')
 
         tensor = self._to_tensor(prediction_nodes)
 
@@ -523,6 +527,17 @@ class DARWINBase(ABC):
         """Predict target for an ongoing case."""
         case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
         features = x.get('features', [])
+
+        self._update_prefix_tree(
+            case_id,
+            event_name,
+            event_id,
+            features=features,
+            is_learn=False,
+        )
+
+        if not self.initialized:
+            return None
 
         logits = self._get_pred_logits(
             case_id,
@@ -698,6 +713,17 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
         features = x.get('features', [])
 
+        self._update_prefix_tree(
+            case_id,
+            event_name,
+            event_id,
+            features=features,
+            is_learn=False,
+        )
+
+        if not self.initialized:
+            return None
+
         logits = self._get_pred_logits(
             case_id,
             event_name,
@@ -755,7 +781,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             feature_aggs=feature_aggs,
             sample_buffer=sample_buffer
             if sample_buffer is not None
-            else BinBuffer(),
+            else SimpleBuffer(),
         )
 
     def _init_head(self) -> None:
