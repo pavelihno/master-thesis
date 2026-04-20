@@ -12,6 +12,7 @@ import torch
 import torch.nn as nn
 from gensim.models import Word2Vec
 from river import base
+from river.preprocessing import StandardScaler
 
 from utils.streaming.base.feature_aggregators import (
     FeatureAggregator,
@@ -56,6 +57,7 @@ class DARWINBase(ABC):
 
         self.feature_aggs = feature_aggs or []
         self.feature_size = sum(agg.output_size for agg in self.feature_aggs)
+        self.feature_scalers = [StandardScaler() for _ in range(self.feature_size)]
 
         self.events_processed: int = 0
         self.initialized: bool = False
@@ -152,6 +154,7 @@ class DARWINBase(ABC):
                 'learn_table': self.learn_table,
                 'previous_events': self.previous_events,
                 'sample_buffer': self.sample_buffer,
+                'feature_scalers': self.feature_scalers,
                 'events_processed': self.events_processed,
                 'initialized': self.initialized,
                 'drift_detector': self.drift_detector,
@@ -180,6 +183,7 @@ class DARWINBase(ABC):
         self.learn_table = runtime_state['learn_table']
         self.previous_events = runtime_state['previous_events']
         self.sample_buffer = runtime_state['sample_buffer']
+        self.feature_scalers = runtime_state['feature_scalers']
         self.events_processed = runtime_state['events_processed']
         self.initialized = runtime_state['initialized']
         self.drift_detector = runtime_state.get('drift_detector', self.drift_detector)
@@ -286,7 +290,7 @@ class DARWINBase(ABC):
             return self.w2v.wv[event_name]
         return np.zeros(self.embedding_dim, dtype=np.float32)
 
-    def _get_node_features(self, node: PrefixTreeNode) -> np.ndarray:
+    def _get_feature_vector(self, node: PrefixTreeNode) -> np.ndarray:
         """Flatten node feature aggregators into a fixed-size vector."""
         if self.feature_size == 0:
             return np.zeros(self.feature_size, dtype=np.float32)
@@ -297,6 +301,24 @@ class DARWINBase(ABC):
             values.extend(float(v) for v in agg_features)
 
         return np.asarray(values, dtype=np.float32)
+
+    def _scale_feature_vector(
+        self, feature_vector: np.ndarray, is_learn: bool = False
+    ) -> np.ndarray:
+        """Scale feature vector using the scalers."""
+        scaled_vector = np.zeros_like(feature_vector, dtype=np.float32)
+
+        for i, (value, scaler) in enumerate(
+            zip(feature_vector, self.feature_scalers, strict=True)
+        ):
+            float_value = float(value)
+
+            if is_learn:
+                scaler.learn_one({'x': float_value})
+
+            scaled_vector[i] = scaler.transform_one({'x': float_value})['x']
+
+        return scaled_vector
 
     def _to_tensor(
         self,
@@ -319,18 +341,22 @@ class DARWINBase(ABC):
 
             for i, node in enumerate(window_nodes):
                 event_name_vector = self._get_embedding(node.event_name)
-                feature_vector = np.zeros(self.feature_size, dtype=np.float32)
+                scaled_feature_vector = np.zeros(self.feature_size, dtype=np.float32)
 
                 # Features only for the current (last) event in the sequence
                 if i == last_idx:
+                    # Features are known (inference)
                     if features is not None:
                         feature_vector = np.asarray(features, dtype=np.float32)
+                    # Features are not known and extracted from aggregators (learning)
                     else:
-                        feature_vector = self._get_node_features(node)
+                        feature_vector = self._get_feature_vector(node)
 
-                vector = np.concatenate([event_name_vector, feature_vector]).astype(
-                    np.float32, copy=False
-                )
+                    scaled_feature_vector = self._scale_feature_vector(feature_vector)
+
+                vector = np.concatenate(
+                    [event_name_vector, scaled_feature_vector]
+                ).astype(np.float32, copy=False)
 
                 vectors.append(vector)
 
@@ -441,6 +467,12 @@ class DARWINBase(ABC):
         )
 
         node = self.learn_table.get(case_id, self.prefix_tree)
+
+        feature_vector = self._get_feature_vector(node)
+
+        scaled_feature_vector = self._scale_feature_vector(
+            feature_vector, is_learn=True
+        )
 
         # print(f'Learn> case_id={case_id}, current_event="{event_name}", label="{y}"')
 
