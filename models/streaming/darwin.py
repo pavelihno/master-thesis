@@ -301,6 +301,7 @@ class DARWINBase(ABC):
     def _to_tensor(
         self,
         prefix_nodes: list[list[PrefixTreeNode]] | list[PrefixTreeNode],
+        features: list | None = None,
     ) -> torch.Tensor:
         """Prepare zero-padded tensors for LSTM input."""
         # Handle single sequence
@@ -314,9 +315,18 @@ class DARWINBase(ABC):
         for nodes in prefix_nodes:
             window_nodes = nodes[-self.sequence_window :]
             vectors = []
-            for node in window_nodes:
+            last_idx = len(window_nodes) - 1
+
+            for i, node in enumerate(window_nodes):
                 event_name_vector = self._get_embedding(node.event_name)
-                feature_vector = self._get_node_features(node)
+                feature_vector = np.zeros(self.feature_size, dtype=np.float32)
+
+                # Features only for the current (last) event in the sequence
+                if i == last_idx:
+                    if features is not None:
+                        feature_vector = np.asarray(features, dtype=np.float32)
+                    else:
+                        feature_vector = self._get_node_features(node)
 
                 vector = np.concatenate([event_name_vector, feature_vector]).astype(
                     np.float32, copy=False
@@ -469,8 +479,6 @@ class DARWINBase(ABC):
         if self.drift_detector is not None:
             logits = self._get_pred_logits(
                 case_id,
-                event_name,
-                event_id,
                 features=features,
                 is_learn=True,
             )
@@ -498,8 +506,6 @@ class DARWINBase(ABC):
     def _get_pred_logits(
         self,
         case_id: str,
-        event_name: str,
-        event_id: int,
         features: list,
         is_learn: bool = False,
     ) -> torch.Tensor | None:
@@ -512,7 +518,7 @@ class DARWINBase(ABC):
 
         prediction_nodes = self._get_prefix_nodes(node)
 
-        tensor = self._to_tensor(prediction_nodes)
+        tensor = self._to_tensor(prediction_nodes, features=features)
 
         self.lstm.eval()
         self.head.eval()
@@ -541,8 +547,6 @@ class DARWINBase(ABC):
 
         logits = self._get_pred_logits(
             case_id,
-            event_name,
-            event_id,
             features=features,
         )
 
@@ -726,8 +730,6 @@ class DARWINClassifier(base.Classifier, DARWINBase):
 
         logits = self._get_pred_logits(
             case_id,
-            event_name,
-            event_id,
             features=features,
         )
 

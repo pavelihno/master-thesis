@@ -43,7 +43,7 @@ class NodeBinKey:
     """Aggregation key for regression windows."""
 
     prefix_node: PrefixTreeNode
-    bin_value: Any
+    bin_id: Any
 
 
 @dataclass(slots=True)
@@ -156,7 +156,7 @@ class BinBuffer(SampleBuffer):
         y = float(target)
         key = NodeBinKey(
             prefix_node=prefix_node,
-            bin_value=self._to_bin(y),
+            bin_id=self._to_bin(y),
         )
         stats = self._stats.get(key)
         if stats is None:

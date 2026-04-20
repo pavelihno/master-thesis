@@ -11,7 +11,9 @@ from utils.streaming.time import TimeTarget, convert_time, parse_time
 class LearnerMap(BaseMap):
     def __init__(self, model):
         self._model = model
-        self._has_drift_detector = hasattr(model, 'drift_detector')
+        self._has_drift_detector = (
+            hasattr(model, 'drift_detector') and model.drift_detector is not None
+        )
 
     def _get_loss(self):
         return (
@@ -86,10 +88,6 @@ class OutcomeLearner(LearnerMap):
         if y_true is not None:
             trace_features = self._pending_features.pop(trace_id, [])
             for pending_prefix_len, pending_features in trace_features:
-                # print(
-                #     f'LEARN>trace_id={trace_id}, prefix_len={pending_prefix_len}, features={pending_features}, y_true={y_true}'
-                # )
-
                 self._model.learn_one(pending_features, y_true)
                 drift_detected = drift_detected or self._is_drift_detected()
 
@@ -146,10 +144,6 @@ class RemainingTimeLearner(LearnerMap):
                     end_time - prefix_time,
                     target=self._target,
                 )
-
-                # print(
-                #     f'LEARN>trace_id={trace_id}, prefix_len={pending_prefix_len}, features={pending_features}, y_true={remaining_time}'
-                # )
 
                 self._model.learn_one(pending_features, remaining_time)
                 drift_detected = drift_detected or self._is_drift_detected()
