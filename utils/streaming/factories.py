@@ -14,10 +14,7 @@ from utils.streaming.base.extractors import (
     BinaryOutcomeExtractor,
     MultiClassOutcomeExtractor,
 )
-from utils.streaming.base.feature_aggregators import (
-    AverageAggregator,
-    FeatureAggregator,
-)
+from utils.streaming.base.feature_buffers import FeatureBuffer
 from utils.streaming.base.pipelines import (
     NextActivityPredictionPipeline,
     OutcomePredictionPipeline,
@@ -26,10 +23,8 @@ from utils.streaming.base.pipelines import (
     SourceMode,
 )
 from utils.streaming.base.sample_buffers import (
-    BinBuffer,
-    CountBuffer,
+    ReservoirSampleBuffer,
     SampleBuffer,
-    SimpleBuffer,
 )
 from utils.streaming.base.transformers import (
     ControlFlowTransformer,
@@ -95,8 +90,8 @@ def create_model(config: dict):
             params.pop('optimizer', {'type': 'adam', 'lr': 0.001})
         )
         loss_fn = create_loss_fn(params.pop('loss_fn', {'type': 'cross_entropy'}))
-        feature_aggs = create_feature_aggregators(params.pop('feature_aggs', []))
         sample_buffer = create_sample_buffer(params.pop('sample_buffer', None))
+        feature_buffer = create_feature_buffer(params.pop('feature_buffer', None))
 
         # TODO: learning rate reducer
         params.pop('lr_reducer', None)
@@ -106,8 +101,8 @@ def create_model(config: dict):
             optimizer_cls=optimizer_cls,
             loss_fn=loss_fn,
             drift_detector=drift_detector,
-            feature_aggs=feature_aggs,
             sample_buffer=sample_buffer,
+            feature_buffer=feature_buffer,
         )
     else:
         raise ValueError(f"Unknown model type: '{model_type}'.")
@@ -219,50 +214,40 @@ def create_loss_fn(config: dict):
         raise ValueError(f"Unknown criterion type: '{criterion_type}'.")
 
 
-def create_feature_aggregators(config: list | None) -> list[FeatureAggregator]:
-    """
-    Create feature aggregators from an ordered config list.
-    """
-    if not config:
-        return []
-
-    if not isinstance(config, list):
-        raise TypeError('feature_aggs must be an ordered list')
-
-    aggregators = []
-    for i, agg_params in enumerate(config):
-        if isinstance(agg_params, dict):
-            agg_type = agg_params.pop('type', '').lower()
-        else:
-            raise TypeError(f'Each feature_aggs item must be a dict (item #{i + 1})')
-
-        if agg_type == 'average':
-            aggregators.append(AverageAggregator())
-        else:
-            raise ValueError(
-                f"Unknown feature aggregator type: '{agg_type}' (item #{i + 1})"
-            )
-
-    return aggregators
-
-
-def create_sample_buffer(config: dict) -> SampleBuffer | None:
+def create_sample_buffer(config: dict | None) -> SampleBuffer | None:
     """Create a sample buffer from a config dict."""
     if not config:
         return None
 
-    buffer_type = config.pop('type', None)
+    config = dict(config)
+    buffer_type = str(config.pop('type', None)).lower()
+    if not buffer_type:
+        return None
 
-    if buffer_type == 'simple':
-        return SimpleBuffer()
-    elif buffer_type == 'count':
-        return CountBuffer()
-    elif buffer_type == 'bin':
-        return BinBuffer(**config)
-    elif buffer_type is None:
+    if buffer_type == 'sample':
+        return SampleBuffer(**config)
+    elif buffer_type == 'reservoir':
+        return ReservoirSampleBuffer(**config)
+    elif buffer_type == 'none':
         return None
     else:
         raise ValueError(f"Unknown sample buffer type: '{buffer_type}'.")
+
+
+def create_feature_buffer(config: dict | None) -> FeatureBuffer | None:
+    """Create a feature buffer from a config dict."""
+    if not config:
+        return None
+
+    config = dict(config)
+    buffer_type = str(config.pop('type', 'feature')).lower()
+
+    if buffer_type == 'feature':
+        return FeatureBuffer(**config)
+    elif buffer_type == 'none':
+        return None
+    else:
+        raise ValueError(f"Unknown feature buffer type: '{buffer_type}'.")
 
 
 def create_outcome_extractor(config: dict):
