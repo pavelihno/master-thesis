@@ -456,7 +456,7 @@ class DARWINBase(ABC):
         self.lstm.train()
         self.head.train()
 
-        for _ in range(max(1, self.epochs)):
+        for epoch_idx in range(max(1, self.epochs)):
             epoch_loss_history = []
 
             for i in range(0, len(samples), self.batch_size):
@@ -471,7 +471,7 @@ class DARWINBase(ABC):
                     batch_prefix_nodes,
                     batch_case_ids,
                     is_learn=True,
-                    fit_scalers=True,
+                    fit_scalers=(epoch_idx == 0),
                 )
                 out, _ = self.lstm(tensor)
                 logits = self.head(out[:, -1, :])
