@@ -60,7 +60,7 @@ class SampleBuffer:
 
     def clear(self) -> None:
         """Clear all buffered samples."""
-        self._samples.clear()
+        self._samples = []
 
 
 class ReservoirSampleBuffer(SampleBuffer):

@@ -38,7 +38,6 @@ class DARWINBase(ABC):
         end_events: set[str] | None = None,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
-        feature_buffer: FeatureBuffer | None = None,
     ):
         self.embedding_dim = embedding_dim
         self.w2v_window = w2v_window
@@ -84,14 +83,18 @@ class DARWINBase(ABC):
         # Separate header table for learning
         self.learn_table: dict[str, PrefixTreeNode] = {}
 
+        # Separate feature learning and prediction buffers
+        self.feature_buffer = (
+            FeatureBuffer(sequence_window=sequence_window) if feature_size > 0 else None
+        )
+        self.learn_feature_buffer = (
+            FeatureBuffer(sequence_window=sequence_window) if feature_size > 0 else None
+        )
+
         # Sample buffer for:
         # 1) initialization and 2) drift handling
         self.sample_buffer = (
             sample_buffer if sample_buffer is not None else SampleBuffer()
-        )
-
-        self.feature_buffer = (
-            feature_buffer if feature_buffer is not None else FeatureBuffer()
         )
 
     @abstractmethod
@@ -154,6 +157,7 @@ class DARWINBase(ABC):
                 'previous_events': self.previous_events,
                 'sample_buffer': self.sample_buffer,
                 'feature_buffer': self.feature_buffer,
+                'learn_feature_buffer': self.learn_feature_buffer,
                 'feature_scalers': self.feature_scalers,
                 'events_processed': self.events_processed,
                 'initialized': self.initialized,
@@ -184,6 +188,7 @@ class DARWINBase(ABC):
         self.previous_events = runtime_state['previous_events']
         self.sample_buffer = runtime_state['sample_buffer']
         self.feature_buffer = runtime_state['feature_buffer']
+        self.learn_feature_buffer = runtime_state['learn_feature_buffer']
         self.feature_scalers = runtime_state['feature_scalers']
         self.events_processed = runtime_state['events_processed']
         self.initialized = runtime_state['initialized']
@@ -230,7 +235,12 @@ class DARWINBase(ABC):
             self.header_table[case_id] = next_node
 
             # Store features for the current event in the feature buffer
-            self.feature_buffer.add_features(next_node, case_id, features)
+            if self.feature_buffer is not None:
+                self.feature_buffer.add_features(
+                    next_node,
+                    case_id,
+                    features,
+                )
 
             # Mark event as processed
             if event_id is not None:
@@ -241,6 +251,13 @@ class DARWINBase(ABC):
             current_node = self.learn_table.get(case_id, self.prefix_tree)
             next_node = self._build_node(current_node, event_name)
             self.learn_table[case_id] = next_node
+
+            if self.learn_feature_buffer is not None:
+                self.learn_feature_buffer.add_features(
+                    next_node,
+                    case_id,
+                    features,
+                )
 
     def _build_node(
         self,
@@ -284,15 +301,25 @@ class DARWINBase(ABC):
             return self.w2v.wv[event_name]
         return np.zeros(self.embedding_dim, dtype=np.float32)
 
-    def _get_features(self, case_id: str, node: PrefixTreeNode) -> list[float]:
+    def _get_features(
+        self,
+        case_id: str,
+        node: PrefixTreeNode,
+        is_learn: bool = False,
+    ) -> list[float]:
         """Retrieve features from feature buffer for the given case and node."""
-        features = self.feature_buffer.get_features(node, case_id)
+        buffer = self.learn_feature_buffer if is_learn else self.feature_buffer
+        if buffer is None:
+            return [0.0] * self.feature_size
+        features = buffer.get_features(node, case_id)
         if features is None:
             return [0.0] * self.feature_size
         return features
 
     def _scale_features(
-        self, features: list[float], is_learn: bool = False
+        self,
+        features: list[float],
+        fit_scalers: bool = False,
     ) -> np.ndarray:
         """Scale feature vector using the scalers."""
         if self.feature_size == 0:
@@ -305,7 +332,7 @@ class DARWINBase(ABC):
         ):
             float_value = float(value)
 
-            if is_learn:
+            if fit_scalers:
                 scaler.learn_one({'x': float_value})
 
             scaled_vector[i] = scaler.transform_one({'x': float_value})['x']
@@ -317,6 +344,7 @@ class DARWINBase(ABC):
         prefix_nodes: list[list[PrefixTreeNode]],
         case_ids: list[str],
         is_learn: bool = False,
+        fit_scalers: bool = False,
     ) -> torch.Tensor:
         """Prepare zero-padded tensors for LSTM input."""
         # Handle single sequence
@@ -331,13 +359,27 @@ class DARWINBase(ABC):
             for i, node in enumerate(window_nodes):
                 event_name_embedding = self._get_embedding(node.event_name)
 
-                features = self._get_features(case_id, node)
-                feature_vector = self._scale_features(features, is_learn=is_learn)
+                features = self._get_features(
+                    case_id,
+                    node,
+                    is_learn=is_learn,
+                )
+                feature_vector = self._scale_features(
+                    features,
+                    fit_scalers=fit_scalers,
+                )
 
                 # Features only for the most recent event
                 # if i == len(window_nodes) - 1:
-                #     features = self._get_features(case_id, node)
-                #     feature_vector = self._scale_features(features, is_learn=is_learn)
+                #     features = self._get_features(
+                #         case_id,
+                #         node,
+                #         is_learn=is_learn,
+                #     )
+                #     feature_vector = self._scale_features(
+                #         features,
+                #         fit_scalers=fit_scalers,
+                #     )
                 # else:
                 #     feature_vector = np.zeros(self.feature_size, dtype=np.float32)
 
@@ -359,7 +401,10 @@ class DARWINBase(ABC):
         self.header_table.pop(case_id, None)
         self.previous_events.pop(case_id, None)
         self.learn_table.pop(case_id, None)
-        self.feature_buffer.clear(case_id)
+        if self.feature_buffer is not None:
+            self.feature_buffer.clear(case_id)
+        if self.learn_feature_buffer is not None:
+            self.learn_feature_buffer.clear(case_id)
 
     def _adapt_model(self, sample_buffer: SampleBuffer) -> None:
         """Updates Word2Vec and fine-tunes the LSTM on the provided window."""
@@ -423,7 +468,10 @@ class DARWINBase(ABC):
                 batch_targets = self._prepare_target([s.target for s in batch])
 
                 tensor = self._to_tensor(
-                    batch_prefix_nodes, batch_case_ids, is_learn=True
+                    batch_prefix_nodes,
+                    batch_case_ids,
+                    is_learn=True,
+                    fit_scalers=True,
                 )
                 out, _ = self.lstm(tensor)
                 logits = self.head(out[:, -1, :])
@@ -490,10 +538,7 @@ class DARWINBase(ABC):
             return self
 
         if self.drift_detector is not None:
-            logits = self._get_pred_logits(
-                case_id,
-                is_learn=True,
-            )
+            logits = self._get_pred_logits(case_id, is_learn=True)
             y_pred, y_pred_target = self._get_pred(logits)
 
             # Only if label is known
@@ -527,7 +572,12 @@ class DARWINBase(ABC):
 
         prediction_nodes = self._get_prefix_nodes(node)
 
-        tensor = self._to_tensor([prediction_nodes], [case_id], is_learn=False)
+        tensor = self._to_tensor(
+            [prediction_nodes],
+            [case_id],
+            is_learn=is_learn,
+            fit_scalers=False,
+        )
 
         self.lstm.eval()
         self.head.eval()
@@ -554,9 +604,7 @@ class DARWINBase(ABC):
         if not self.initialized:
             return None
 
-        logits = self._get_pred_logits(
-            case_id,
-        )
+        logits = self._get_pred_logits(case_id)
 
         if logits is None:
             return None
@@ -584,7 +632,6 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         end_events: set[str] | None = None,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
-        feature_buffer: FeatureBuffer | None = None,
         dynamic_n_classes: bool = False,
         n_classes: int | None = None,
         max_n_classes: int | None = None,
@@ -606,7 +653,6 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             end_events=end_events,
             feature_size=feature_size,
             sample_buffer=sample_buffer,
-            feature_buffer=feature_buffer,
         )
 
         # Class number configuration
@@ -738,9 +784,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         if not self.initialized:
             return {}
 
-        logits = self._get_pred_logits(
-            case_id,
-        )
+        logits = self._get_pred_logits(case_id)
 
         if logits is None or len(self.idx_to_label) == 0:
             return {}
@@ -773,7 +817,6 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         end_events: set[str] | None = None,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
-        feature_buffer: FeatureBuffer | None = None,
     ):
         DARWINBase.__init__(
             self,
@@ -792,7 +835,6 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             end_events=end_events,
             feature_size=feature_size,
             sample_buffer=sample_buffer,
-            feature_buffer=feature_buffer,
         )
 
     def _init_head(self) -> None:

@@ -14,7 +14,6 @@ from utils.streaming.base.extractors import (
     BinaryOutcomeExtractor,
     MultiClassOutcomeExtractor,
 )
-from utils.streaming.base.feature_buffers import FeatureBuffer
 from utils.streaming.base.pipelines import (
     NextActivityPredictionPipeline,
     OutcomePredictionPipeline,
@@ -93,7 +92,6 @@ def create_model(config: dict):
         )
         loss_fn = create_loss_fn(params.pop('loss_fn', {'type': 'cross_entropy'}))
         sample_buffer = create_sample_buffer(params.pop('sample_buffer', None))
-        feature_buffer = create_feature_buffer(params.pop('feature_buffer', None))
 
         # TODO: learning rate reducer
         params.pop('lr_reducer', None)
@@ -104,7 +102,6 @@ def create_model(config: dict):
             loss_fn=loss_fn,
             drift_detector=drift_detector,
             sample_buffer=sample_buffer,
-            feature_buffer=feature_buffer,
         )
     else:
         raise ValueError(f"Unknown model type: '{model_type}'.")
@@ -235,22 +232,6 @@ def create_sample_buffer(config: dict | None) -> SampleBuffer | None:
         return None
     else:
         raise ValueError(f"Unknown sample buffer type: '{buffer_type}'.")
-
-
-def create_feature_buffer(config: dict | None) -> FeatureBuffer | None:
-    """Create a feature buffer from a config dict."""
-    if not config:
-        return None
-
-    config = dict(config)
-    buffer_type = str(config.pop('type', 'feature')).lower()
-
-    if buffer_type == 'feature':
-        return FeatureBuffer(**config)
-    elif buffer_type == 'none':
-        return None
-    else:
-        raise ValueError(f"Unknown feature buffer type: '{buffer_type}'.")
 
 
 def create_outcome_extractor(config: dict):
