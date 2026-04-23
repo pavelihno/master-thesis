@@ -736,7 +736,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         )
 
         if not self.initialized:
-            return None
+            return {}
 
         logits = self._get_pred_logits(
             case_id,

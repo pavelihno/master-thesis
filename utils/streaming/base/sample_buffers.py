@@ -46,9 +46,8 @@ class SampleBuffer:
         )
 
         if self._max_size is not None and self._max_size > 0:
-            overflow = len(self._samples) - self._max_size
-            if overflow > 0:
-                del self._samples[:overflow]
+            if len(self._samples) > self._max_size:
+                self._samples = self._samples[-self._max_size :]
 
     def get_samples(self) -> list[SampleBufferElement]:
         """Return all stored samples."""

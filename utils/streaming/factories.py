@@ -40,6 +40,7 @@ from utils.streaming.time import TimeTarget
 
 def create_transformer(config: dict):
     """Create a streaming transformer from a config dict."""
+    config = dict(config)
     transformer_type = config.pop('type', None)
     max_events = config.pop('max_events', None)
     include_prefix_len = config.pop('include_prefix_len', True)
@@ -66,6 +67,7 @@ def create_transformer(config: dict):
 
 def create_model(config: dict):
     """Create a river streaming classifier from a config dict."""
+    config = dict(config)
     model_type = config.pop('type', None)
     params = dict(config.pop('params', {}))
 
@@ -118,6 +120,7 @@ def create_model(config: dict):
 
 
 def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
+    config = dict(config)
     source_mode = SourceMode(config.pop('source', None))
 
     if source_mode == SourceMode.LOG:
@@ -252,6 +255,7 @@ def create_feature_buffer(config: dict | None) -> FeatureBuffer | None:
 
 def create_outcome_extractor(config: dict):
     """Create an outcome extractor for streaming outcome prediction."""
+    config = dict(config)
     regime = config.pop('regime', None)
 
     if regime == 'binary':
@@ -279,6 +283,7 @@ def create_pipeline(
     source_mode: SourceMode | str = SourceMode.LOG,
 ):
     """Create a task pipeline from a config dict."""
+    config = dict(config)
     task_type = config.pop('type', None)
     max_events = config.pop('max_events', None)
 
