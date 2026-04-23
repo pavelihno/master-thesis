@@ -538,7 +538,7 @@ class DARWINBase(ABC):
             return self
 
         if self.drift_detector is not None:
-            logits = self._get_pred_logits(case_id, is_learn=True)
+            logits = self._get_pred_logits(case_id, node, is_learn=True)
             y_pred, y_pred_target = self._get_pred(logits)
 
             # Only if label is known
@@ -563,12 +563,9 @@ class DARWINBase(ABC):
     def _get_pred_logits(
         self,
         case_id: str,
+        node: PrefixTreeNode,
         is_learn: bool = False,
     ) -> torch.Tensor | None:
-
-        node = (self.learn_table if is_learn else self.header_table).get(
-            case_id, self.prefix_tree
-        )
 
         prediction_nodes = self._get_prefix_nodes(node)
 
@@ -604,7 +601,9 @@ class DARWINBase(ABC):
         if not self.initialized:
             return None
 
-        logits = self._get_pred_logits(case_id)
+        node = self.header_table.get(case_id)
+
+        logits = self._get_pred_logits(case_id, node)
 
         if logits is None:
             return None
@@ -784,7 +783,9 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         if not self.initialized:
             return {}
 
-        logits = self._get_pred_logits(case_id)
+        node = self.header_table.get(case_id)
+
+        logits = self._get_pred_logits(case_id, node)
 
         if logits is None or len(self.idx_to_label) == 0:
             return {}
