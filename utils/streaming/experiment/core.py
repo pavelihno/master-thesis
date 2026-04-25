@@ -4,6 +4,7 @@ import pickle
 from pathlib import Path
 from typing import Any
 
+import torch
 import yaml
 
 
@@ -25,6 +26,20 @@ def make_json_safe(value: Any) -> Any:
     if isinstance(value, (list, tuple, set)):
         return [make_json_safe(item) for item in value]
     return str(value)
+
+
+def select_device(device_name: str | None) -> torch.device | None:
+    if device_name is None:
+        return None
+
+    requested = device_name.lower()
+    if requested == 'auto':
+        return torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    if requested == 'cuda' and not torch.cuda.is_available():
+        print('CUDA requested but not available. Falling back to CPU.')
+        return torch.device('cpu')
+
+    return torch.device(requested)
 
 
 def prepare_results_frame(config: dict, results_df):

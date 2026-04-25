@@ -12,6 +12,7 @@ from utils.streaming.experiment import (
     make_json_safe,
     prepare_results_frame,
     save_model,
+    select_device,
     write_results,
 )
 from utils.streaming.factories import (
@@ -34,6 +35,7 @@ def run_config(
     save_artifacts: bool = True,
     metrics_json_path: str | None = None,
     results_csv_path: str | None = None,
+    device=None,
 ) -> dict:
     dataset_name, model_name = get_dataset_and_model(config)
     config_hash = get_config_hash(config)
@@ -55,9 +57,11 @@ def run_config(
     print(f'Dataset: {dataset_name}')
     print(f'Transformer: {config["transformer"]["type"]}')
     print(f'Model: {model_name}')
+    if device is not None:
+        print(f'Device: {device.type}')
 
     transformer = create_transformer(config['transformer'])
-    model = create_model(config['model'])
+    model = create_model(config['model'], device=device)
     dataset_kwargs, dataset_source, end_events = create_dataset(config['dataset'])
 
     pipeline = create_pipeline(
@@ -150,11 +154,18 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help='Optional CSV path for per-row prediction results.',
     )
+    parser.add_argument(
+        '--device',
+        type=str,
+        default='auto',
+        help="Execution device: 'auto', 'cuda', or 'cpu'.",
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+    device = select_device(args.device)
 
     try:
         run_config(
@@ -163,6 +174,7 @@ def main():
             save_artifacts=args.save_artifacts,
             metrics_json_path=args.metrics_json,
             results_csv_path=args.results_csv,
+            device=device,
         )
     except Exception as exc:
         if args.metrics_json:

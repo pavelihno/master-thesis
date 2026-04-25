@@ -37,6 +37,7 @@ class DARWINBase(ABC):
         end_events: set[str] | None = None,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
+        device: torch.device | None = None,
     ):
         self.embedding_dim = embedding_dim
         self.w2v_window = w2v_window
@@ -51,15 +52,16 @@ class DARWINBase(ABC):
 
         self.events_processed: int = 0
         self.initialized: bool = False
+        self.device = device or torch.device('cpu')
 
         self.w2v = None
 
-        self.sequence_model = sequence_model
+        self.sequence_model = sequence_model.to(self.device)
         self.head = None
 
         self.optimizer_cls = optimizer_cls
         self.optimizer = None
-        self.loss_fn = loss_fn
+        self.loss_fn = loss_fn.to(self.device)
 
         self.loss_history = []
 
@@ -163,12 +165,16 @@ class DARWINBase(ABC):
     def load_checkpoint(
         self,
         path: str | Path,
-        device: str | torch.device = 'cpu',
     ) -> DARWINBase:
         """Load model and runtime state."""
-        checkpoint = torch.load(Path(path), map_location=device, weights_only=False)
+        checkpoint = torch.load(
+            Path(path),
+            map_location=self.device,
+            weights_only=False,
+        )
 
         self.sequence_model.load_state_dict(checkpoint['sequence_model_state_dict'])
+        self.sequence_model.to(self.device)
 
         runtime_state = checkpoint['runtime_state']
         self.w2v = runtime_state['w2v']
@@ -189,7 +195,7 @@ class DARWINBase(ABC):
             self.head = None
         else:
             out_features, in_features = head_state['weight'].shape
-            self.head = nn.Linear(in_features, out_features)
+            self.head = nn.Linear(in_features, out_features).to(self.device)
             self.head.load_state_dict(head_state)
 
         # Reconstruct optimizer if head was loaded
@@ -385,7 +391,11 @@ class DARWINBase(ABC):
             vectors_batch.append(np.stack(vectors))
 
         # (batch_size, sequence_window, embedding_dim + feature_size)
-        return torch.tensor(np.stack(vectors_batch), dtype=torch.float32)
+        return torch.tensor(
+            np.stack(vectors_batch),
+            dtype=torch.float32,
+            device=self.device,
+        )
 
     def _clear(self, case_id: str) -> None:
         self.header_table.pop(case_id, None)
@@ -455,7 +465,9 @@ class DARWINBase(ABC):
                     self._get_prefix_nodes(s.prefix_node) for s in batch
                 ]
                 batch_case_ids = [s.case_id for s in batch]
-                batch_targets = self._prepare_target([s.target for s in batch])
+                batch_targets = self._prepare_target([s.target for s in batch]).to(
+                    self.device
+                )
 
                 tensor = self._to_tensor(
                     batch_prefix_nodes,
@@ -622,6 +634,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         dynamic_n_classes: bool = False,
         n_classes: int | None = None,
         max_n_classes: int | None = None,
+        device: torch.device | None = None,
     ):
         DARWINBase.__init__(
             self,
@@ -638,6 +651,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             end_events=end_events,
             feature_size=feature_size,
             sample_buffer=sample_buffer,
+            device=device,
         )
 
         # Class number configuration
@@ -672,12 +686,14 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         elif self.n_classes <= 0:
             raise ValueError('In fixed mode n_classes must be a positive integer')
 
-        self.head = nn.Linear(self.sequence_model.output_dim, self.n_classes)
+        self.head = nn.Linear(self.sequence_model.output_dim, self.n_classes).to(
+            self.device
+        )
 
     def _prepare_target(self, y: Any) -> torch.Tensor:
         if isinstance(y, list):
-            return torch.tensor(y, dtype=torch.long)
-        return torch.tensor([y], dtype=torch.long)
+            return torch.tensor(y, dtype=torch.long, device=self.device)
+        return torch.tensor([y], dtype=torch.long, device=self.device)
 
     def _encode_target(self, y: Any) -> int | None:
         return self._map_label(y)
@@ -725,7 +741,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         old_n_classes = old_head.out_features
         hidden_dim = old_head.in_features
 
-        new_head = nn.Linear(hidden_dim, new_n_classes)
+        new_head = nn.Linear(hidden_dim, new_n_classes).to(self.device)
         with torch.no_grad():
             if old_n_classes > 0:
                 new_head.weight[:old_n_classes].copy_(old_head.weight)
@@ -802,6 +818,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         end_events: set[str] | None = None,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
+        device: torch.device | None = None,
     ):
         DARWINBase.__init__(
             self,
@@ -818,17 +835,18 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             end_events=end_events,
             feature_size=feature_size,
             sample_buffer=sample_buffer,
+            device=device,
         )
 
     def _init_head(self) -> None:
         if self.head is not None:
             return
-        self.head = nn.Linear(self.sequence_model.output_dim, 1)
+        self.head = nn.Linear(self.sequence_model.output_dim, 1).to(self.device)
 
     def _prepare_target(self, y: Any) -> torch.Tensor:
         if isinstance(y, list):
-            return torch.tensor(y, dtype=torch.float32)
-        return torch.tensor([y], dtype=torch.float32)
+            return torch.tensor(y, dtype=torch.float32, device=self.device)
+        return torch.tensor([y], dtype=torch.float32, device=self.device)
 
     def _encode_target(self, y: Any) -> float | None:
         if y is None:

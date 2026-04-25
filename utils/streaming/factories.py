@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from pathlib import Path
 
+import torch
 import torch.nn as nn
 import torch.optim as optim
 from pybeamline.sources import BEvent
@@ -65,7 +66,7 @@ def create_transformer(config: dict):
         raise ValueError(f"Unknown transformer type: '{transformer_type}'.")
 
 
-def create_model(config: dict):
+def create_model(config: dict, device: torch.device | None = None):
     """Create a river streaming classifier from a config dict."""
     config = dict(config)
     model_type = config.pop('type', None)
@@ -108,6 +109,7 @@ def create_model(config: dict):
             loss_fn=loss_fn,
             drift_detector=drift_detector,
             sample_buffer=sample_buffer,
+            device=device,
         )
     else:
         raise ValueError(f"Unknown model type: '{model_type}'.")

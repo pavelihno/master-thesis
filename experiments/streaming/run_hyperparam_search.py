@@ -9,6 +9,7 @@ from utils.streaming.experiment import (
     build_output_folder_name,
     get_dataset_and_model,
     make_json_safe,
+    select_device,
 )
 from utils.streaming.hyperparam import (
     extract_trial_rows,
@@ -24,6 +25,7 @@ def run_search(
     report_dir: str | None = None,
     search_name: str | None = None,
     top_k: int = 10,
+    device=None,
 ) -> dict:
 
     config = load_config(config_path)
@@ -54,8 +56,10 @@ def run_search(
     print(f'Hyperparameter Search: {search_name}')
     print('=' * 80)
     print(f'Config file         : {config_path}')
+    if device is not None:
+        print(f'Device              : {device.type}')
 
-    hyperopt_results = run_hyperopt(config)
+    hyperopt_results = run_hyperopt(config, device=device)
     metric_name = hyperopt_results['metric']
     is_max = hyperopt_results['maximize']
     metric_mode = 'max' if is_max else 'min'
@@ -195,17 +199,25 @@ def parse_args() -> argparse.Namespace:
         help='Optional output name prefix.',
     )
     parser.add_argument('--top-k', type=int, default=10, help='Top-k models in TXT.')
+    parser.add_argument(
+        '--device',
+        type=str,
+        default='auto',
+        help="Execution device: 'auto', 'cuda', or 'cpu'.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    device = select_device(args.device)
 
     run_search(
         args.config_path,
         report_dir=args.report_dir,
         search_name=args.search_name,
         top_k=args.top_k,
+        device=device,
     )
 
 

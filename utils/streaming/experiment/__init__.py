@@ -5,6 +5,7 @@ from utils.streaming.experiment.core import (
     make_json_safe,
     prepare_results_frame,
     save_model,
+    select_device,
     write_results,
 )
 from utils.streaming.experiment.naming import (
@@ -29,6 +30,7 @@ __all__ = [
     'prepare_results_frame',
     'read_run_info',
     'save_model',
+    'select_device',
     'slugify',
     'write_results',
 ]

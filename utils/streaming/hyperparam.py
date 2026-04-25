@@ -3,6 +3,7 @@ import math
 from pathlib import Path
 
 import numpy as np
+import torch
 import yaml
 from hyperopt import STATUS_OK, Trials, fmin, hp, space_eval, tpe
 from hyperopt.pyll import scope
@@ -115,7 +116,7 @@ def save_cfg_yaml(
     return final_cfg
 
 
-def run_hyperopt(cfg: dict) -> dict:
+def run_hyperopt(cfg: dict, device: torch.device | None = None) -> dict:
     cfg = copy.deepcopy(cfg)
 
     task_cfg = cfg.get('task', {})
@@ -145,7 +146,7 @@ def run_hyperopt(cfg: dict) -> dict:
         sampled_model_cfg = sample['model_cfg']
         sampled_transformer_cfg = sample['transformer_cfg']
 
-        model = create_model(sampled_model_cfg)
+        model = create_model(sampled_model_cfg, device=device)
         transformer = create_transformer(sampled_transformer_cfg)
 
         pipeline = create_pipeline(

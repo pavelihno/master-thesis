@@ -9,6 +9,7 @@ from utils.streaming.experiment.batch import (
     run_config_process,
     save_comparison_reports,
 )
+from utils.streaming.experiment.core import select_device
 from utils.streaming.experiment.naming import (
     build_output_folder_name,
     read_run_info,
@@ -19,6 +20,7 @@ def run_batch(
     config_files: list[Path],
     workers: int = 1,
     save_artifacts: bool = False,
+    device: str | None = None,
 ) -> list[dict]:
     runner_path = Path(__file__).with_name('run_train.py')
     python_executable = sys.executable
@@ -55,6 +57,7 @@ def run_batch(
                 metrics_dir,
                 results_dir,
                 save_artifacts,
+                device,
             )
             status = 'OK' if result['ok'] else 'FAILED'
             print(f'[{status}] {config_path}')
@@ -80,6 +83,7 @@ def run_batch(
                     metrics_dir,
                     results_dir,
                     save_artifacts,
+                    device,
                 )
                 futures[future] = config_path
             for future in as_completed(futures):
@@ -134,11 +138,18 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help='Optional run output folder name under --report-dir.',
     )
+    parser.add_argument(
+        '--device',
+        type=str,
+        default='auto',
+        help="Execution device: 'auto', 'cuda', or 'cpu'.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    device = select_device(args.device)
 
     base_path = Path(args.base_path)
 
@@ -157,6 +168,7 @@ def main() -> None:
         config_files,
         workers=args.workers,
         save_artifacts=False,
+        device=device.type if device is not None else None,
     )
 
     run_folder_name = build_output_folder_name(

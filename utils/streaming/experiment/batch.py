@@ -64,6 +64,7 @@ def run_config_process(
     metrics_dir: Path,
     results_dir: Path,
     save_artifacts: bool,
+    device: str | None = None,
 ) -> dict:
     path_key = hashlib.sha1(str(config_path).encode()).hexdigest()[:10]
     metrics_path = metrics_dir / f'{config_path.stem}_{path_key}.json'
@@ -79,6 +80,8 @@ def run_config_process(
     ]
     if save_artifacts:
         command.append('--save-artifacts')
+    if device is not None:
+        command.extend(['--device', device])
 
     completed = subprocess.run(command, capture_output=True, text=True)
 
