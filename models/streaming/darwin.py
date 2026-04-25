@@ -13,6 +13,7 @@ from gensim.models import Word2Vec
 from river import base
 from river.preprocessing import StandardScaler
 
+from models.streaming.sequence import SequenceModel
 from utils.streaming.base.feature_buffers import FeatureBuffer
 from utils.streaming.base.sample_buffers import (
     PrefixTreeNode,
@@ -26,11 +27,9 @@ class DARWINBase(ABC):
         embedding_dim: int,
         w2v_window: int,
         sequence_window: int,
+        sequence_model: SequenceModel,
         optimizer_cls: Callable,
         loss_fn: nn.Module,
-        lstm_layers: int,
-        hidden_dim: int,
-        dropout: float,
         batch_size: int,
         drift_detector: base.DriftDetector | None,
         init_size: int,
@@ -42,11 +41,8 @@ class DARWINBase(ABC):
         self.embedding_dim = embedding_dim
         self.w2v_window = w2v_window
         self.sequence_window = sequence_window
-        self.lstm_layers = lstm_layers
-        self.hidden_dim = hidden_dim
         self.init_size = init_size
         self.batch_size = batch_size
-        self.dropout = dropout
         self.epochs = epochs
         self.end_events = end_events or set()
 
@@ -58,13 +54,7 @@ class DARWINBase(ABC):
 
         self.w2v = None
 
-        self.lstm = nn.LSTM(
-            input_size=embedding_dim + self.feature_size,
-            hidden_size=hidden_dim,
-            num_layers=lstm_layers,
-            dropout=self.dropout if lstm_layers > 1 else 0.0,
-            batch_first=True,
-        )
+        self.sequence_model = sequence_model
         self.head = None
 
         self.optimizer_cls = optimizer_cls
@@ -142,7 +132,7 @@ class DARWINBase(ABC):
         """Save model and runtime state."""
         checkpoint_data = self._get_checkpoint_data()
         checkpoint = {
-            'lstm_state_dict': self.lstm.state_dict(),
+            'sequence_model_state_dict': self.sequence_model.state_dict(),
             'head_state_dict': self.head.state_dict()
             if self.head is not None
             else None,
@@ -178,7 +168,7 @@ class DARWINBase(ABC):
         """Load model and runtime state."""
         checkpoint = torch.load(Path(path), map_location=device, weights_only=False)
 
-        self.lstm.load_state_dict(checkpoint['lstm_state_dict'])
+        self.sequence_model.load_state_dict(checkpoint['sequence_model_state_dict'])
 
         runtime_state = checkpoint['runtime_state']
         self.w2v = runtime_state['w2v']
@@ -205,7 +195,7 @@ class DARWINBase(ABC):
         # Reconstruct optimizer if head was loaded
         if self.head is not None:
             self.optimizer = self.optimizer_cls(
-                list(self.lstm.parameters()) + list(self.head.parameters())
+                list(self.sequence_model.parameters()) + list(self.head.parameters())
             )
             opt_state = checkpoint.get('optimizer_state_dict')
             if opt_state is not None:
@@ -346,7 +336,7 @@ class DARWINBase(ABC):
         is_learn: bool = False,
         fit_scalers: bool = False,
     ) -> torch.Tensor:
-        """Prepare zero-padded tensors for LSTM input."""
+        """Prepare zero-padded tensors for sequence model input."""
         # Handle single sequence
         input_dim = self.embedding_dim + self.feature_size
         zero_vector = np.zeros(input_dim, dtype=np.float32)
@@ -407,7 +397,7 @@ class DARWINBase(ABC):
             self.learn_feature_buffer.clear(case_id)
 
     def _adapt_model(self, sample_buffer: SampleBuffer) -> None:
-        """Updates Word2Vec and fine-tunes the LSTM on the provided window."""
+        """Updates Word2Vec and fine-tunes the sequence model on the provided window."""
         buffer_size = sample_buffer.size
         if buffer_size == 0:
             return
@@ -449,11 +439,11 @@ class DARWINBase(ABC):
 
         if self.optimizer is None:
             self.optimizer = self.optimizer_cls(
-                list(self.lstm.parameters()) + list(self.head.parameters())
+                list(self.sequence_model.parameters()) + list(self.head.parameters())
             )
 
-        # LSTM fine-tuning
-        self.lstm.train()
+        # Sequence model fine-tuning
+        self.sequence_model.train()
         self.head.train()
 
         for epoch_idx in range(max(1, self.epochs)):
@@ -473,8 +463,8 @@ class DARWINBase(ABC):
                     is_learn=True,
                     fit_scalers=(epoch_idx == 0),
                 )
-                out, _ = self.lstm(tensor)
-                logits = self.head(out[:, -1, :])
+                hidden = self.sequence_model(tensor)
+                logits = self.head(hidden)
 
                 loss = self._compute_loss(logits, batch_targets)
                 self.optimizer.zero_grad()
@@ -576,12 +566,12 @@ class DARWINBase(ABC):
             fit_scalers=False,
         )
 
-        self.lstm.eval()
+        self.sequence_model.eval()
         self.head.eval()
 
         with torch.no_grad():
-            out, _ = self.lstm(tensor)
-            logits = self.head(out[:, -1, :])
+            hidden = self.sequence_model(tensor)
+            logits = self.head(hidden)
 
         return logits
 
@@ -619,11 +609,9 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         embedding_dim: int,
         w2v_window: int,
         sequence_window: int,
+        sequence_model: SequenceModel,
         optimizer_cls: Callable,
         loss_fn: nn.Module,
-        lstm_layers: int,
-        hidden_dim: int,
-        dropout: float,
         batch_size: int,
         drift_detector: base.DriftDetector | None,
         init_size: int,
@@ -640,11 +628,9 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             embedding_dim=embedding_dim,
             w2v_window=w2v_window,
             sequence_window=sequence_window,
+            sequence_model=sequence_model,
             optimizer_cls=optimizer_cls,
             loss_fn=loss_fn,
-            lstm_layers=lstm_layers,
-            hidden_dim=hidden_dim,
-            dropout=dropout,
             batch_size=batch_size,
             drift_detector=drift_detector,
             init_size=init_size,
@@ -686,7 +672,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         elif self.n_classes <= 0:
             raise ValueError('In fixed mode n_classes must be a positive integer')
 
-        self.head = nn.Linear(self.lstm.hidden_size, self.n_classes)
+        self.head = nn.Linear(self.sequence_model.output_dim, self.n_classes)
 
     def _prepare_target(self, y: Any) -> torch.Tensor:
         if isinstance(y, list):
@@ -749,7 +735,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         self.n_classes = new_n_classes
 
         self.optimizer = self.optimizer_cls(
-            list(self.lstm.parameters()) + list(self.head.parameters())
+            list(self.sequence_model.parameters()) + list(self.head.parameters())
         )
 
     def _get_checkpoint_data(self) -> dict:
@@ -806,11 +792,9 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         embedding_dim: int,
         w2v_window: int,
         sequence_window: int,
+        sequence_model: SequenceModel,
         optimizer_cls: Callable,
         loss_fn: nn.Module,
-        lstm_layers: int,
-        hidden_dim: int,
-        dropout: float,
         batch_size: int,
         drift_detector: base.DriftDetector | None,
         init_size: int,
@@ -824,11 +808,9 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             embedding_dim=embedding_dim,
             w2v_window=w2v_window,
             sequence_window=sequence_window,
+            sequence_model=sequence_model,
             optimizer_cls=optimizer_cls,
             loss_fn=loss_fn,
-            lstm_layers=lstm_layers,
-            hidden_dim=hidden_dim,
-            dropout=dropout,
             batch_size=batch_size,
             drift_detector=drift_detector,
             init_size=init_size,
@@ -841,7 +823,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
     def _init_head(self) -> None:
         if self.head is not None:
             return
-        self.head = nn.Linear(self.lstm.hidden_size, 1)
+        self.head = nn.Linear(self.sequence_model.output_dim, 1)
 
     def _prepare_target(self, y: Any) -> torch.Tensor:
         if isinstance(y, list):

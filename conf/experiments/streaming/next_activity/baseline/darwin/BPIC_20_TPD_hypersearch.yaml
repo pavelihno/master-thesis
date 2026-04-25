@@ -27,20 +27,23 @@ model:
       search: choice
       options: [128, 256, 512]
 
-    lstm_layers: # 1, 2, 3
-      search: choice
-      options: [2, 3]
+    sequence_model:
+      type: lstm
 
-    hidden_dim: # 10 - 150
-      search: int
-      low: 10
-      high: 150
-      log: true
+      hidden_dim: # 10 - 150
+        search: int
+        low: 10
+        high: 150
+        log: true
 
-    dropout: # 0.0 - 1.0
-      search: float
-      low: 0.0
-      high: 1.0
+      num_layers: # 1, 2, 3
+        search: choice
+        options: [2, 3]
+
+      dropout: # 0.0 - 1.0
+        search: float
+        low: 0.0
+        high: 1.0
 
     batch_size: # 2^5 - 2^10
       search: choice

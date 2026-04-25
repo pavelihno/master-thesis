@@ -10,6 +10,7 @@ from river.forest import ARFClassifier
 from river.tree import HoeffdingAdaptiveTreeClassifier
 
 from models.streaming.darwin import DARWINClassifier, DARWINRegressor
+from models.streaming.sequence import LSTMModel, ProcessTransformerModel
 from utils.streaming.base.extractors import (
     BinaryOutcomeExtractor,
     MultiClassOutcomeExtractor,
@@ -87,17 +88,22 @@ def create_model(config: dict):
         darwin_cls = (
             DARWINClassifier if model_type == 'darwin_classifier' else DARWINRegressor
         )
+
+        sequence_model = create_sequence_model(
+            params.pop('sequence_model', {'type': 'lstm'}),
+            embedding_dim=params.get('embedding_dim', 0),
+            feature_size=params.get('feature_size', 0),
+            sequence_window=params.get('sequence_window', 0),
+        )
         optimizer_cls = create_optimizer_cls(
             params.pop('optimizer', {'type': 'adam', 'lr': 0.001})
         )
         loss_fn = create_loss_fn(params.pop('loss_fn', {'type': 'cross_entropy'}))
         sample_buffer = create_sample_buffer(params.pop('sample_buffer', None))
 
-        # TODO: learning rate reducer
-        params.pop('lr_reducer', None)
-
         model = darwin_cls(
             **params,
+            sequence_model=sequence_model,
             optimizer_cls=optimizer_cls,
             loss_fn=loss_fn,
             drift_detector=drift_detector,
@@ -175,6 +181,24 @@ def create_drift_detector(config: dict):
         return NoDrift()
     else:
         raise ValueError(f"Unknown drift detector type: '{detector_type}'.")
+
+
+def create_sequence_model(
+    config: dict, embedding_dim: int, feature_size: int, sequence_window: int
+):
+    """Create DARWIN sequence backbone from DARWIN model params."""
+    config = dict(config)
+    architecture_type = config.pop('type', 'lstm').lower()
+    input_dim = embedding_dim + feature_size
+
+    if architecture_type == 'lstm':
+        return LSTMModel(input_dim=input_dim, **config)
+    elif architecture_type == 'process_transformer':
+        return ProcessTransformerModel(
+            input_dim=input_dim, max_len=sequence_window, **config
+        )
+    else:
+        raise ValueError(f"Unknown DARWIN architecture type: '{architecture_type}'.")
 
 
 def create_optimizer_cls(config: dict) -> Callable:
