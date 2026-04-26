@@ -17,11 +17,10 @@ module load cuda/11.6
 module load python3/3.10.18
 
 # -- Activate Environment --
-source /zhome/5b/6/228538/projects/master-thesis/my_env/bin/activate
+source my_env/bin/activate
 
 # -- Set Environment Variables --
-export PYTHONPATH=$PYTHONPATH:$(pwd)
-
+export PYTHONPATH=$(pwd)
 export PM4PY_SHOW_PROGRESS_BAR=False
 export PM4PY_SHOW_INTERNAL_WARNINGS=False
 
