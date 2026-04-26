@@ -25,4 +25,4 @@ export PM4PY_SHOW_PROGRESS_BAR=False
 export PM4PY_SHOW_INTERNAL_WARNINGS=False
 
 # -- Run Script --
-python -u experiments/streaming/run_experiments.py --base-path=conf/experiments/streaming/next_activity/baseline/process_transformer --report-dir=experiments/outputs/streaming/next_activity/baseline/process_transformer --device=cuda --workers=4
+python -u experiments/streaming/run_experiments.py --base-path="$BASE_PATH" --report-dir="$REPORT_DIR" --device=cuda --workers=4

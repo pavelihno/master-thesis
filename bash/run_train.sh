@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -euo pipefail
 
 #BSUB -J master_thesis_train
@@ -26,4 +26,4 @@ export PM4PY_SHOW_PROGRESS_BAR=False
 export PM4PY_SHOW_INTERNAL_WARNINGS=False
 
 # -- Run Script --
-python -u experiments/streaming/run_train.py conf/experiments/streaming/next_activity/baseline/process_transformer/BPIC_20_DD.yaml --device=cuda
+python -u experiments/streaming/run_train.py "$CONFIG_PATH" --device=cuda

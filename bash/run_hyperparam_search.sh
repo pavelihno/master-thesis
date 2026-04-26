@@ -25,4 +25,4 @@ export PM4PY_SHOW_PROGRESS_BAR=False
 export PM4PY_SHOW_INTERNAL_WARNINGS=False
 
 # -- Run Script --
-python -u experiments/streaming/run_hyperparam_search.py conf/experiments/streaming/next_activity/baseline/process_transformer/BPIC_20_DD_hypersearch.yaml --device=cuda
+python -u experiments/streaming/run_hyperparam_search.py "$CONFIG_PATH" --device=cuda
