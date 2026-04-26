@@ -297,8 +297,15 @@ class DARWINTimeTransformer(StreamingTransformer):
     Time-based transformer for DARWIN-style streaming models.
 
     Stores the most recent event per trace along with timestamp-based features.
-     - Numerical: duration since case start, duration since last event
-     - Categorical: month, day, week, hour
+     - Numerical:
+        - duration since case start
+        - duration since last event
+        - duration since event before last event
+     - Categorical:
+        - month
+        - day
+        - week
+        - hour
     """
 
     def __init__(

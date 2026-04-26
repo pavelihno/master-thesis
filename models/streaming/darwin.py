@@ -341,13 +341,14 @@ class DARWINBase(ABC):
         case_ids: list[str],
         is_learn: bool = False,
         fit_scalers: bool = False,
-    ) -> torch.Tensor:
-        """Prepare zero-padded tensors for sequence model input."""
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Prepare zero-padded tensors and padding mask for sequence model input."""
         # Handle single sequence
         input_dim = self.embedding_dim + self.feature_size
         zero_vector = np.zeros(input_dim, dtype=np.float32)
 
         vectors_batch = []
+        padding_masks_batch = []
         for nodes, case_id in zip(prefix_nodes, case_ids, strict=True):
             window_nodes = nodes[-self.sequence_window :]
             vectors = []
@@ -390,12 +391,21 @@ class DARWINBase(ABC):
                 vectors = [zero_vector.copy() for _ in range(pad)] + vectors
             vectors_batch.append(np.stack(vectors))
 
+            # True means padded token
+            padding_masks_batch.append([True] * pad + [False] * (len(window_nodes)))
+
         # (batch_size, sequence_window, embedding_dim + feature_size)
-        return torch.tensor(
+        tensor = torch.tensor(
             np.stack(vectors_batch),
             dtype=torch.float32,
             device=self.device,
         )
+        padding_mask = torch.tensor(
+            np.asarray(padding_masks_batch, dtype=np.bool_),
+            dtype=torch.bool,
+            device=self.device,
+        )
+        return tensor, padding_mask
 
     def _clear(self, case_id: str) -> None:
         self.header_table.pop(case_id, None)
@@ -469,13 +479,14 @@ class DARWINBase(ABC):
                     self.device
                 )
 
-                tensor = self._to_tensor(
+                tensor, padding_mask = self._to_tensor(
                     batch_prefix_nodes,
                     batch_case_ids,
                     is_learn=True,
                     fit_scalers=(epoch_idx == 0),
                 )
-                hidden = self.sequence_model(tensor)
+                padding_mask = padding_mask.to(device=tensor.device, dtype=torch.bool)
+                hidden = self.sequence_model(tensor, padding_mask=padding_mask)
                 logits = self.head(hidden)
 
                 loss = self._compute_loss(logits, batch_targets)
@@ -571,18 +582,19 @@ class DARWINBase(ABC):
 
         prediction_nodes = self._get_prefix_nodes(node)
 
-        tensor = self._to_tensor(
+        tensor, padding_mask = self._to_tensor(
             [prediction_nodes],
             [case_id],
             is_learn=is_learn,
             fit_scalers=False,
         )
+        padding_mask = padding_mask.to(device=tensor.device, dtype=torch.bool)
 
         self.sequence_model.eval()
         self.head.eval()
 
         with torch.no_grad():
-            hidden = self.sequence_model(tensor)
+            hidden = self.sequence_model(tensor, padding_mask=padding_mask)
             logits = self.head(hidden)
 
         return logits

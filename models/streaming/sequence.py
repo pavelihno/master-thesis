@@ -12,7 +12,7 @@ class SequenceModel(nn.Module, ABC):
     output_dim: int
 
     @abstractmethod
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, padding_mask: torch.Tensor) -> torch.Tensor:
         """Return a fixed-size representation for each sequence in batch."""
 
 
@@ -35,7 +35,7 @@ class LSTMModel(SequenceModel):
             batch_first=True,
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, padding_mask: torch.Tensor) -> torch.Tensor:
         out, _ = self.lstm(x)
         return out[:, -1, :]
 
@@ -49,26 +49,37 @@ class ProcessTransformerModel(SequenceModel):
         num_layers: int,
         dropout: float,
         max_len: int,
-        pooling_type: str = 'mean',
+        pooling_dropout: float,
+        pooling_type: str = 'max',
     ) -> None:
         super().__init__()
 
         self.pooling_type = pooling_type
-        self.output_dim = head_dim * num_heads
+        self.encoder_dim = head_dim * num_heads
+        self.output_dim = 128
 
-        self.input_projection = nn.Linear(input_dim, self.output_dim)
-        self.pos_embedding = nn.Parameter(torch.randn(1, max_len, self.output_dim))
+        self.input_projection = nn.Linear(input_dim, self.encoder_dim)
+        self.pos_embedding = nn.Parameter(torch.randn(1, max_len, self.encoder_dim))
+        self.pooling_dropout = nn.Dropout(pooling_dropout)
+        self.dense_layers = nn.Sequential(
+            nn.Linear(self.encoder_dim, 32),
+            nn.ReLU(),
+            nn.Linear(32, 128),
+            nn.ReLU(),
+        )
 
         encoder_layer = nn.TransformerEncoderLayer(
-            d_model=self.output_dim,
+            d_model=self.encoder_dim,
             nhead=num_heads,
-            dim_feedforward=self.output_dim * 4,
+            dim_feedforward=self.encoder_dim * 4,
             dropout=dropout,
             batch_first=True,
         )
-        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+        self.encoder = nn.TransformerEncoder(
+            encoder_layer, num_layers=num_layers, enable_nested_tensor=False
+        )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, padding_mask: torch.Tensor) -> torch.Tensor:
         seq_len = x.shape[1]
         if seq_len > self.pos_embedding.shape[1]:
             raise ValueError(
@@ -78,16 +89,31 @@ class ProcessTransformerModel(SequenceModel):
 
         h = self.input_projection(x)
         h = h + self.pos_embedding[:, :seq_len, :]
-        h = self.encoder(h)
+        h = self.encoder(h, src_key_padding_mask=padding_mask)
+
+        valid_mask = (~padding_mask).unsqueeze(-1)
 
         if self.pooling_type == 'mean':
-            return torch.mean(h, dim=1)
+            masked_h = h * valid_mask
+            valid_counts = valid_mask.sum(dim=1).clamp_min(1)
+            pooled = masked_h.sum(dim=1) / valid_counts
 
         elif self.pooling_type == 'last':
-            return h[:, -1, :]
+            lengths = (~padding_mask).sum(dim=1).clamp_min(1)
+            last_idx = lengths - 1
+            pooled = h[torch.arange(h.size(0), device=h.device), last_idx, :]
 
         elif self.pooling_type == 'max':
-            return torch.max(h, dim=1)[0]
+            neg_inf = torch.finfo(h.dtype).min
+            masked_h = h.masked_fill(~valid_mask, neg_inf)
+            pooled = torch.max(masked_h, dim=1)[0]
+            all_padded = (~padding_mask).sum(dim=1) == 0
+            if all_padded.any():
+                pooled[all_padded] = 0.0
 
         else:
             raise ValueError(f'Unknown pooling type: {self.pooling_type}')
+
+        pooled = self.pooling_dropout(pooled)
+
+        return self.dense_layers(pooled)

@@ -12,6 +12,7 @@ from river.tree import HoeffdingAdaptiveTreeClassifier
 
 from models.streaming.darwin import DARWINClassifier, DARWINRegressor
 from models.streaming.sequence import LSTMModel, ProcessTransformerModel
+from utils.loss_functions import LogCoshLoss
 from utils.streaming.base.extractors import (
     BinaryOutcomeExtractor,
     MultiClassOutcomeExtractor,
@@ -230,12 +231,12 @@ def create_loss_fn(config: dict):
 
     if criterion_type == 'cross_entropy':
         return nn.CrossEntropyLoss(**config)
-    elif criterion_type == 'nll':
-        return nn.NLLLoss(**config)
-    elif criterion_type == 'bce':
-        return nn.BCELoss(**config)
-    elif criterion_type == 'bce_logits':
-        return nn.BCEWithLogitsLoss(**config)
+    elif criterion_type == 'mse':
+        return nn.MSELoss(**config)
+    elif criterion_type == 'mae':
+        return nn.L1Loss(**config)
+    elif criterion_type == 'log_cosh':
+        return LogCoshLoss()
     else:
         raise ValueError(f"Unknown criterion type: '{criterion_type}'.")
 
