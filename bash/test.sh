@@ -11,7 +11,7 @@ set -euo pipefail
 #BSUB -N
 
 # -- Activate Environment --
-source /zhome/5b/6/228538/projects/master-thesis/my_env/bin/activate
+source my_env/bin/activate
 
 # -- Set Environment Variables --
 export PYTHONPATH=$(pwd)
