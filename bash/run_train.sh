@@ -4,8 +4,8 @@ set -euo pipefail
 #BSUB -J master_thesis_train
 #BSUB -q gpua100
 #BSUB -W 12:00
-#BSUB -n 1
-#BSUB -R "rusage[mem=2GB]"
+#BSUB -n 4
+#BSUB -R "rusage[mem=1GB]"
 #BSUB -R "span[hosts=1]"
 #BSUB -gpu "num=1:mode=exclusive_process"
 #BSUB -o logs/train_%J.out
