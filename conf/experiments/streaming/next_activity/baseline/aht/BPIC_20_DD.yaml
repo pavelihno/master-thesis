@@ -30,4 +30,4 @@ model:
     tau: 0.13
 
 output:
-  folder: experiments/outputs/streaming/baseline
+  folder: experiments/outputs/streaming/next_activity/baseline

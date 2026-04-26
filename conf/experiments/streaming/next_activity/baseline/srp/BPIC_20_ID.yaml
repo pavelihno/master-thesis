@@ -32,4 +32,4 @@ model:
       type: adwin
 
 output:
-  folder: experiments/outputs/streaming/baseline
+  folder: experiments/outputs/streaming/next_activity/baseline

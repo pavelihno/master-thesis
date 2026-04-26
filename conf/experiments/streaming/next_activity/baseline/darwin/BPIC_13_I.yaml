@@ -37,4 +37,4 @@ model:
     w2v_window: 5
 
 output:
-  folder: experiments/outputs/streaming/baseline
+  folder: experiments/outputs/streaming/next_activity/baseline

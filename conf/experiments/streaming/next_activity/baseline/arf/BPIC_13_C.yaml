@@ -37,4 +37,4 @@ model:
   type: arf
 
 output:
-  folder: experiments/outputs/streaming/baseline
+  folder: experiments/outputs/streaming/next_activity/baseline
