@@ -5,7 +5,7 @@ set -euo pipefail
 #BSUB -q gpua100
 #BSUB -W 12:00
 #BSUB -n 4
-#BSUB -R "rusage[mem=1GB]"
+#BSUB -R "rusage[mem=512MB]"
 #BSUB -R "span[hosts=1]"
 #BSUB -gpu "num=1:mode=exclusive_process"
 #BSUB -o logs/hypersearch_%J.out
