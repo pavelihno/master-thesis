@@ -15,7 +15,7 @@ transformer:
 model:
   type: darwin_classifier
   params:
-    batch_size: 32
+    batch_size: 64
     drift_detector:
       type: adwin
     dynamic_n_classes: true
@@ -26,15 +26,18 @@ model:
       type: cross_entropy
     max_n_classes: 40
     optimizer:
-      lr: 0.010260651575963136
+      lr: 0.0015068979368865738
       type: nadam
     sequence_model:
-      type: lstm
-      hidden_dim: 56
+      dropout: 0.1964036493087466
+      head_dim: 16
+      num_heads: 4
       num_layers: 2
-      dropout: 0.17491008411944947
-    sequence_window: 7
+      pooling_dropout: 0.1
+      pooling_type: mean
+      type: process_transformer
+    sequence_window: 6
     w2v_window: 5
 
 output:
-  folder: experiments/outputs/streaming/next_activity/baseline
+  folder: experiments/outputs/streaming/BPIC_20_ID
