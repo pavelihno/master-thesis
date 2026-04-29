@@ -6,8 +6,10 @@ from utils.experiment import ensure_output_dir, load_config
 from utils.streaming.experiment import (
     build_output_folder_name,
     build_run_summary,
+    format_metric_values,
     get_config_hash,
     get_dataset_and_model,
+    get_stream_summary_values,
     get_timestamp,
     make_json_safe,
     prepare_results_frame,
@@ -74,21 +76,20 @@ def run_config(
 
     results_df, model, elapsed_seconds = pipeline.run(**dataset_kwargs)
 
-    last_row = results_df.iloc[-1]
+    summary_values = get_stream_summary_values(results_df)
+    metric_text = format_metric_values(summary_values)
 
-    n_traces = int(results_df['trace_id'].nunique()) if 'trace_id' in results_df else 0
-    n_events = int(results_df['event_n'].max()) if 'event_n' in results_df else 0
-    n_preds = int(results_df['n_pred'].max()) if 'n_pred' in results_df else 0
+    print_metrics = [
+        f'n_preds={summary_values["n_preds"]}',
+        f'n_traces={summary_values["n_traces"]}',
+        f'n_events={summary_values["n_events"]}',
+        f'n_drifts={summary_values["n_drifts"]}',
+    ]
+    if metric_text:
+        print_metrics.append(metric_text)
+    print_metrics.append(f'time={elapsed_seconds:.2f}s')
 
-    print(
-        f'\nn_preds={n_preds}, '
-        f'n_traces={n_traces}, '
-        f'n_events={n_events}, '
-        f'n_drifts={int(last_row.get("n_drifts", 0))}, '
-        f'accuracy={last_row.get("accuracy", 0):.4f}, '
-        f'macro_f1={last_row.get("macro_f1", 0):.4f}, '
-        f'time={elapsed_seconds:.2f}s'
-    )
+    print('\n' + ', '.join(print_metrics))
 
     output_folder = None
 
@@ -118,7 +119,6 @@ def run_config(
         config_hash=config_hash,
         config=config,
         results_df=results_df,
-        last_row=last_row,
         elapsed_seconds=elapsed_seconds,
         output_dir=str(output_folder) if output_folder else None,
     )

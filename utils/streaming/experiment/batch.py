@@ -157,6 +157,9 @@ def save_comparison_reports(
         'config_hash',
         'status',
         'error',
+        'task_type',
+        'task_mode',
+        'time_target',
         'dataset_name',
         'model_name',
         'n_preds',
@@ -164,6 +167,8 @@ def save_comparison_reports(
         'n_events',
         'accuracy',
         'macro_f1',
+        'mae',
+        'rmse',
         'loss',
         'n_drifts',
         'time_s',
@@ -174,12 +179,11 @@ def save_comparison_reports(
 
     sort_columns = [
         column
-        for column in ['dataset_name', 'model_name', 'feature_encoding', 'macro_f1']
+        for column in ['dataset_name', 'model_name', 'feature_encoding']
         if column in results_df.columns
     ]
-    if 'macro_f1' in results_df.columns:
-        ascending = [column != 'macro_f1' for column in sort_columns]
-        results_df = results_df.sort_values(sort_columns, ascending=ascending)
+
+    results_df = results_df.sort_values(sort_columns)
 
     summary_path = report_dir / 'summary.csv'
     results_df.to_csv(summary_path, index=False)

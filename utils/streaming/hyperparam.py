@@ -128,7 +128,9 @@ def run_hyperopt(cfg: dict, device: torch.device | None = None) -> dict:
 
     search_cfg = cfg.get('search', {})
     max_trials = int(search_cfg.get('max_trials', 1))
-    metric = str(search_cfg.get('metric', 'macro_f1'))
+    metric = search_cfg.get('metric', None)
+    if metric is None:
+        raise ValueError("Search configuration must include a 'metric' to optimize.")
     maximize = bool(search_cfg.get('maximize', True))
     seed = int(search_cfg.get('seed', 123))
 

@@ -28,6 +28,56 @@ def make_json_safe(value: Any) -> Any:
     return str(value)
 
 
+def get_available_metrics(metrics_dict: Any) -> list[str]:
+    metric_names = ['accuracy', 'macro_f1', 'mae', 'rmse']
+    available: list[str] = []
+
+    for metric_name in metric_names:
+        if metric_name not in metrics_dict:
+            continue
+        value = metrics_dict.get(metric_name)
+        if value is None:
+            continue
+        available.append(metric_name)
+
+    return available
+
+
+def format_metric_values(metrics_dict: Any) -> str:
+    pieces: list[str] = []
+    for metric_name in get_available_metrics(metrics_dict):
+        value = metrics_dict.get(metric_name)
+        try:
+            pieces.append(f'{metric_name}={float(value):.4f}')
+        except (TypeError, ValueError):
+            pieces.append(f'{metric_name}={value}')
+
+    return ', '.join(pieces)
+
+
+def get_stream_summary_values(results_df) -> dict[str, Any]:
+    last_row = results_df.iloc[-1]
+    summary_values = {
+        'n_traces': (
+            int(results_df['trace_id'].nunique()) if 'trace_id' in results_df else 0
+        ),
+        'n_events': (
+            int(results_df['event_n'].max()) if 'event_n' in results_df else 0
+        ),
+        'n_preds': (int(results_df['n_pred'].max()) if 'n_pred' in results_df else 0),
+        'n_drifts': int(last_row.get('n_drifts', 0)),
+    }
+
+    for metric_name in get_available_metrics(last_row):
+        value = last_row.get(metric_name)
+        try:
+            summary_values[metric_name] = float(value)
+        except (TypeError, ValueError):
+            summary_values[metric_name] = value
+
+    return summary_values
+
+
 def select_device(device_name: str | None) -> torch.device | None:
     if device_name is None:
         return None
@@ -46,6 +96,9 @@ def prepare_results_frame(config: dict, results_df):
     prepared_df = results_df.copy()
     prepared_df['dataset_name'] = config.get('dataset', {}).get('dataset_name')
     prepared_df['model'] = config.get('model', {}).get('type')
+    prepared_df['task_type'] = config.get('task', {}).get('type')
+    prepared_df['task_mode'] = config.get('task', {}).get('mode')
+    prepared_df['time_target'] = config.get('task', {}).get('time_target')
     return prepared_df
 
 
@@ -57,7 +110,6 @@ def build_run_summary(
     config_hash: str,
     config: dict,
     results_df,
-    last_row,
     elapsed_seconds: float,
     output_dir: str | None,
 ) -> dict:
@@ -65,18 +117,17 @@ def build_run_summary(
     drift_detector = model_params.get('drift_detector', {})
     warning_detector = model_params.get('warning_detector', {})
     safe_params = make_json_safe(model_params)
+    task_cfg = config.get('task', {})
+    summary_values = get_stream_summary_values(results_df)
 
-    n_traces = int(results_df['trace_id'].nunique()) if 'trace_id' in results_df else 0
-    n_events = int(results_df['event_n'].max()) if 'event_n' in results_df else 0
-    n_preds = int(results_df['n_pred'].max()) if 'n_pred' in results_df else 0
-
-    return {
+    result = {
         'run_id': run_id,
         'config_path': str(config_path),
         'timestamp': timestamp,
         'config_hash': config_hash,
-        'task_type': config.get('task', {}).get('type'),
-        'task_mode': config.get('task', {}).get('mode'),
+        'task_type': task_cfg.get('type'),
+        'task_mode': task_cfg.get('mode'),
+        'time_target': task_cfg.get('time_target'),
         'dataset_name': config.get('dataset', {}).get('dataset_name'),
         'dataset_path': config.get('dataset', {}).get('dataset_path'),
         'feature_encoding': config.get('transformer', {}).get('type'),
@@ -86,17 +137,19 @@ def build_run_summary(
         'warning_detector_type': warning_detector.get('type'),
         'model_params': safe_params,
         'model_params_json': json.dumps(safe_params, sort_keys=True),
-        'n_preds': n_preds,
-        'n_traces': n_traces,
-        'n_events': n_events,
-        'n_pred': n_preds,
-        'accuracy': float(last_row.get('accuracy', 0)),
-        'macro_f1': float(last_row.get('macro_f1', 0)),
-        'loss': float(last_row.get('loss', 0) or 0),
-        'n_drifts': int(last_row.get('n_drifts', 0)),
+        'n_preds': summary_values['n_preds'],
+        'n_traces': summary_values['n_traces'],
+        'n_events': summary_values['n_events'],
+        'n_pred': summary_values['n_preds'],
+        'n_drifts': summary_values['n_drifts'],
         'time_s': float(elapsed_seconds),
         'output_dir': output_dir,
     }
+
+    for metric_name in get_available_metrics(summary_values):
+        result[metric_name] = summary_values.get(metric_name)
+
+    return result
 
 
 def write_results(
@@ -112,31 +165,33 @@ def write_results(
 
     results_df.to_csv(results_path, index=False)
 
-    last_row = results_df.iloc[-1]
+    summary_values = get_stream_summary_values(results_df)
     summary_path = output_dir / 'summary.txt'
     with open(summary_path, 'w', encoding='utf-8') as file:
-        n_traces = (
-            int(results_df['trace_id'].nunique()) if 'trace_id' in results_df else 0
-        )
-        n_events = int(results_df['event_n'].max()) if 'event_n' in results_df else 0
-        n_preds = int(results_df['n_pred'].max()) if 'n_pred' in results_df else 0
+        task_cfg = config.get('task', {})
 
         file.write(f'Run ID: {run_id}\n')
         file.write(f'Config     : {config_path}\n')
         file.write(f'Timestamp  : {timestamp}\n')
         file.write('=' * 60 + '\n\n')
+        file.write('Task:\n')
+        file.write('-' * 60 + '\n')
+        file.write(f'type={task_cfg.get("type")}\n')
+        file.write(f'mode={task_cfg.get("mode")}\n')
+        file.write(f'time_target={task_cfg.get("time_target")}\n')
+        file.write('\n')
         file.write('Configuration:\n')
         file.write('-' * 60 + '\n')
         file.write(yaml.safe_dump(config, sort_keys=False))
         file.write('\n')
         file.write('Summary Metrics:\n')
         file.write('-' * 60 + '\n')
-        file.write(f'n_preds={n_preds}\n')
-        file.write(f'n_traces={n_traces}\n')
-        file.write(f'n_events={n_events}\n')
-        file.write(f'n_drifts={int(last_row.get("n_drifts", 0))}\n')
-        file.write(f'accuracy={last_row.get("accuracy", 0):.4f}\n')
-        file.write(f'macro_f1={last_row.get("macro_f1", 0):.4f}\n')
+        file.write(f'n_preds={summary_values["n_preds"]}\n')
+        file.write(f'n_traces={summary_values["n_traces"]}\n')
+        file.write(f'n_events={summary_values["n_events"]}\n')
+        file.write(f'n_drifts={summary_values["n_drifts"]}\n')
+        for metric_name in get_available_metrics(summary_values):
+            file.write(f'{metric_name}={summary_values[metric_name]:.4f}\n')
         file.write(f'time={elapsed_seconds:.2f}s\n')
 
     print(f'Results -> {results_path}')

@@ -64,6 +64,23 @@ def plot_stream_metric(
         ylabel = 'Macro F1-score'
         line_label = f'Macro F1 (window={window}, center={center_window})'
 
+    elif metric in {'mae', 'rmse'}:
+        reg_df = stream_df.dropna(subset=['y_true', 'y_pred']).copy()
+        if reg_df.empty:
+            raise ValueError('No valid rows available to plot regression metrics.')
+
+        errors = reg_df['y_true'].astype(float) - reg_df['y_pred'].astype(float)
+        squared_errors = errors.pow(2)
+
+        if metric == 'mae':
+            metric_values = errors.abs().rolling(**roll_kw).mean()
+            ylabel = 'MAE'
+            line_label = f'MAE (window={window}, center={center_window})'
+        else:
+            metric_values = squared_errors.rolling(**roll_kw).mean().pow(0.5)
+            ylabel = 'RMSE'
+            line_label = f'RMSE (window={window}, center={center_window})'
+
     else:
         raise ValueError(f'Unknown {metric}')
 
@@ -107,7 +124,10 @@ def plot_stream_metric(
     ax.set_xlabel('Stream Progress (Trace #)')
     ax.set_ylabel(ylabel)
     ax.set_title(line_label)
-    ax.set_ylim(0, 1)
+    if metric in {'accuracy', 'f1'}:
+        ax.set_ylim(0, 1)
+    else:
+        ax.set_ylim(bottom=0)
     ax.grid(True, alpha=0.3)
 
     if save_path is not None:
