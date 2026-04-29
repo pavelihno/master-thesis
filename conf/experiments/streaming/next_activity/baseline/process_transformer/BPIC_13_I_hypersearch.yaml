@@ -63,7 +63,7 @@ model:
     init_size: 4962
 
     optimizer:
-      type: adam
+      type: nadam
       lr: # 10^-4 - 10^-2
         search: float
         low: -4
