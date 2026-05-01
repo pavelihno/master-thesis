@@ -57,12 +57,29 @@ class Source(ABC):
 
 
 class LogSource(Source):
-    def get_source(self, max_events: int | None = None, **kwargs):
+    def get_source(
+        self,
+        max_events: int | None = None,
+        censored: bool = False,
+        end_events: set[str] | None = None,
+        case_id_col: str = 'case:concept:name',
+        activity_col: str = 'concept:name',
+        time_col: str = 'time:timestamp',
+        **kwargs,
+    ):
         dataset_path = kwargs.get('dataset_path')
         if dataset_path is None:
             raise ValueError('dataset_path must be provided for LogSource')
 
-        return xes_log_source_from_file(dataset_path, max_events=max_events)
+        return xes_log_source_from_file(
+            dataset_path,
+            max_events=max_events,
+            censored=censored,
+            end_events=end_events,
+            case_id_col=case_id_col,
+            activity_col=activity_col,
+            time_col=time_col,
+        )
 
 
 class StringSource(Source):

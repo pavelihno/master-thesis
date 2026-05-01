@@ -134,8 +134,20 @@ def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
         if not dataset_path:
             raise ValueError('dataset_path must be provided for LogSource')
 
-        run_kwargs = {'dataset_path': dataset_path}
+        censored = config.pop('censored', False)
+        case_id_col = config.pop('case_id_col', 'case:concept:name')
+        time_col = config.pop('time_col', 'time:timestamp')
+        activity_col = config.pop('activity_col', 'concept:name')
         end_events = set(config.pop('end_events', []))
+
+        run_kwargs = {
+            'dataset_path': dataset_path,
+            'censored': censored,
+            'end_events': end_events,
+            'case_id_col': case_id_col,
+            'activity_col': activity_col,
+            'time_col': time_col,
+        }
 
     elif source_mode == SourceMode.STRING:
         stream_string = config.pop('trace', None)
