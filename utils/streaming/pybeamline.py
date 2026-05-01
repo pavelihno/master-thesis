@@ -28,6 +28,21 @@ def xes_log_source_from_file(
     )
 
 
+def apply_censoring(
+    log_df: pd.DataFrame,
+    end_events: set[str],
+    case_id_col: str = 'case:concept:name',
+    activity_col: str = 'concept:name',
+) -> pd.DataFrame:
+    terminal_events = (
+        log_df.groupby(case_id_col, sort=False)[activity_col]
+        .last()
+        .rename('terminal_event')
+    )
+    allowed_traces = terminal_events[terminal_events.isin(end_events)].index
+    return log_df[log_df[case_id_col].isin(allowed_traces)]
+
+
 def _iter_bevents(
     raw_log: pd.DataFrame,
     max_events: int | None = None,
@@ -39,18 +54,11 @@ def _iter_bevents(
 ) -> Iterator[BEvent]:
     log = raw_log if type(raw_log) is pd.DataFrame else convert_to_dataframe(raw_log)
 
-    if time_col in log.columns:
-        log = log.sort_values(by=[time_col])
-
     end_events = end_events if end_events is not None else set()
     if censored and end_events:
-        terminal_events = (
-            log.groupby(case_id_col, sort=False)[activity_col]
-            .last()
-            .rename('terminal_event')
-        )
-        allowed_traces = terminal_events[terminal_events.isin(end_events)].index
-        log = log[log[case_id_col].isin(allowed_traces)]
+        log = apply_censoring(log, end_events, case_id_col, activity_col)
+
+    log = log.sort_values(by=[time_col])
 
     emitted = 0
     for _, event in log.iterrows():

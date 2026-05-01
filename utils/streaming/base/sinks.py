@@ -266,12 +266,17 @@ class RemainingTimeEvaluator(RegressionEvaluator):
         prefix_len,
         loss,
     ):
+        error = (
+            abs(y_true - y_pred) if y_true is not None and y_pred is not None else None
+        )
+
         return {
             'trace_id': trace_id,
             'trace_n': trace_n,
             'event_n': event_n,
             'y_true': y_true,
             'y_pred': y_pred,
+            'error': error,
             'n_pred': self._n_pred,
             'n_drifts': self._n_drifts,
             'drift_detected': drift_detected,

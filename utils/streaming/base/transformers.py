@@ -319,8 +319,9 @@ class DARWINTimeTransformer(StreamingTransformer):
         self._time_target = time_target
 
         self._last_event: dict[str, tuple[str, datetime | None, int]] = {}
-        self._start_time_delta: dict[str, float] = {}
-        self._last_event_time_delta: dict[str, float] = {}
+        self._first_event_time: dict[str, datetime | None] = {}
+        self._last_before_event_time: dict[str, datetime | None] = {}
+        self._before_before_event_time: dict[str, datetime | None] = {}
         self._event_id: int = 1
 
     def _get_event_time(self, event: BEvent) -> datetime | None:
@@ -330,37 +331,56 @@ class DARWINTimeTransformer(StreamingTransformer):
     def update(self, trace_id: str, event: BEvent) -> None:
         event_name = event.get_event_name()
         event_time = self._get_event_time(event)
-        last_event_time = None
 
         if trace_id not in self._last_event:
             self._prefix_lens[trace_id] = 0
-            self._start_time_delta[trace_id] = 0.0
-            last_event_time = event_time
-
+            self._first_event_time[trace_id] = event_time
+            self._last_before_event_time[trace_id] = None
+            self._before_before_event_time[trace_id] = None
         else:
             _, last_event_time, _ = self._last_event[trace_id]
 
-        if event_time is None or last_event_time is None:
-            last_event_time_delta = 0.0
-        else:
-            last_event_time_delta = convert_time(
-                event_time - last_event_time, target=self._time_target
+            self._before_before_event_time[trace_id] = self._last_before_event_time.get(
+                trace_id
             )
-
-        self._start_time_delta[trace_id] += last_event_time_delta
-        self._last_event_time_delta[trace_id] = last_event_time_delta
+            self._last_before_event_time[trace_id] = last_event_time
 
         self._last_event[trace_id] = (event_name, event_time, self._event_id)
         self._prefix_lens[trace_id] += 1
         self._event_id += 1
 
     def get_features(self, trace_id: str) -> dict[str, Any]:
-        event_name, _, event_id = self._last_event.get(trace_id, ('', None, 0))
+        event_name, current_event_time, event_id = self._last_event.get(
+            trace_id, ('', None, 0)
+        )
         if not event_name:
             return {}
 
-        start_time_delta = self._start_time_delta.get(trace_id, 0.0)
-        last_event_time_delta = self._last_event_time_delta.get(trace_id, 0.0)
+        first_event_time = self._first_event_time.get(trace_id)
+        last_before_event_time = self._last_before_event_time.get(trace_id)
+        before_before_event_time = self._before_before_event_time.get(trace_id)
+
+        if current_event_time is None or first_event_time is None:
+            start_time_delta = 0.0
+        else:
+            start_time_delta = convert_time(
+                current_event_time - first_event_time, target=self._time_target
+            )
+
+        if current_event_time is None or last_before_event_time is None:
+            last_event_time_delta = 0.0
+        else:
+            last_event_time_delta = convert_time(
+                current_event_time - last_before_event_time, target=self._time_target
+            )
+
+        if current_event_time is None or before_before_event_time is None:
+            before_last_event_time_delta = 0.0
+        else:
+            before_last_event_time_delta = convert_time(
+                current_event_time - before_before_event_time,
+                target=self._time_target,
+            )
 
         return {
             'case_id': trace_id,
@@ -369,11 +389,13 @@ class DARWINTimeTransformer(StreamingTransformer):
             'features': [
                 start_time_delta,
                 last_event_time_delta,
+                before_last_event_time_delta,
             ],
         }
 
     def clear(self, trace_id: str) -> None:
         self._last_event.pop(trace_id, None)
-        self._start_time_delta.pop(trace_id, None)
-        self._last_event_time_delta.pop(trace_id, None)
+        self._first_event_time.pop(trace_id, None)
+        self._last_before_event_time.pop(trace_id, None)
+        self._before_before_event_time.pop(trace_id, None)
         self._prefix_lens.pop(trace_id, None)
