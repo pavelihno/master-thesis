@@ -35,7 +35,7 @@ model:
 
     feature_size: 3
 
-    init_size: 666
+    init_size: 1265
 
     loss_fn:
       type: log_cosh
@@ -76,7 +76,7 @@ model:
 search:
   metric: mae
   maximize: false
-  max_trials: 2
+  max_trials: 150
   seed: 123
 
 output:
