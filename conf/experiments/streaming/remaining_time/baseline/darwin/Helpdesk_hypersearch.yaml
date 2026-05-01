@@ -35,7 +35,7 @@ model:
 
     feature_size: 3
 
-    init_size: 1265
+    init_size: 1358
 
     loss_fn:
       type: log_cosh

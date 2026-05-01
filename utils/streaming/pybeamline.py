@@ -33,9 +33,11 @@ def apply_censoring(
     end_events: set[str],
     case_id_col: str = 'case:concept:name',
     activity_col: str = 'concept:name',
+    time_col: str = 'time:timestamp',
 ) -> pd.DataFrame:
     terminal_events = (
-        log_df.groupby(case_id_col, sort=False)[activity_col]
+        log_df.sort_values(by=[time_col])
+        .groupby(case_id_col, sort=False)[activity_col]
         .last()
         .rename('terminal_event')
     )
@@ -56,7 +58,7 @@ def _iter_bevents(
 
     end_events = end_events if end_events is not None else set()
     if censored and end_events:
-        log = apply_censoring(log, end_events, case_id_col, activity_col)
+        log = apply_censoring(log, end_events, case_id_col, activity_col, time_col)
 
     log = log.sort_values(by=[time_col])
 
