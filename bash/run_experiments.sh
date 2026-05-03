@@ -7,7 +7,7 @@ set -euo pipefail
 #BSUB -n 4
 #BSUB -R "rusage[mem=1GB]"
 #BSUB -R "span[hosts=1]"
-#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -gpu "num=1:mode=shared"
 #BSUB -o logs/experiments_%J.out
 #BSUB -e logs/experiments_%J.err
 #BSUB -N
