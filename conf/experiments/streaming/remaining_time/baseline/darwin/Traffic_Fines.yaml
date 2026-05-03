@@ -1,0 +1,43 @@
+task:
+    type: remaining_time
+    mode: predict_and_learn
+    time_target: days
+
+dataset:
+    dataset_name: Traffic_Fines
+    source: log
+    dataset_path: datasets/raw/Traffic_Fines.xes
+    end_events:
+        - Payment
+        - Send for Credit Collection
+        - Send Fine
+    censored: true
+
+transformer:
+    type: darwin_time
+
+model:
+    type: darwin_regressor
+    params:
+        batch_size: 32
+        drift_detector:
+            type: adwin
+        embedding_dim: 64
+        epochs: 50
+        feature_size: 3
+        init_size: 35362
+        loss_fn:
+            type: log_cosh
+        optimizer:
+            lr: 0.00012622556136411908
+            type: adam
+        sequence_model:
+            dropout: 0.6627144883985921
+            hidden_dim: 18
+            num_layers: 3
+            type: lstm
+        sequence_window: 3
+        w2v_window: 5
+
+output:
+    folder: experiments/outputs/streaming/remaining_time/baseline
