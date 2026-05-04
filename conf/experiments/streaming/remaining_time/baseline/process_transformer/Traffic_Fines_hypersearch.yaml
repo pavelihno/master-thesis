@@ -83,7 +83,7 @@ model:
 search:
   metric: mae
   maximize: false
-  max_trials: 100
+  max_trials: 50
   seed: 123
 output:
   folder: experiments/outputs/streaming/remaining_time/Traffic_Fines

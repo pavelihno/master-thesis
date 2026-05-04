@@ -31,8 +31,11 @@ class AttributeValueTerminator(TraceTerminator):
         self.terminal_values = terminal_values
 
     def is_terminal(self, event: BEvent) -> bool:
-        attr_value = event.get_attribute(self.attribute_name)
-        return attr_value in self.terminal_values
+        attributes = event.event_attributes
+
+        attribute_value = attributes.get(self.attribute_name, None)
+
+        return attribute_value in self.terminal_values
 
 
 class OracleTerminator(AttributeValueTerminator):
