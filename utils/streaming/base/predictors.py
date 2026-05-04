@@ -22,8 +22,6 @@ class PredictorMap(BaseMap):
     ) -> list[tuple[str, dict, Any, Any, dict]] | None:
         trace_id, features, y_true, _, metadata = item
 
-        prefix_len = metadata.get('prefix_len', -1)
-
         # Predict only if features are provided
         if features:
             y_pred = self._model.predict_one(features)

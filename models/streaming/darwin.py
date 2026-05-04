@@ -34,7 +34,6 @@ class DARWINBase(ABC):
         drift_detector: base.DriftDetector | None,
         init_size: int,
         epochs: int = 1,
-        end_events: set[str] | None = None,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
         device: torch.device | None = None,
@@ -45,7 +44,6 @@ class DARWINBase(ABC):
         self.init_size = init_size
         self.batch_size = batch_size
         self.epochs = epochs
-        self.end_events = end_events or set()
 
         self.feature_size = feature_size
         self.feature_scalers = [StandardScaler() for _ in range(self.feature_size)]
@@ -407,7 +405,7 @@ class DARWINBase(ABC):
         )
         return tensor, padding_mask
 
-    def _clear(self, case_id: str) -> None:
+    def clear(self, case_id: str) -> None:
         self.header_table.pop(case_id, None)
         self.previous_events.pop(case_id, None)
         self.learn_table.pop(case_id, None)
@@ -545,9 +543,6 @@ class DARWINBase(ABC):
                     pass
                     # print('Initialization skipped due to empty buffer')
 
-            if event_name in self.end_events:
-                self._clear(case_id)
-
             return self
 
         if self.drift_detector is not None:
@@ -567,9 +562,6 @@ class DARWINBase(ABC):
                 if self.drift_detector.drift_detected:
                     self._adapt_model(self.sample_buffer)
                     self.sample_buffer.clear()
-
-        if event_name in self.end_events:
-            self._clear(case_id)
 
         return self
 
@@ -640,7 +632,6 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         drift_detector: base.DriftDetector | None,
         init_size: int,
         epochs: int = 1,
-        end_events: set[str] | None = None,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
         dynamic_n_classes: bool = False,
@@ -660,7 +651,6 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             drift_detector=drift_detector,
             init_size=init_size,
             epochs=epochs,
-            end_events=end_events,
             feature_size=feature_size,
             sample_buffer=sample_buffer,
             device=device,
@@ -827,7 +817,6 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         drift_detector: base.DriftDetector | None,
         init_size: int,
         epochs: int = 1,
-        end_events: set[str] | None = None,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
         device: torch.device | None = None,
@@ -844,7 +833,6 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             drift_detector=drift_detector,
             init_size=init_size,
             epochs=epochs,
-            end_events=end_events,
             feature_size=feature_size,
             sample_buffer=sample_buffer,
             device=device,

@@ -11,9 +11,14 @@ from utils.streaming.time import TimeTarget, convert_time, parse_time
 class LearnerMap(BaseMap):
     def __init__(self, model):
         self._model = model
+        self._has_clear_method = hasattr(model, 'clear') and callable(model.clear)
         self._has_drift_detector = (
             hasattr(model, 'drift_detector') and model.drift_detector is not None
         )
+
+    def _clear(self, trace_id: str) -> None:
+        if self._has_clear_method:
+            self._model.clear(trace_id)
 
     def _get_loss(self):
         return (
@@ -45,6 +50,7 @@ class NextActivityLearner(LearnerMap):
     ) -> list[tuple[str, dict, Any, Any, dict]] | None:
         trace_id, features, y_true, y_pred, metadata = item
 
+        is_terminal = metadata.get('is_terminal', False)
         drift_detected = False
 
         # Learn on features from previous event of the same trace
@@ -54,10 +60,11 @@ class NextActivityLearner(LearnerMap):
             drift_detected = self._is_drift_detected()
 
         # Store current features for the next event of the same trace
-        if features:
+        if not is_terminal:
             self._pending_features[trace_id] = features
         else:
             self._pending_features.pop(trace_id, None)
+            self._clear(trace_id)
 
         loss = self._get_loss()
 
@@ -80,7 +87,7 @@ class OutcomeLearner(LearnerMap):
         trace_id, features, y_true, y_pred, metadata = item
 
         prefix_len = metadata.get('prefix_len', 0)
-        is_end = metadata.get('is_end', False)
+        is_terminal = metadata.get('is_terminal', False)
 
         drift_detected = False
 
@@ -91,14 +98,18 @@ class OutcomeLearner(LearnerMap):
                 self._model.learn_one(pending_features, y_true)
                 drift_detected = drift_detected or self._is_drift_detected()
 
+            if is_terminal:
+                self._clear(trace_id)
+
         else:
             # Store features before outcome is known
             if features:
                 self._pending_features[trace_id].append((prefix_len, features))
 
             # Cleanup for traces that end without known outcome
-            if is_end:
+            if is_terminal:
                 self._pending_features.pop(trace_id, None)
+                self._clear(trace_id)
 
         loss = self._get_loss()
 
@@ -125,7 +136,7 @@ class RemainingTimeLearner(LearnerMap):
         trace_id, features, y_true, y_pred, metadata = item
 
         prefix_len = metadata.get('prefix_len', 0)
-        is_end = metadata.get('is_end', False)
+        is_terminal = metadata.get('is_terminal', False)
         event_time = parse_time(metadata.get('event_time'))
 
         drift_detected = False
@@ -135,7 +146,7 @@ class RemainingTimeLearner(LearnerMap):
             self._pending_features[trace_id].append((prefix_len, features, event_time))
 
         # Learn once the trace has ended
-        if is_end and event_time is not None:
+        if is_terminal and event_time is not None:
             end_time = event_time
             trace_features = self._pending_features.pop(trace_id, [])
 
@@ -148,9 +159,12 @@ class RemainingTimeLearner(LearnerMap):
                 self._model.learn_one(pending_features, remaining_time)
                 drift_detected = drift_detected or self._is_drift_detected()
 
-        elif is_end:
+            self._clear(trace_id)
+
+        elif is_terminal:
             print(f'Learner warning: Trace {trace_id} ended without valid event time')
             self._pending_features.pop(trace_id, None)
+            self._clear(trace_id)
 
         loss = self._get_loss()
         metadata = {**metadata, 'drift_detected': drift_detected, 'loss': loss}

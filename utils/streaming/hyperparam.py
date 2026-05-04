@@ -121,7 +121,7 @@ def run_hyperopt(cfg: dict, device: torch.device | None = None) -> dict:
 
     task_cfg = cfg.get('task', {})
     dataset_cfg = cfg.get('dataset', {})
-    dataset_kwargs, dataset_source, end_events = create_dataset(dataset_cfg)
+    dataset_kwargs, dataset_source, terminator = create_dataset(dataset_cfg)
 
     transformer_cfg = cfg.get('transformer', {})
     model_cfg = cfg.get('model', {})
@@ -155,7 +155,7 @@ def run_hyperopt(cfg: dict, device: torch.device | None = None) -> dict:
             task_cfg,
             model=model,
             transformer=transformer,
-            end_events=end_events,
+            terminator=terminator,
             source_mode=dataset_source,
         )
 

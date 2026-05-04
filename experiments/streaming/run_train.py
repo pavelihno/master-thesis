@@ -64,13 +64,13 @@ def run_config(
 
     transformer = create_transformer(config['transformer'])
     model = create_model(config['model'], device=device)
-    dataset_kwargs, dataset_source, end_events = create_dataset(config['dataset'])
+    dataset_kwargs, dataset_source, terminator = create_dataset(config['dataset'])
 
     pipeline = create_pipeline(
         config['task'],
         model=model,
         transformer=transformer,
-        end_events=end_events,
+        terminator=terminator,
         source_mode=dataset_source,
     )
 

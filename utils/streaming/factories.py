@@ -28,6 +28,11 @@ from utils.streaming.base.sample_buffers import (
     ReservoirSampleBuffer,
     SampleBuffer,
 )
+from utils.streaming.base.terminators import (
+    EventNameTerminator,
+    OracleTerminator,
+    TraceTerminator,
+)
 from utils.streaming.base.transformers import (
     ControlFlowTransformer,
     DARWINTimeTransformer,
@@ -125,25 +130,24 @@ def create_model(config: dict, device: torch.device | None = None):
     return model
 
 
-def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
+def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator]:
     config = dict(config)
     source_mode = SourceMode(config.pop('source', None))
+    terminator = create_terminator(config.pop('terminator', None))
+    inject_terminal = isinstance(terminator, OracleTerminator)
 
     if source_mode == SourceMode.LOG:
         dataset_path = config.pop('dataset_path', None)
         if not dataset_path:
             raise ValueError('dataset_path must be provided for LogSource')
 
-        censored = config.pop('censored', False)
         case_id_col = config.pop('case_id_col', 'case:concept:name')
         time_col = config.pop('time_col', 'time:timestamp')
         activity_col = config.pop('activity_col', 'concept:name')
-        end_events = set(config.pop('end_events', []))
 
         run_kwargs = {
             'dataset_path': dataset_path,
-            'censored': censored,
-            'end_events': end_events,
+            'inject_terminal': inject_terminal,
             'case_id_col': case_id_col,
             'activity_col': activity_col,
             'time_col': time_col,
@@ -154,8 +158,7 @@ def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
         if not stream_string:
             raise ValueError('trace must be provided for StringSource')
 
-        run_kwargs = {'string': stream_string}
-        end_events = set(stream_string.split()[-1:])
+        run_kwargs = {'string': stream_string, 'inject_terminal': inject_terminal}
 
     elif source_mode == SourceMode.BEVENTS:
         trace_specs = config.pop('traces', None)
@@ -165,7 +168,6 @@ def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
         process_name = config.pop('dataset_name', 'synthetic_process')
         case_id = 0
         bevents = []
-        end_events = set()
 
         for trace, count in trace_specs:
             for _ in range(count):
@@ -173,14 +175,26 @@ def create_dataset(config: dict) -> tuple[dict, set[str] | None]:
                 for event in trace:
                     bevents.append(BEvent(event, case_id, process_name))
 
-            end_events.add(trace[-1])
-
-        run_kwargs = {'bevents': bevents}
+        run_kwargs = {'bevents': bevents, 'inject_terminal': inject_terminal}
 
     else:
         raise ValueError(f"Unknown dataset source mode: '{source_mode}'.")
 
-    return run_kwargs, source_mode, end_events
+    return run_kwargs, source_mode, terminator
+
+
+def create_terminator(config: dict | None) -> TraceTerminator:
+    config = dict(config)
+    terminator_type = config.pop('type', 'oracle').lower()
+
+    if terminator_type == 'event_name':
+        end_events = set(config.pop('end_events', []))
+        return EventNameTerminator(end_events=end_events)
+
+    elif terminator_type == 'oracle':
+        return OracleTerminator()
+
+    raise ValueError(f"Unknown terminator type: '{terminator_type}'.")
 
 
 def create_drift_detector(config: dict):
@@ -299,7 +313,7 @@ def create_pipeline(
     config: dict,
     model,
     transformer,
-    end_events: set | None = None,
+    terminator: TraceTerminator,
     source_mode: SourceMode | str = SourceMode.LOG,
 ):
     """Create a task pipeline from a config dict."""
@@ -314,7 +328,7 @@ def create_pipeline(
         return NextActivityPredictionPipeline(
             model=model,
             transformer=transformer,
-            end_events=end_events,
+            terminator=terminator,
             pipeline_mode=pipeline_mode,
             source_mode=source_mode,
             max_events=max_events,
@@ -325,7 +339,7 @@ def create_pipeline(
         return OutcomePredictionPipeline(
             model=model,
             transformer=transformer,
-            end_events=end_events,
+            terminator=terminator,
             pipeline_mode=pipeline_mode,
             source_mode=source_mode,
             outcome_extractor=outcome_extractor,
@@ -337,7 +351,7 @@ def create_pipeline(
         return RemainingTimePredictionPipeline(
             model=model,
             transformer=transformer,
-            end_events=end_events,
+            terminator=terminator,
             pipeline_mode=pipeline_mode,
             source_mode=source_mode,
             target=target,

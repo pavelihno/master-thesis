@@ -76,7 +76,7 @@ class EvaluatorSink(CollectorSink):
             'event_n': metadata.pop('event_n', -1),
             'prefix_len': metadata.pop('prefix_len', -1),
             'loss': metadata.pop('loss', None),
-            'is_end': metadata.pop('is_end', False),
+            'is_terminal': metadata.pop('is_terminal', False),
             'event_time': metadata.pop('event_time', None),
         }
 
@@ -193,7 +193,7 @@ class OutcomeEvaluator(ClassificationEvaluator):
         metadata = self._get_metadata(metadata)
         event_n = metadata['event_n']
         prefix_len = metadata['prefix_len']
-        is_end = metadata['is_end']
+        is_terminal = metadata['is_terminal']
         trace_n = metadata['trace_n']
         loss = metadata['loss']
         drift_detected = metadata['drift_detected']
@@ -223,7 +223,7 @@ class OutcomeEvaluator(ClassificationEvaluator):
             # Store prediction for later evaluation
             self._pending_predictions[trace_id].append((prefix_len, event_n, y_pred))
 
-        if is_end:
+        if is_terminal:
             for _prefix_len, _event_n, _y_pred in self._pending_predictions[trace_id]:
                 self.records.append(
                     self._get_record(
@@ -291,7 +291,7 @@ class RemainingTimeEvaluator(RegressionEvaluator):
         metadata = self._get_metadata(metadata)
         prefix_len = metadata['prefix_len']
         event_n = metadata['event_n']
-        is_end = metadata['is_end']
+        is_terminal = metadata['is_terminal']
         trace_n = metadata['trace_n']
         loss = metadata['loss']
         drift_detected = metadata['drift_detected']
@@ -300,7 +300,7 @@ class RemainingTimeEvaluator(RegressionEvaluator):
         if drift_detected:
             self._n_drifts += 1
 
-        if not is_end:
+        if not is_terminal:
             self._pending_predictions[trace_id].append(
                 (prefix_len, event_n, event_time, y_pred)
             )
