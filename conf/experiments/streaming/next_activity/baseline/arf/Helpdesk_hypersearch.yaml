@@ -1,69 +1,66 @@
 hyperparam_search: true
-
 task:
   type: next_activity
   mode: predict_and_learn
-
 dataset:
   dataset_name: Helpdesk
   source: log
   dataset_path: datasets/raw/Helpdesk.xes
-  end_events: ["Closed"]
-
+  terminator:
+    type: oracle
 transformer:
   type: index
   max_events:
     search: choice
-    options: [8, 10]
+    options:
+    - 8
+    - 10
   include_prefix_len: false
-
 model:
   type: arf
   params:
     n_models:
       search: choice
-      options: [20, 30, 50]
-
+      options:
+      - 20
+      - 30
+      - 50
     max_features:
       search: choice
-      options: [sqrt, log2]
-
+      options:
+      - sqrt
+      - log2
     lambda_value:
       search: choice
-      options: [6, 8]
-
+      options:
+      - 6
+      - 8
     disable_weighted_vote: false
-
     grace_period:
       search: int
       low: 50
       high: 150
-
     max_depth:
       search: choice
-      options: [15, 20]
-
+      options:
+      - 15
+      - 20
     split_criterion: info_gain
-
     delta:
       search: float
       low: -4
       high: -2
       exp: true
       base: 10
-
     tau:
       search: float
       low: 0.01
       high: 0.05
-
     leaf_prediction: nb
-
     nb_threshold:
       search: int
       low: 20
       high: 30
-
     drift_detector:
       type: adwin
       delta:
@@ -72,7 +69,6 @@ model:
         high: -3
         exp: true
         base: 10
-
     warning_detector:
       type: adwin
       delta:
@@ -81,14 +77,11 @@ model:
         high: -2
         exp: true
         base: 10
-
     seed: 42
-
 search:
   metric: macro_f1
   max_trials: 50
   maximize: true
   seed: 123
-
 output:
   folder: experiments/outputs/streaming/Helpdesk

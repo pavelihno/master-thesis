@@ -3,9 +3,9 @@ task:
   mode: predict_and_learn
   time_target: days
 dataset:
-  dataset_name: Hospital_Billing
+  dataset_name: Helpdesk
   source: log
-  dataset_path: datasets/raw/Hospital_Billing.xes
+  dataset_path: datasets/raw/Helpdesk.xes
   terminator:
     type: oracle
 transformer:
@@ -16,20 +16,23 @@ model:
     batch_size: 128
     drift_detector:
       type: adwin
-    embedding_dim: 256
-    epochs: 50
+    embedding_dim: 64
+    epochs: 100
     feature_size: 3
-    init_size: 23352
+    init_size: 1819
     loss_fn:
       type: log_cosh
     optimizer:
-      lr: 0.00011746315653523956
+      lr: 1.4854080648715547e-05
       type: adam
     sequence_model:
-      dropout: 0.7738826603202918
-      hidden_dim: 10
-      num_layers: 3
-      type: lstm
+      dropout: 0.06656690465455545
+      head_dim: 64
+      num_heads: 8
+      num_layers: 2
+      pooling_dropout: 0.1
+      pooling_type: mean
+      type: process_transformer
     sequence_window: 6
     w2v_window: 5
 output:

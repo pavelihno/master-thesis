@@ -1,17 +1,14 @@
 task:
   type: next_activity
   mode: predict_and_learn
-
 dataset:
   dataset_name: Helpdesk
   source: log
   dataset_path: datasets/raw/Helpdesk.xes
-  end_events:
-  - Closed
-
+  terminator:
+    type: oracle
 transformer:
   type: darwin
-
 model:
   type: darwin_classifier
   params:
@@ -38,6 +35,5 @@ model:
       type: process_transformer
     sequence_window: 3
     w2v_window: 5
-
 output:
   folder: experiments/outputs/streaming/Helpdesk

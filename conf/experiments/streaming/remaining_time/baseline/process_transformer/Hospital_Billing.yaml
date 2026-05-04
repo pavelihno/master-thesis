@@ -13,24 +13,27 @@ transformer:
 model:
   type: darwin_regressor
   params:
-    batch_size: 128
+    batch_size: 64
     drift_detector:
       type: adwin
-    embedding_dim: 256
-    epochs: 50
+    embedding_dim: 128
+    epochs: 100
     feature_size: 3
     init_size: 23352
     loss_fn:
       type: log_cosh
     optimizer:
-      lr: 0.00011746315653523956
+      lr: 3.880581928966811e-05
       type: adam
     sequence_model:
-      dropout: 0.7738826603202918
-      hidden_dim: 10
-      num_layers: 3
-      type: lstm
-    sequence_window: 6
+      dropout: 0.2081781086551734
+      head_dim: 16
+      num_heads: 4
+      num_layers: 1
+      pooling_dropout: 0.1
+      pooling_type: max
+      type: process_transformer
+    sequence_window: 3
     w2v_window: 5
 output:
   folder: experiments/outputs/streaming/remaining_time/baseline

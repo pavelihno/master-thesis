@@ -1,19 +1,16 @@
 task:
   type: next_activity
   mode: predict_and_learn
-
 dataset:
   dataset_name: BPIC_13_C
   source: log
   dataset_path: datasets/raw/BPIC_13_C.xes
-  end_events:
-  - Completed
-
+  terminator:
+    type: oracle
 transformer:
   include_prefix_len: false
   max_events: 8
   type: index
-
 model:
   params:
     delta: 0.0005422533117777606
@@ -35,6 +32,5 @@ model:
       delta: 0.009744664878613075
       type: adwin
   type: arf
-
 output:
   folder: experiments/outputs/streaming/next_activity/baseline

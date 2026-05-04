@@ -1,87 +1,87 @@
 hyperparam_search: true
-
 task:
   type: next_activity
   mode: predict_and_learn
   max_events: 7216
-
 dataset:
   dataset_name: BPIC_20_ID
   source: log
   dataset_path: datasets/raw/BPIC_20_ID.xes
-  end_events: ["Payment Handled"]
-
+  terminator:
+    type: oracle
 transformer:
   type: darwin
-
 model:
   type: darwin_classifier
   params:
     w2v_window: 5
-
-    sequence_window: # 3 - 7
+    sequence_window:
       search: choice
-      options: [3, 4, 5, 6, 7]
-
-    embedding_dim: # 2^4 - 2^10
+      options:
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+    embedding_dim:
       search: choice
-      options: [64, 128, 256]
-
+      options:
+      - 64
+      - 128
+      - 256
     sequence_model:
       type: process_transformer
-
-      head_dim: # 2^4 - 2^6
+      head_dim:
         search: choice
-        options: [16, 32, 64]
-
+        options:
+        - 16
+        - 32
+        - 64
       num_heads:
         search: choice
-        options: [4, 8]
-
-      num_layers: # 1, 2
+        options:
+        - 4
+        - 8
+      num_layers:
         search: choice
-        options: [1, 2]
-
-      dropout: # 0.0 - 0.5
+        options:
+        - 1
+        - 2
+      dropout:
         search: float
         low: 0.0
         high: 0.5
-
       pooling_type:
         search: choice
-        options: ['max', 'mean']
-
+        options:
+        - max
+        - mean
       pooling_dropout: 0.1
-
-    batch_size: # 2^5 - 2^10
+    batch_size:
       search: choice
-      options: [32, 64]
-
+      options:
+      - 32
+      - 64
     epochs: 30
     dynamic_n_classes: true
     max_n_classes: 30
     init_size: 5390
-
     optimizer:
       type: nadam
-      lr: # 10^-5 - 10^-1
+      lr:
         search: float
         low: -3
         high: -1
         exp: true
         base: 10
-
     loss_fn:
       type: cross_entropy
-
     drift_detector:
       type: adwin
-
 search:
   metric: macro_f1
   maximize: true
   max_trials: 200
   seed: 123
-
 output:
   folder: experiments/outputs/streaming/BPIC_20_ID

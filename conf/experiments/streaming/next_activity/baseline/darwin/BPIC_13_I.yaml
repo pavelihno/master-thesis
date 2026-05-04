@@ -1,17 +1,14 @@
 task:
   type: next_activity
   mode: predict_and_learn
-
 dataset:
   dataset_name: BPIC_13_I
   source: log
   dataset_path: datasets/raw/BPIC_13_I.xes
-  end_events:
-  - Completed
-
+  terminator:
+    type: oracle
 transformer:
   type: darwin
-
 model:
   type: darwin_classifier
   params:
@@ -35,6 +32,5 @@ model:
       dropout: 0.4410301114290178
     sequence_window: 6
     w2v_window: 5
-
 output:
   folder: experiments/outputs/streaming/next_activity/baseline

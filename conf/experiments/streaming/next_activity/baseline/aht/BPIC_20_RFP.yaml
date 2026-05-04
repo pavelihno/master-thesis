@@ -1,19 +1,16 @@
 task:
   type: next_activity
   mode: predict_and_learn
-
 dataset:
   dataset_name: BPIC_20_RFP
   source: log
   dataset_path: datasets/raw/BPIC_20_RFP.xes
-  end_events:
-  - Payment Handled
-
+  terminator:
+    type: oracle
 transformer:
   type: index
   max_events: 4
   include_prefix_len: false
-
 model:
   type: aht
   params:
@@ -28,6 +25,5 @@ model:
     split_criterion: info_gain
     switch_significance: 0.09956655961678687
     tau: 0.05731425014362501
-
 output:
   folder: experiments/outputs/streaming/next_activity/baseline

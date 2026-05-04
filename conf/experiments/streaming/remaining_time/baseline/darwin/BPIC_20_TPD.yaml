@@ -2,18 +2,14 @@ task:
   type: remaining_time
   mode: predict_and_learn
   time_target: days
-
 dataset:
   dataset_name: BPIC_20_TPD
   source: log
   dataset_path: datasets/raw/BPIC_20_TPD.xes
-  end_events:
-  - Payment Handled
-  censored: true
-
+  terminator:
+    type: oracle
 transformer:
   type: darwin_time
-
 model:
   type: darwin_regressor
   params:
@@ -36,6 +32,5 @@ model:
       type: lstm
     sequence_window: 3
     w2v_window: 5
-
 output:
   folder: experiments/outputs/streaming/remaining_time/baseline

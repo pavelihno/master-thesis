@@ -1,25 +1,22 @@
 task:
   type: next_activity
   mode: predict_and_learn
-
 dataset:
   dataset_name: BPIC_13_C
   source: log
   dataset_path: datasets/raw/BPIC_13_C.xes
-  end_events:
-  - Completed
-
+  terminator:
+    type: oracle
 transformer:
   include_prefix_len: false
   max_events: 10
   type: index
-
 model:
   type: aht
   params:
     drift_detector:
       type: none
-    delta: 0.00001
+    delta: 1.0e-05
     grace_period: 221
     leaf_prediction: nba
     max_depth: 20
@@ -28,6 +25,5 @@ model:
     split_criterion: gini
     switch_significance: 0.08
     tau: 0.08
-
 output:
   folder: experiments/outputs/streaming/next_activity/baseline

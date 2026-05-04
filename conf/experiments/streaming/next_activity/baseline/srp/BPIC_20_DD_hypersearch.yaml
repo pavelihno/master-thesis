@@ -1,45 +1,46 @@
 hyperparam_search: true
-
 task:
   type: next_activity
   mode: predict_and_learn
-
 dataset:
   dataset_name: BPIC_20_DD
   source: log
   dataset_path: datasets/raw/BPIC_20_DD.xes
-  end_events: ["Payment Handled"]
-
+  terminator:
+    type: oracle
 transformer:
   type: index
   max_events:
     search: choice
-    options: [4, 6]
+    options:
+    - 4
+    - 6
   include_prefix_len: false
-
 model:
   type: srp
   params:
     n_models:
       search: choice
-      options: [50, 75]
-
+      options:
+      - 50
+      - 75
     subspace_size:
       search: choice
-      options: [0.6, 0.8]
-
+      options:
+      - 0.6
+      - 0.8
     training_method:
       search: choice
-      options: [patches, subspaces]
-
+      options:
+      - patches
+      - subspaces
     lam:
       search: choice
-      options: [6, 8]
-
-    disable_detector: "off"
-
+      options:
+      - 6
+      - 8
+    disable_detector: 'off'
     disable_weighted_vote: false
-
     drift_detector:
       type: adwin
       delta:
@@ -48,7 +49,6 @@ model:
         high: -4
         exp: true
         base: 10
-
     warning_detector:
       type: adwin
       delta:
@@ -57,14 +57,11 @@ model:
         high: -3
         exp: true
         base: 10
-
     seed: 42
-
 search:
   metric: macro_f1
   max_trials: 15
   maximize: true
   seed: 123
-
 output:
   folder: experiments/outputs/streaming/BPIC_20_DD

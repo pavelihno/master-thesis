@@ -5,8 +5,8 @@ dataset:
   dataset_name: Helpdesk
   source: log
   dataset_path: datasets/raw/Helpdesk.xes
-  end_events:
-  - Closed
+  terminator:
+    type: oracle
 transformer:
   include_prefix_len: false
   max_events: 8

@@ -1,46 +1,39 @@
 hyperparam_search: true
-
 task:
   type: remaining_time
   mode: predict_and_learn
   time_target: days
   max_events: 62257
-
 dataset:
   dataset_name: Hospital_Billing
   source: log
   dataset_path: datasets/raw/Hospital_Billing.xes
-  end_events:
-  - BILLED
-  - NEW
-  censored: true
-
+  terminator:
+    type: oracle
 transformer:
   type: darwin_time
-
 model:
   type: darwin_regressor
   params:
     batch_size:
       search: choice
-      options: [32, 64, 128]
-
+      options:
+      - 32
+      - 64
+      - 128
     drift_detector:
       type: adwin
-
     embedding_dim:
       search: choice
-      options: [64, 128, 256]
-
+      options:
+      - 64
+      - 128
+      - 256
     epochs: 100
-
     feature_size: 3
-
     init_size: 13686
-
     loss_fn:
       type: log_cosh
-
     optimizer:
       type: adam
       lr:
@@ -49,44 +42,48 @@ model:
         high: -2
         exp: true
         base: 10
-
     sequence_model:
       type: process_transformer
-
-      head_dim: # 2^4 - 2^6
+      head_dim:
         search: choice
-        options: [16, 32, 64]
-
+        options:
+        - 16
+        - 32
+        - 64
       num_heads:
         search: choice
-        options: [4, 8]
-
-      num_layers: # 1, 2, 3
+        options:
+        - 4
+        - 8
+      num_layers:
         search: choice
-        options: [1, 2, 3]
-
-      dropout: # 0.0 - 0.5
+        options:
+        - 1
+        - 2
+        - 3
+      dropout:
         search: float
         low: 0.0
         high: 0.5
-
       pooling_type:
         search: choice
-        options: ['max', 'mean']
-
+        options:
+        - max
+        - mean
       pooling_dropout: 0.1
-
     sequence_window:
       search: choice
-      options: [3, 4, 5, 6, 7]
-
+      options:
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
     w2v_window: 5
-
 search:
   metric: mae
   maximize: false
   max_trials: 100
   seed: 123
-
 output:
   folder: experiments/outputs/streaming/remaining_time/Hospital_Billing
