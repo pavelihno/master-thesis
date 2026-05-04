@@ -42,6 +42,7 @@ class EmitterMap(BaseMap):
             'trace_n': trace_n,
             'event_n': event_n,
             'prefix_len': prefix_len,
+            'event_name': event.get_event_name(),
             'event_time': str(event.get_event_time()),
             'is_terminal': is_terminal,
         }
