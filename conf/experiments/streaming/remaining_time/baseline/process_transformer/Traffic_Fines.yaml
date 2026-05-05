@@ -1,0 +1,39 @@
+task:
+  type: remaining_time
+  mode: predict_and_learn
+  time_target: days
+dataset:
+  dataset_name: Traffic_Fines
+  source: log
+  dataset_path: datasets/raw/Traffic_Fines.xes
+  terminator:
+    type: oracle
+transformer:
+  type: darwin_time
+model:
+  params:
+    batch_size: 32
+    drift_detector:
+      type: adwin
+    embedding_dim: 256
+    epochs: 100
+    feature_size: 3
+    init_size: 35362
+    loss_fn:
+      type: log_cosh
+    optimizer:
+      lr: 0.007531377192344699
+      type: adam
+    sequence_model:
+      dropout: 0.0407186817904755
+      head_dim: 16
+      num_heads: 4
+      num_layers: 1
+      pooling_dropout: 0.1
+      pooling_type: max
+      type: process_transformer
+    sequence_window: 3
+    w2v_window: 5
+  type: darwin_regressor
+output:
+  folder: experiments/outputs/streaming/remaining_time/baseline
