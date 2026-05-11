@@ -158,7 +158,10 @@ class DARWINBase(ABC):
         # Merge task specific checkpoint data
         checkpoint.update(checkpoint_data)
 
-        torch.save(checkpoint, Path(path))
+        try:
+            torch.save(checkpoint, Path(path))
+        except Exception as e:
+            print(f'Error occurred while saving checkpoint: {e}')
 
     def load_checkpoint(
         self,

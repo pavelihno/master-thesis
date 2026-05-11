@@ -15,24 +15,24 @@ model:
     batch_size: 32
     drift_detector:
       type: adwin
-    embedding_dim: 256
+    embedding_dim: 128
     epochs: 100
     feature_size: 3
     init_size: 35362
     loss_fn:
       type: log_cosh
     optimizer:
-      lr: 0.007531377192344699
+      lr: 0.001117077085614309
       type: adam
     sequence_model:
-      dropout: 0.0407186817904755
+      dropout: 0.014263306985349888
       head_dim: 16
       num_heads: 4
-      num_layers: 1
+      num_layers: 2
       pooling_dropout: 0.1
       pooling_type: max
       type: process_transformer
-    sequence_window: 3
+    sequence_window: 6
     w2v_window: 5
   type: darwin_regressor
 output:
