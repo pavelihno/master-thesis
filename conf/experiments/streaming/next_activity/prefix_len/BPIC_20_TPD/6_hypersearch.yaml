@@ -15,48 +15,29 @@ model:
   type: darwin_classifier
   params:
     w2v_window: 5
-    sequence_window:
-      search: choice
-      options:
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
+    sequence_window: 6
     embedding_dim:
       search: choice
       options:
-      - 64
       - 128
       - 256
+      - 512
     sequence_model:
-      type: process_transformer
-      head_dim:
-        search: choice
-        options:
-        - 16
-        - 32
-        - 64
-      num_heads:
-        search: choice
-        options:
-        - 4
-        - 8
+      type: lstm
+      hidden_dim:
+        search: int
+        low: 10
+        high: 150
+        log: true
       num_layers:
         search: choice
         options:
-        - 1
         - 2
+        - 3
       dropout:
         search: float
         low: 0.0
-        high: 0.5
-      pooling_type:
-        search: choice
-        options:
-        - max
-        - mean
-      pooling_dropout: 0.1
+        high: 1.0
     batch_size:
       search: choice
       options:
@@ -81,7 +62,7 @@ model:
 search:
   metric: macro_f1
   maximize: true
-  max_trials: 150
+  max_trials: 15
   seed: 123
 output:
-  folder: experiments/outputs/streaming/BPIC_20_TPD
+  folder: experiments/outputs/streaming/prefix_len/BPIC_20_TPD

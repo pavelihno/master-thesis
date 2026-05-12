@@ -53,7 +53,7 @@ model:
     epochs: 30
     dynamic_n_classes: true
     max_n_classes: 55
-    init_size: 6475
+    init_size: 6272
     optimizer:
       type: nadam
       lr:

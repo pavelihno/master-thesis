@@ -1,0 +1,36 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_13_C
+  source: log
+  dataset_path: datasets/raw/BPIC_13_C.xes
+  terminator:
+    type: oracle
+transformer:
+  type: darwin
+model:
+  params:
+    batch_size: 64
+    drift_detector:
+      type: adwin
+    dynamic_n_classes: true
+    embedding_dim: 256
+    epochs: 30
+    init_size: 666
+    loss_fn:
+      type: cross_entropy
+    max_n_classes: 30
+    optimizer:
+      lr: 0.03940967603647379
+      type: nadam
+    sequence_model:
+      dropout: 0.31880847709137183
+      hidden_dim: 15
+      num_layers: 2
+      type: lstm
+    sequence_window: 6
+    w2v_window: 5
+  type: darwin_classifier
+output:
+  folder: experiments/outputs/streaming/BPIC_13_C
