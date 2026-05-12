@@ -11,14 +11,16 @@ from utils.streaming.time import TimeTarget, convert_time, parse_time
 class LearnerMap(BaseMap):
     def __init__(self, model):
         self._model = model
-        self._has_clear_method = hasattr(model, 'clear') and callable(model.clear)
+        self._has_clear_case_method = hasattr(model, 'clear_case') and callable(
+            model.clear_case
+        )
         self._has_drift_detector = (
             hasattr(model, 'drift_detector') and model.drift_detector is not None
         )
 
     def _clear(self, trace_id: str) -> None:
-        if self._has_clear_method:
-            self._model.clear(trace_id)
+        if self._has_clear_case_method:
+            self._model.clear_case(trace_id)
 
     def _get_loss(self):
         return (

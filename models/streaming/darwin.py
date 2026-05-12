@@ -408,7 +408,7 @@ class DARWINBase(ABC):
         )
         return tensor, padding_mask
 
-    def clear(self, case_id: str) -> None:
+    def clear_case(self, case_id: str) -> None:
         self.header_table.pop(case_id, None)
         self.previous_events.pop(case_id, None)
         self.learn_table.pop(case_id, None)
