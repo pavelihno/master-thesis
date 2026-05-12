@@ -160,6 +160,23 @@ def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator]:
 
         run_kwargs = {'string': stream_string, 'inject_terminal': inject_terminal}
 
+    elif source_mode == SourceMode.DATA_FRAME:
+        data_frame = config.pop('data_frame', None)
+        if data_frame is None:
+            raise ValueError('data_frame must be provided for DataFrameSource')
+
+        case_id_col = config.pop('case_id_col', 'case:concept:name')
+        time_col = config.pop('time_col', 'time:timestamp')
+        activity_col = config.pop('activity_col', 'concept:name')
+
+        run_kwargs = {
+            'data_frame': data_frame,
+            'inject_terminal': inject_terminal,
+            'case_id_col': case_id_col,
+            'activity_col': activity_col,
+            'time_col': time_col,
+        }
+
     elif source_mode == SourceMode.BEVENTS:
         trace_specs = config.pop('traces', None)
         if not trace_specs:

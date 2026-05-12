@@ -27,6 +27,26 @@ def xes_log_source_from_file(
     )
 
 
+def xes_log_source_from_dataframe(
+    data_frame: pd.DataFrame,
+    max_events: int | None = None,
+    inject_terminal: bool = False,
+    case_id_col: str = 'case:concept:name',
+    activity_col: str = 'concept:name',
+    time_col: str = 'time:timestamp',
+) -> Stream[BEvent]:
+    return Stream.from_iterable(
+        _iter_bevents(
+            data_frame,
+            max_events=max_events,
+            inject_terminal=inject_terminal,
+            case_id_col=case_id_col,
+            activity_col=activity_col,
+            time_col=time_col,
+        )
+    )
+
+
 def _iter_bevents(
     raw_log: pd.DataFrame,
     max_events: int | None = None,

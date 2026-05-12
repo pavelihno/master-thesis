@@ -33,6 +33,7 @@ from utils.streaming.base.terminators import TraceTerminator
 from utils.streaming.base.transformers import StreamingTransformer
 from utils.streaming.pybeamline import (
     xes_log_source_from_bevents,
+    xes_log_source_from_dataframe,
     xes_log_source_from_file,
     xes_log_source_from_string,
 )
@@ -46,6 +47,7 @@ class PipelineMode(Enum):
 
 class SourceMode(Enum):
     LOG = 'log'
+    DATA_FRAME = 'data_frame'
     STRING = 'string'
     BEVENTS = 'bevents'
 
@@ -72,6 +74,30 @@ class LogSource(Source):
 
         return xes_log_source_from_file(
             dataset_path,
+            max_events=max_events,
+            inject_terminal=inject_terminal,
+            case_id_col=case_id_col,
+            activity_col=activity_col,
+            time_col=time_col,
+        )
+
+
+class DataFrameSource(Source):
+    def get_source(
+        self,
+        max_events: int | None = None,
+        inject_terminal: bool = False,
+        case_id_col: str = 'case:concept:name',
+        activity_col: str = 'concept:name',
+        time_col: str = 'time:timestamp',
+        **kwargs,
+    ):
+        df = kwargs.get('data_frame')
+        if df is None:
+            raise ValueError('data_frame must be provided for DataFrameSource')
+
+        return xes_log_source_from_dataframe(
+            df,
             max_events=max_events,
             inject_terminal=inject_terminal,
             case_id_col=case_id_col,
@@ -154,6 +180,8 @@ class TaskPipeline(ABC):
 
         if self.source_mode == SourceMode.LOG:
             source_obj = LogSource()
+        elif self.source_mode == SourceMode.DATA_FRAME:
+            source_obj = DataFrameSource()
         elif self.source_mode == SourceMode.STRING:
             source_obj = StringSource()
         elif self.source_mode == SourceMode.BEVENTS:
