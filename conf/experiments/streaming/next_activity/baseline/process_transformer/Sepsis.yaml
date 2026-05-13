@@ -2,9 +2,9 @@ task:
   type: next_activity
   mode: predict_and_learn
 dataset:
-  dataset_name: BPIC_13_C
+  dataset_name: Sepsis
   source: log
-  dataset_path: datasets/raw/BPIC_13_C.xes
+  dataset_path: datasets/raw/Sepsis.xes
   terminator:
     type: oracle
 transformer:
@@ -17,20 +17,23 @@ model:
     dynamic_n_classes: true
     embedding_dim: 64
     epochs: 30
-    init_size: 666
+    init_size: 1522
     loss_fn:
       type: cross_entropy
     max_n_classes: 30
     optimizer:
-      lr: 0.018299399204731597
+      lr: 0.002080409394558654
       type: nadam
     sequence_model:
-      dropout: 0.4672133514179332
-      hidden_dim: 109
-      num_layers: 3
-      type: lstm
+      dropout: 0.16737860545913713
+      head_dim: 32
+      num_heads: 4
+      num_layers: 1
+      pooling_dropout: 0.1
+      pooling_type: mean
+      type: process_transformer
     sequence_window: 7
     w2v_window: 5
   type: darwin_classifier
 output:
-  folder: experiments/outputs/streaming/next_activity/prefix_len
+  folder: experiments/outputs/streaming/next_activity/baseline

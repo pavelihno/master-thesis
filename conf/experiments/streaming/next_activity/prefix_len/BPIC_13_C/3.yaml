@@ -33,4 +33,4 @@ model:
     w2v_window: 5
   type: darwin_classifier
 output:
-  folder: experiments/outputs/streaming/BPIC_13_C
+  folder: experiments/outputs/streaming/next_activity/prefix_len
