@@ -1,7 +1,6 @@
 task:
   type: next_activity
   mode: predict_and_learn
-  max_events: 8659
 dataset:
   dataset_name: BPIC_20_TPD
   source: log
@@ -18,7 +17,7 @@ model:
     dynamic_n_classes: true
     embedding_dim: 512
     epochs: 30
-    init_size: 6029
+    init_size: 8659
     loss_fn:
       type: cross_entropy
     max_n_classes: 55
@@ -34,4 +33,4 @@ model:
     w2v_window: 5
   type: darwin_classifier
 output:
-  folder: experiments/outputs/streaming/BPIC_20_TPD
+  folder: experiments/outputs/streaming/next_activity/prefix_len

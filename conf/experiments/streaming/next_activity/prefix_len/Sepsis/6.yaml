@@ -1,7 +1,6 @@
 task:
   type: next_activity
   mode: predict_and_learn
-  max_events: 1522
 dataset:
   dataset_name: Sepsis
   source: log
@@ -18,7 +17,7 @@ model:
     dynamic_n_classes: true
     embedding_dim: 64
     epochs: 30
-    init_size: 1127
+    init_size: 1522
     loss_fn:
       type: cross_entropy
     max_n_classes: 30
@@ -34,4 +33,4 @@ model:
     w2v_window: 5
   type: darwin_classifier
 output:
-  folder: experiments/outputs/streaming/Sepsis
+  folder: experiments/outputs/streaming/next_activity/prefix_len
