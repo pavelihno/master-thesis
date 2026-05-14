@@ -2,11 +2,11 @@ hyperparam_search: true
 task:
   type: next_activity
   mode: predict_and_learn
-  max_events: 5222
+  max_events: 2135
 dataset:
-  dataset_name: BPIC_15_1
+  dataset_name: Helpdesk
   source: log
-  dataset_path: datasets/raw/BPIC_15_1.xes
+  dataset_path: datasets/raw/Helpdesk.xes
   terminator:
     type: oracle
 transformer:
@@ -15,13 +15,22 @@ model:
   type: darwin_classifier
   params:
     w2v_window: 5
-    sequence_window: 7
+    sequence_window: 4
     embedding_dim:
       search: choice
       options:
+      - 64
       - 128
       - 256
-      - 512
+    batch_size:
+      search: choice
+      options:
+      - 32
+      - 64
+    epochs: 30
+    dynamic_n_classes: true
+    max_n_classes: 30
+    init_size: 1337
     sequence_model:
       type: lstm
       hidden_dim:
@@ -32,26 +41,18 @@ model:
       num_layers:
         search: choice
         options:
+        - 1
         - 2
         - 3
       dropout:
         search: float
         low: 0.0
         high: 1.0
-    batch_size:
-      search: choice
-      options:
-      - 32
-      - 64
-    epochs: 30
-    dynamic_n_classes: true
-    max_n_classes: 55
-    init_size: 4006
     optimizer:
       type: nadam
       lr:
         search: float
-        low: -3
+        low: -4
         high: -1
         exp: true
         base: 10
@@ -62,7 +63,7 @@ model:
 search:
   metric: macro_f1
   maximize: true
-  max_trials: 20
+  max_trials: 25
   seed: 123
 output:
-  folder: experiments/outputs/streaming/prefix_len/BPIC_15_1
+  folder: experiments/outputs/streaming/prefix_len/Helpdesk
