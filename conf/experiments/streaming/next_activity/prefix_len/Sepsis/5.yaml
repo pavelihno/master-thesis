@@ -1,0 +1,37 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+  max_events: 1522
+dataset:
+  dataset_name: Sepsis
+  source: log
+  dataset_path: datasets/raw/Sepsis.xes
+  terminator:
+    type: oracle
+transformer:
+  type: darwin
+model:
+  params:
+    batch_size: 32
+    drift_detector:
+      type: adwin
+    dynamic_n_classes: true
+    embedding_dim: 256
+    epochs: 30
+    init_size: 1127
+    loss_fn:
+      type: cross_entropy
+    max_n_classes: 30
+    optimizer:
+      lr: 0.018922376088607324
+      type: nadam
+    sequence_model:
+      dropout: 0.17270171391103606
+      hidden_dim: 44
+      num_layers: 1
+      type: lstm
+    sequence_window: 5
+    w2v_window: 5
+  type: darwin_classifier
+output:
+  folder: experiments/outputs/streaming/Sepsis
