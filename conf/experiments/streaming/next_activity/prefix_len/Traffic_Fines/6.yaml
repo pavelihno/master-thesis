@@ -1,0 +1,36 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: Traffic_Fines
+  source: log
+  dataset_path: datasets/raw/Traffic_Fines.xes
+  terminator:
+    type: oracle
+transformer:
+  type: darwin
+model:
+  params:
+    batch_size: 64
+    drift_detector:
+      type: adwin
+    dynamic_n_classes: true
+    embedding_dim: 512
+    epochs: 30
+    init_size: 56147
+    loss_fn:
+      type: cross_entropy
+    max_n_classes: 20
+    optimizer:
+      lr: 0.0032099874917197483
+      type: nadam
+    sequence_model:
+      dropout: 0.36938041450750536
+      hidden_dim: 25
+      num_layers: 2
+      type: lstm
+    sequence_window: 6
+    w2v_window: 5
+  type: darwin_classifier
+output:
+  folder: experiments/outputs/streaming/next_activity/prefix_len
