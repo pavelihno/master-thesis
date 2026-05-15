@@ -1,19 +1,24 @@
 from collections.abc import Iterator
 
 import pandas as pd
-from pm4py import convert_to_dataframe, read_xes
+from pm4py import convert_to_dataframe, format_dataframe, read_xes
 from pybeamline.bevent import BEvent
 from pybeamline.sources import string_test_source
 from pybeamline.stream.stream import Stream
+
+
+CASE_ID_COL = 'case:concept:name'
+ACTIVITY_COL = 'concept:name'
+TIME_COL = 'time:timestamp'
 
 
 def xes_log_source_from_file(
     log: str,
     max_events: int | None = None,
     inject_terminal: bool = False,
-    case_id_col: str = 'case:concept:name',
-    activity_col: str = 'concept:name',
-    time_col: str = 'time:timestamp',
+    case_id_col: str = CASE_ID_COL,
+    activity_col: str = ACTIVITY_COL,
+    time_col: str = TIME_COL,
 ) -> Stream[BEvent]:
     return Stream.from_iterable(
         _iter_bevents(
@@ -31,9 +36,9 @@ def xes_log_source_from_dataframe(
     data_frame: pd.DataFrame,
     max_events: int | None = None,
     inject_terminal: bool = False,
-    case_id_col: str = 'case:concept:name',
-    activity_col: str = 'concept:name',
-    time_col: str = 'time:timestamp',
+    case_id_col: str = CASE_ID_COL,
+    activity_col: str = ACTIVITY_COL,
+    time_col: str = TIME_COL,
 ) -> Stream[BEvent]:
     return Stream.from_iterable(
         _iter_bevents(
@@ -51,17 +56,22 @@ def _iter_bevents(
     raw_log: pd.DataFrame,
     max_events: int | None = None,
     inject_terminal: bool = False,
-    case_id_col: str = 'case:concept:name',
-    activity_col: str = 'concept:name',
-    time_col: str = 'time:timestamp',
+    case_id_col: str = CASE_ID_COL,
+    activity_col: str = ACTIVITY_COL,
+    time_col: str = TIME_COL,
 ) -> Iterator[BEvent]:
-    log = raw_log if type(raw_log) is pd.DataFrame else convert_to_dataframe(raw_log)
+    log = (
+        raw_log if isinstance(raw_log, pd.DataFrame) else convert_to_dataframe(raw_log)
+    )
 
-    log = log.sort_values(by=[time_col])
+    log = format_dataframe(
+        log, case_id=case_id_col, activity_key=activity_col, timestamp_key=time_col
+    )
 
-    # Mark only the last event of each trace with is_terminal=True
+    log = log.sort_values(by=[TIME_COL])
+
     if inject_terminal:
-        last_event_indices = log.groupby(case_id_col).tail(1).index
+        last_event_indices = log.groupby(CASE_ID_COL).tail(1).index
         log['is_terminal'] = log.index.isin(last_event_indices)
 
     emitted = 0
@@ -69,15 +79,19 @@ def _iter_bevents(
         if max_events is not None and emitted >= max_events:
             break
 
-        time = event[time_col] if time_col in event else None
-        bevent = BEvent(event[activity_col], event[case_id_col], 'log-file', time)
+        bevent = BEvent(
+            event[ACTIVITY_COL],
+            str(event[CASE_ID_COL]),
+            'log-file',
+            event[TIME_COL],
+        )
 
         for col in log.columns:
-            if col in {activity_col, case_id_col, time_col}:
+            if col in {ACTIVITY_COL, CASE_ID_COL, TIME_COL}:
                 continue
 
             if pd.notna(event[col]):
-                if col.startswith('case:') and col != case_id_col:
+                if col.startswith('case:') and col != CASE_ID_COL:
                     bevent.trace_attributes[col[5:]] = event[col]
                 else:
                     bevent.event_attributes[col] = event[col]

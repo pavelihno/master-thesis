@@ -11,6 +11,7 @@ from river.forest import ARFClassifier
 from river.tree import HoeffdingAdaptiveTreeClassifier
 
 from models.streaming.darwin import DARWINClassifier, DARWINRegressor
+from models.streaming.ngram import NGramClassifier, NGramRegressor
 from models.streaming.sequence import LSTMModel, ProcessTransformerModel
 from utils.loss_functions import LogCoshLoss
 from utils.streaming.base.extractors import (
@@ -42,6 +43,7 @@ from utils.streaming.base.transformers import (
     IndexBasedTransformer,
 )
 from utils.streaming.experiment import load_saved_model
+from utils.streaming.pybeamline import ACTIVITY_COL, CASE_ID_COL, TIME_COL
 from utils.streaming.time import TimeTarget
 
 
@@ -91,6 +93,10 @@ def create_model(config: dict, device: torch.device | None = None):
         )
     elif model_type == 'aht':
         model = HoeffdingAdaptiveTreeClassifier(**params, drift_detector=drift_detector)
+    elif model_type == 'ngram_classifier':
+        model = NGramClassifier(**params)
+    elif model_type == 'ngram_regressor':
+        model = NGramRegressor(**params)
     elif model_type == 'darwin_classifier' or model_type == 'darwin_regressor':
         darwin_cls = (
             DARWINClassifier if model_type == 'darwin_classifier' else DARWINRegressor
@@ -141,9 +147,9 @@ def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator]:
         if not dataset_path:
             raise ValueError('dataset_path must be provided for LogSource')
 
-        case_id_col = config.pop('case_id_col', 'case:concept:name')
-        time_col = config.pop('time_col', 'time:timestamp')
-        activity_col = config.pop('activity_col', 'concept:name')
+        case_id_col = config.pop('case_id_col', CASE_ID_COL)
+        time_col = config.pop('time_col', TIME_COL)
+        activity_col = config.pop('activity_col', ACTIVITY_COL)
 
         run_kwargs = {
             'dataset_path': dataset_path,
@@ -165,9 +171,9 @@ def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator]:
         if data_frame is None:
             raise ValueError('data_frame must be provided for DataFrameSource')
 
-        case_id_col = config.pop('case_id_col', 'case:concept:name')
-        time_col = config.pop('time_col', 'time:timestamp')
-        activity_col = config.pop('activity_col', 'concept:name')
+        case_id_col = config.pop('case_id_col', CASE_ID_COL)
+        time_col = config.pop('time_col', TIME_COL)
+        activity_col = config.pop('activity_col', ACTIVITY_COL)
 
         run_kwargs = {
             'data_frame': data_frame,

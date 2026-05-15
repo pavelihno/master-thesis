@@ -199,14 +199,17 @@ def write_results(
 
 
 def save_model(output_dir: Path, model) -> None:
-    if hasattr(model, 'save_checkpoint'):
-        model_path = output_dir / 'model.pt'
-        model.save_checkpoint(model_path)
-    else:
-        model_path = output_dir / 'model.pkl'
-        with open(model_path, 'wb') as file:
-            pickle.dump(model, file)
-    print(f'Model -> {model_path}')
+    try:
+        if hasattr(model, 'save_checkpoint'):
+            model_path = output_dir / 'model.pt'
+            model.save_checkpoint(model_path)
+        else:
+            model_path = output_dir / 'model.pkl'
+            with open(model_path, 'wb') as file:
+                pickle.dump(model, file)
+        print(f'Model -> {model_path}')
+    except Exception as e:
+        print(f'Failed to save model: {e}')
 
 
 def load_saved_model(model_path: Path, model=None):
