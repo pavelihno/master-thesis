@@ -22,14 +22,14 @@ model:
       type: cross_entropy
     max_n_classes: 30
     optimizer:
-      lr: 0.07774565309630932
+      lr: 0.0020186363591865263
       type: nadam
     sequence_model:
-      dropout: 0.033406514409254184
-      hidden_dim: 52
+      dropout: 0.06408878063524909
+      hidden_dim: 126
       num_layers: 1
       type: lstm
-    sequence_window: 3
+    sequence_window: 7
     w2v_window: 5
   type: darwin_classifier
 output:
