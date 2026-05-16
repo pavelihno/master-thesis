@@ -1,0 +1,31 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: Traffic_Fines
+  source: log
+  dataset_path: datasets/raw/Traffic_Fines.xes
+  terminator:
+    type: oracle
+transformer:
+  include_prefix_len: false
+  max_events: 4
+  type: index
+model:
+  params:
+    disable_detector: 'off'
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 1.1974114323302014e-05
+      type: adwin
+    lam: 6
+    n_models: 50
+    seed: 42
+    subspace_size: 0.8
+    training_method: subspaces
+    warning_detector:
+      delta: 0.0002003023637577015
+      type: adwin
+  type: srp
+output:
+  folder: experiments/outputs/streaming/next_activity/baseline
