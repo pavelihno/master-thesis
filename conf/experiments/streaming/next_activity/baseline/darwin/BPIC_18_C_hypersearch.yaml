@@ -2,7 +2,7 @@ hyperparam_search: true
 task:
   type: next_activity
   mode: predict_and_learn
-  max_events: 16130
+  max_events: 8065
 dataset:
   dataset_name: BPIC_18_C
   source: log
@@ -65,7 +65,7 @@ model:
     epochs: 100
     dynamic_n_classes: true
     max_n_classes: 30
-    init_size: 8615
+    init_size: 4312
     optimizer:
       type: nadam
       lr:
@@ -81,7 +81,7 @@ model:
 search:
   metric: macro_f1
   maximize: true
-  max_trials: 100
+  max_trials: 75
   seed: 123
 output:
   folder: experiments/outputs/streaming/BPIC_18_C
