@@ -83,6 +83,34 @@
         "mean_cycle": 21.899605591087365,
         "normalization_factor": 286.07243812499996
     },
+    "BPIC_18": {
+        "num_cases": 43809,
+        "num_events": 2514266,
+        "num_activities": 41,
+        "mean_cycle": 335.35254922498353,
+        "normalization_factor": 1011.3593265856482
+    },
+    "BPIC_18_C": {
+        "num_cases": 43808,
+        "num_events": 161296,
+        "num_activities": 7,
+        "mean_cycle": 57.319817512825324,
+        "normalization_factor": 860.1436226851852
+    },
+    "BPIC_18_G": {
+        "num_cases": 29059,
+        "num_events": 569209,
+        "num_activities": 16,
+        "mean_cycle": 143.81960803136747,
+        "normalization_factor": 576.4282012731481
+    },
+    "BPIC_18_P": {
+        "num_cases": 14750,
+        "num_events": 132963,
+        "num_activities": 10,
+        "mean_cycle": 196.1923493542059,
+        "normalization_factor": 954.9988078703703
+    },
     "BPIC_19": {
         "num_cases": 251734,
         "num_events": 1595923,

@@ -29,7 +29,7 @@ class DatasetSplitter(ABC):
         log = log_converter.apply(log_df)
 
         # Apply splitting logic
-        subdatasets = self.apply_splitting_rules(log)
+        subdatasets = self.apply_splitting_rules(log, log_df)
 
         # Save each subdataset
         for subdataset_name, subdataset_log in subdatasets.items():
@@ -42,7 +42,7 @@ class DatasetSplitter(ABC):
         return subdatasets
 
     @abstractmethod
-    def apply_splitting_rules(self, log):
+    def apply_splitting_rules(self, log, log_df):
         """Apply splitting logic to the event log."""
         pass
 
@@ -85,7 +85,7 @@ class BPIC12Splitter(DatasetSplitter):
     - W_*: Work subprocess
     """
 
-    def apply_splitting_rules(self, log):
+    def apply_splitting_rules(self, log, log_df):
         """Split BPIC_12 based on activity name prefixes."""
         # Initialize subdataset logs
         log_A = EventLog()
@@ -122,6 +122,65 @@ class BPIC12Splitter(DatasetSplitter):
         }
 
 
+class BPIC18Splitter(DatasetSplitter):
+    """
+    Split BPIC_18 dataset into 3 subdatasets based on event attribute doctype:
+    - Geo parcel document
+    - Parcel document
+    - Control summary
+    """
+
+    def apply_splitting_rules(self, log, log_df):
+        log_G = EventLog()
+        log_P = EventLog()
+        log_C = EventLog()
+
+        for attr_key, attr_value in log.attributes.items():
+            log_G.attributes[attr_key] = attr_value
+            log_P.attributes[attr_key] = attr_value
+            log_C.attributes[attr_key] = attr_value
+
+        def _get_doctype(event):
+            return (
+                event.get('doctype')
+                or event.get('doc_type')
+                or event.get('docType')
+                or ''
+            )
+
+        for trace in log:
+            filtered_G = Trace()
+            filtered_P = Trace()
+            filtered_C = Trace()
+
+            for attr_key, attr_value in trace.attributes.items():
+                filtered_G.attributes[attr_key] = attr_value
+                filtered_P.attributes[attr_key] = attr_value
+                filtered_C.attributes[attr_key] = attr_value
+
+            for event in trace:
+                doctype = _get_doctype(event).lower()
+                if doctype == 'geo parcel document':
+                    filtered_G.append(event)
+                elif doctype == 'parcel document':
+                    filtered_P.append(event)
+                elif doctype == 'control summary':
+                    filtered_C.append(event)
+
+            if len(filtered_G) > 0:
+                log_G.append(filtered_G)
+            if len(filtered_P) > 0:
+                log_P.append(filtered_P)
+            if len(filtered_C) > 0:
+                log_C.append(filtered_C)
+
+        return {
+            'BPIC_18_G': log_G,
+            'BPIC_18_P': log_P,
+            'BPIC_18_C': log_C,
+        }
+
+
 def split_datasets():
     """Main function to split all configured datasets."""
     print('=' * 60)
@@ -130,6 +189,7 @@ def split_datasets():
 
     splitters = [
         ('BPIC_12', BPIC12Splitter),
+        ('BPIC_18', BPIC18Splitter),
     ]
 
     for dataset_name, splitter_class in splitters:
