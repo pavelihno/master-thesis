@@ -10,9 +10,8 @@ dataset:
 transformer:
   type: darwin
 model:
-  type: darwin_classifier
   params:
-    batch_size: 32
+    batch_size: 64
     drift_detector:
       type: adwin
     dynamic_n_classes: true
@@ -23,14 +22,15 @@ model:
       type: cross_entropy
     max_n_classes: 30
     optimizer:
-      lr: 0.040093660211867846
+      lr: 0.02066315915304916
       type: nadam
     sequence_model:
-      dropout: 0.43920348961052785
-      hidden_dim: 42
-      num_layers: 1
+      dropout: 0.2893999937062631
+      hidden_dim: 11
+      num_layers: 2
       type: lstm
     sequence_window: 3
     w2v_window: 5
+  type: darwin_classifier
 output:
   folder: experiments/outputs/streaming/next_activity/baseline
