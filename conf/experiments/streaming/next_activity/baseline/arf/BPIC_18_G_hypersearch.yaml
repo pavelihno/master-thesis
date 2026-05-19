@@ -2,7 +2,7 @@ hyperparam_search: true
 task:
   type: next_activity
   mode: predict_and_learn
-  max_events: 56921
+  max_events: 28461
 dataset:
   dataset_name: BPIC_18_G
   source: log

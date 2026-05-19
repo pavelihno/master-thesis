@@ -30,39 +30,28 @@ model:
       - 128
       - 256
     sequence_model:
-      type: process_transformer
-      head_dim:
-        search: choice
-        options:
-        - 16
-        - 32
-        - 64
-      num_heads:
-        search: choice
-        options:
-        - 4
-        - 8
+      type: lstm
+      hidden_dim:
+        search: int
+        low: 10
+        high: 150
+        log: true
       num_layers:
         search: choice
         options:
         - 1
         - 2
+        - 3
       dropout:
         search: float
         low: 0.0
-        high: 0.5
-      pooling_type:
-        search: choice
-        options:
-        - max
-        - mean
-      pooling_dropout: 0.1
+        high: 1.0
     batch_size:
       search: choice
       options:
       - 32
       - 64
-    epochs: 100
+    epochs: 30
     dynamic_n_classes: true
     max_n_classes: 30
     init_size: 17217
@@ -71,7 +60,7 @@ model:
       lr:
         search: float
         low: -4
-        high: -2
+        high: -1
         exp: true
         base: 10
     loss_fn:
