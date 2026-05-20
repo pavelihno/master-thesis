@@ -1,0 +1,31 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_18_C
+  source: log
+  dataset_path: datasets/raw/BPIC_18_C.xes
+  terminator:
+    type: oracle
+transformer:
+  include_prefix_len: false
+  max_events: 4
+  type: index
+model:
+  params:
+    disable_detector: 'off'
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 1.0791801179344957e-05
+      type: adwin
+    lam: 6
+    n_models: 50
+    seed: 42
+    subspace_size: 0.8
+    training_method: patches
+    warning_detector:
+      delta: 0.00014183260190931646
+      type: adwin
+  type: srp
+output:
+  folder: experiments/outputs/streaming/next_activity/baseline
