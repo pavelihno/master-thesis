@@ -13,24 +13,17 @@ transformer:
   type: index
 model:
   params:
-    delta: 0.00018550817000062664
-    disable_weighted_vote: false
+    delta: 0.005197297833020463
     drift_detector:
-      delta: 1.2953196051284491e-05
-      type: adwin
-    grace_period: 64
-    lambda_value: 6
-    leaf_prediction: nba
-    max_depth: 40
-    max_features: 0.5
-    n_models: 50
-    nb_threshold: 14
+      type: none
+    grace_period: 58
+    leaf_prediction: mc
+    max_depth: 10
+    nb_threshold: 9
     seed: 42
     split_criterion: info_gain
-    tau: 0.11473036872426576
-    warning_detector:
-      delta: 0.00015795068565804197
-      type: adwin
-  type: arf
+    switch_significance: 0.08098226265887667
+    tau: 0.04301595334218844
+  type: aht
 output:
   folder: experiments/outputs/streaming/next_activity/baseline

@@ -1,0 +1,79 @@
+    {
+        "BPIC_12_O": {
+            "3": "bpic_12_o_darwin_classifier_c16f868d_2026-05-15_10-57-21",
+            "4": "bpic_12_o_darwin_classifier_a4074fa1_2026-05-15_10-57-21",
+            "5": "bpic_12_o_darwin_classifier_480d452c_2026-05-15_10-57-21",
+            "6": "bpic_12_o_darwin_classifier_c45af024_2026-05-15_10-57-21",
+            "7": "bpic_12_o_darwin_classifier_24b8719e_2026-05-15_11-01-47"
+        },
+        "BPIC_13_C": {
+            "3": "bpic_13_c_darwin_classifier_63c29236_2026-05-13_09-35-43",
+            "4": "bpic_13_c_darwin_classifier_aaf14cc0_2026-05-13_09-35-58",
+            "5": "bpic_13_c_darwin_classifier_1c537903_2026-05-13_09-36-11",
+            "6": "bpic_13_c_darwin_classifier_5c22b247_2026-05-13_09-36-25",
+            "7": "bpic_13_c_darwin_classifier_8b2a540f_2026-05-13_09-36-40"
+        },
+        "BPIC_13_I": {
+            "3": "bpic_13_i_darwin_classifier_2ca657cc_2026-05-13_18-00-57",
+            "4": "bpic_13_i_darwin_classifier_7baf20b0_2026-05-13_18-04-24",
+            "5": "bpic_13_i_darwin_classifier_cb726e02_2026-05-13_18-06-59",
+            "6": "bpic_13_i_darwin_classifier_5c012cb9_2026-05-13_18-09-46",
+            "7": "bpic_13_i_darwin_classifier_b2d284a5_2026-05-13_18-13-07"
+        },
+        "BPIC_15_1": {
+            "3": "bpic_15_1_darwin_classifier_2bcf5ecb_2026-05-15_13-41-13",
+            "4": "bpic_15_1_darwin_classifier_c793ff02_2026-05-15_13-41-13",
+            "5": "bpic_15_1_darwin_classifier_3a252d38_2026-05-15_13-41-13",
+            "6": "bpic_15_1_darwin_classifier_ee2235a9_2026-05-15_13-41-13",
+            "7": "bpic_15_1_darwin_classifier_ac2d371b_2026-05-15_13-45-44"
+        },
+        "BPIC_20_DD": {
+            "3": "bpic_20_dd_darwin_classifier_38a97860_2026-05-16_02-04-26",
+            "4": "bpic_20_dd_darwin_classifier_6a333dca_2026-05-16_02-04-26",
+            "5": "bpic_20_dd_darwin_classifier_50bc1a96_2026-05-16_02-04-26",
+            "6": "bpic_20_dd_darwin_classifier_c355d639_2026-05-16_02-04-26",
+            "7": "bpic_20_dd_darwin_classifier_953a33ca_2026-05-16_02-10-26"
+        },
+        "BPIC_20_PTC": {
+            "3": "bpic_20_ptc_darwin_classifier_e439b7d0_2026-05-16_02-04-26",
+            "4": "bpic_20_ptc_darwin_classifier_4424013a_2026-05-16_02-04-26",
+            "5": "bpic_20_ptc_darwin_classifier_fbf661b1_2026-05-16_02-04-26",
+            "6": "bpic_20_ptc_darwin_classifier_83dd993e_2026-05-16_02-04-26",
+            "7": "bpic_20_ptc_darwin_classifier_5e6e1aa0_2026-05-16_02-07-18"
+        },
+        "BPIC_20_RFP": {
+            "3": "bpic_20_rfp_darwin_classifier_adf5e26d_2026-05-16_02-13-59",
+            "4": "bpic_20_rfp_darwin_classifier_aeb4ea91_2026-05-16_02-13-59",
+            "5": "bpic_20_rfp_darwin_classifier_ca85490c_2026-05-16_02-13-59",
+            "6": "bpic_20_rfp_darwin_classifier_15b839e8_2026-05-16_02-13-59",
+            "7": "bpic_20_rfp_darwin_classifier_f9c59ae9_2026-05-16_02-16-48"
+        },
+        "BPIC_20_TPD": {
+            "3": "bpic_20_tpd_darwin_classifier_392a19cc_2026-05-14_10-01-08",
+            "4": "bpic_20_tpd_darwin_classifier_b81f1f2e_2026-05-14_10-01-08",
+            "5": "bpic_20_tpd_darwin_classifier_91607cfe_2026-05-14_10-01-08",
+            "6": "bpic_20_tpd_darwin_classifier_32eca658_2026-05-14_10-01-08",
+            "7": "bpic_20_tpd_darwin_classifier_2c23d840_2026-05-14_10-10-08"
+        },
+        "Helpdesk": {
+            "3": "helpdesk_darwin_classifier_e74e19fa_2026-05-15_10-57-33",
+            "4": "helpdesk_darwin_classifier_25c34fb0_2026-05-15_10-57-38",
+            "5": "helpdesk_darwin_classifier_055758a8_2026-05-15_10-57-33",
+            "6": "helpdesk_darwin_classifier_23605b31_2026-05-15_10-57-33",
+            "7": "helpdesk_darwin_classifier_8a658600_2026-05-15_11-01-11"
+        },
+        "Sepsis": {
+            "3": "sepsis_darwin_classifier_3e269ba4_2026-05-14_10-01-34",
+            "4": "sepsis_darwin_classifier_82c3797a_2026-05-14_10-01-34",
+            "5": "sepsis_darwin_classifier_337c5313_2026-05-14_10-01-34",
+            "6": "sepsis_darwin_classifier_caefc39d_2026-05-14_10-01-34",
+            "7": "sepsis_darwin_classifier_a9d7088c_2026-05-14_10-03-34"
+        },
+        "Traffic_Fines": {
+            "3": "traffic_fines_darwin_classifier_d0916d18_2026-05-15_11-21-11",
+            "4": "traffic_fines_darwin_classifier_1f3c882b_2026-05-15_11-21-11",
+            "5": "traffic_fines_darwin_classifier_d88a133e_2026-05-15_11-21-11",
+            "6": "traffic_fines_darwin_classifier_d6b2fe85_2026-05-15_11-21-11",
+            "7": "traffic_fines_darwin_classifier_bf8f807f_2026-05-15_11-57-59"
+        }
+    }

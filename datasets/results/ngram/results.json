@@ -1,0 +1,163 @@
+{
+    "BPIC_12": {
+        "3": "BPIC_12_prefix_3",
+        "4": "BPIC_12_prefix_4",
+        "5": "BPIC_12_prefix_5",
+        "6": "BPIC_12_prefix_6",
+        "7": "BPIC_12_prefix_7"
+    },
+    "BPIC_12_A": {
+        "3": "BPIC_12_A_prefix_3",
+        "4": "BPIC_12_A_prefix_4",
+        "5": "BPIC_12_A_prefix_5",
+        "6": "BPIC_12_A_prefix_6",
+        "7": "BPIC_12_A_prefix_7"
+    },
+    "BPIC_12_O": {
+        "3": "BPIC_12_O_prefix_3",
+        "4": "BPIC_12_O_prefix_4",
+        "5": "BPIC_12_O_prefix_5",
+        "6": "BPIC_12_O_prefix_6",
+        "7": "BPIC_12_O_prefix_7"
+    },
+    "BPIC_12_W": {
+        "3": "BPIC_12_W_prefix_3",
+        "4": "BPIC_12_W_prefix_4",
+        "5": "BPIC_12_W_prefix_5",
+        "6": "BPIC_12_W_prefix_6",
+        "7": "BPIC_12_W_prefix_7"
+    },
+    "BPIC_13_C": {
+        "3": "BPIC_13_C_prefix_3",
+        "4": "BPIC_13_C_prefix_4",
+        "5": "BPIC_13_C_prefix_5",
+        "6": "BPIC_13_C_prefix_6",
+        "7": "BPIC_13_C_prefix_7"
+    },
+    "BPIC_13_I": {
+        "3": "BPIC_13_I_prefix_3",
+        "4": "BPIC_13_I_prefix_4",
+        "5": "BPIC_13_I_prefix_5",
+        "6": "BPIC_13_I_prefix_6",
+        "7": "BPIC_13_I_prefix_7"
+    },
+    "BPIC_15_1": {
+        "3": "BPIC_15_1_prefix_3",
+        "4": "BPIC_15_1_prefix_4",
+        "5": "BPIC_15_1_prefix_5",
+        "6": "BPIC_15_1_prefix_6",
+        "7": "BPIC_15_1_prefix_7"
+    },
+    "BPIC_15_2": {
+        "3": "BPIC_15_2_prefix_3",
+        "4": "BPIC_15_2_prefix_4",
+        "5": "BPIC_15_2_prefix_5",
+        "6": "BPIC_15_2_prefix_6",
+        "7": "BPIC_15_2_prefix_7"
+    },
+    "BPIC_15_3": {
+        "3": "BPIC_15_3_prefix_3",
+        "4": "BPIC_15_3_prefix_4",
+        "5": "BPIC_15_3_prefix_5",
+        "6": "BPIC_15_3_prefix_6",
+        "7": "BPIC_15_3_prefix_7"
+    },
+    "BPIC_15_4": {
+        "3": "BPIC_15_4_prefix_3",
+        "4": "BPIC_15_4_prefix_4",
+        "5": "BPIC_15_4_prefix_5",
+        "6": "BPIC_15_4_prefix_6",
+        "7": "BPIC_15_4_prefix_7"
+    },
+    "BPIC_15_5": {
+        "3": "BPIC_15_5_prefix_3",
+        "4": "BPIC_15_5_prefix_4",
+        "5": "BPIC_15_5_prefix_5",
+        "6": "BPIC_15_5_prefix_6",
+        "7": "BPIC_15_5_prefix_7"
+    },
+    "BPIC_18_C": {
+        "3": "BPIC_18_C_prefix_3",
+        "4": "BPIC_18_C_prefix_4",
+        "5": "BPIC_18_C_prefix_5",
+        "6": "BPIC_18_C_prefix_6",
+        "7": "BPIC_18_C_prefix_7"
+    },
+    "BPIC_18_G": {
+        "3": "BPIC_18_G_prefix_3",
+        "4": "BPIC_18_G_prefix_4",
+        "5": "BPIC_18_G_prefix_5",
+        "6": "BPIC_18_G_prefix_6",
+        "7": "BPIC_18_G_prefix_7"
+    },
+    "BPIC_18_P": {
+        "3": "BPIC_18_P_prefix_3",
+        "4": "BPIC_18_P_prefix_4",
+        "5": "BPIC_18_P_prefix_5",
+        "6": "BPIC_18_P_prefix_6",
+        "7": "BPIC_18_P_prefix_7"
+    },
+    "BPIC_20_DD": {
+        "3": "BPIC_20_DD_prefix_3",
+        "4": "BPIC_20_DD_prefix_4",
+        "5": "BPIC_20_DD_prefix_5",
+        "6": "BPIC_20_DD_prefix_6",
+        "7": "BPIC_20_DD_prefix_7"
+    },
+    "BPIC_20_ID": {
+        "3": "BPIC_20_ID_prefix_3",
+        "4": "BPIC_20_ID_prefix_4",
+        "5": "BPIC_20_ID_prefix_5",
+        "6": "BPIC_20_ID_prefix_6",
+        "7": "BPIC_20_ID_prefix_7"
+    },
+    "BPIC_20_PTC": {
+        "3": "BPIC_20_PTC_prefix_3",
+        "4": "BPIC_20_PTC_prefix_4",
+        "5": "BPIC_20_PTC_prefix_5",
+        "6": "BPIC_20_PTC_prefix_6",
+        "7": "BPIC_20_PTC_prefix_7"
+    },
+    "BPIC_20_RFP": {
+        "3": "BPIC_20_RFP_prefix_3",
+        "4": "BPIC_20_RFP_prefix_4",
+        "5": "BPIC_20_RFP_prefix_5",
+        "6": "BPIC_20_RFP_prefix_6",
+        "7": "BPIC_20_RFP_prefix_7"
+    },
+    "BPIC_20_TPD": {
+        "3": "BPIC_20_TPD_prefix_3",
+        "4": "BPIC_20_TPD_prefix_4",
+        "5": "BPIC_20_TPD_prefix_5",
+        "6": "BPIC_20_TPD_prefix_6",
+        "7": "BPIC_20_TPD_prefix_7"
+    },
+    "Helpdesk": {
+        "3": "Helpdesk_prefix_3",
+        "4": "Helpdesk_prefix_4",
+        "5": "Helpdesk_prefix_5",
+        "6": "Helpdesk_prefix_6",
+        "7": "Helpdesk_prefix_7"
+    },
+    "Hospital_Billing": {
+        "3": "Hospital_Billing_prefix_3",
+        "4": "Hospital_Billing_prefix_4",
+        "5": "Hospital_Billing_prefix_5",
+        "6": "Hospital_Billing_prefix_6",
+        "7": "Hospital_Billing_prefix_7"
+    },
+    "Sepsis": {
+        "3": "Sepsis_prefix_3",
+        "4": "Sepsis_prefix_4",
+        "5": "Sepsis_prefix_5",
+        "6": "Sepsis_prefix_6",
+        "7": "Sepsis_prefix_7"
+    },
+    "Traffic_Fines": {
+        "3": "Traffic_Fines_prefix_3",
+        "4": "Traffic_Fines_prefix_4",
+        "5": "Traffic_Fines_prefix_5",
+        "6": "Traffic_Fines_prefix_6",
+        "7": "Traffic_Fines_prefix_7"
+    }
+}
