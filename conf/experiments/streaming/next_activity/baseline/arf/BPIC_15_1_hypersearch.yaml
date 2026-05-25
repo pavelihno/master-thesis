@@ -2,10 +2,12 @@ hyperparam_search: true
 task:
   type: next_activity
   mode: predict_and_learn
+  max_events: 10000
 dataset:
   dataset_name: BPIC_15_1
   source: log
   dataset_path: datasets/raw/BPIC_15_1.xes
+  activity_col: activityNameEN
   terminator:
     type: oracle
 transformer:
@@ -89,7 +91,7 @@ model:
     seed: 42
 search:
   metric: macro_f1
-  max_trials: 50
+  max_trials: 30
   maximize: true
   seed: 123
 output:
