@@ -1,0 +1,37 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_15_1
+  source: log
+  dataset_path: datasets/raw/BPIC_15_1.xes
+  activity_col: activityNameEN
+  terminator:
+    type: oracle
+transformer:
+  include_prefix_len: false
+  max_events: 6
+  type: index
+model:
+  params:
+    delta: 1.9226051707322318e-05
+    disable_weighted_vote: false
+    drift_detector:
+      delta: 1.5097627090391927e-05
+      type: adwin
+    grace_period: 58
+    lambda_value: 6
+    leaf_prediction: nb
+    max_depth: 20
+    max_features: log2
+    n_models: 50
+    nb_threshold: 10
+    seed: 42
+    split_criterion: gini
+    tau: 0.05862251621397206
+    warning_detector:
+      delta: 0.00015795068565804197
+      type: adwin
+  type: arf
+output:
+  folder: experiments/outputs/streaming/next_activity/baseline
