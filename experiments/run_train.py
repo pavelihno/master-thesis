@@ -1,18 +1,19 @@
 import argparse
-import json
 
 from utils.base.pipelines import PredictionPipeline
-from utils.experiment import (
-    build_output_folder_name,
+from utils.experiment.core import (
     compute_bucket_statistics,
     ensure_output_dir,
     get_config_hash,
-    get_dataset_name,
-    get_model_name,
-    get_timestamp,
     load_and_prepare_data,
     load_config,
     select_device,
+)
+from utils.experiment.naming import (
+    build_output_folder_name,
+    get_dataset_name,
+    get_model_name,
+    get_timestamp,
 )
 from utils.factories import (
     create_bucketer,
@@ -50,8 +51,7 @@ def run_config(
     print(f'Run ID: {run_id}')
     print('=' * 60)
 
-    print(f'Task: {config["task"]["type"]}')
-    print(f'Mode: {config["task"].get("mode")}')
+    print(f'Config: {config_path}')
     print(f'Dataset: {dataset_name}')
     print(f'Transformer: {config["transformer"]["type"]}')
     print(f'Model: {model_name}')
@@ -60,9 +60,7 @@ def run_config(
 
     # Create dataset and load data
     dataset = create_dataset(config['dataset'])
-    train_prefixes, test_prefixes, y_train, y_test = load_and_prepare_data(
-        dataset, config
-    )
+    train_prefixes, test_prefixes, y_train, y_test = load_and_prepare_data(dataset)
 
     # Create pipeline components
     bucketer = create_bucketer(config['bucketer'])
@@ -76,10 +74,6 @@ def run_config(
     # Generate predictions
     y_train_pred = pipeline.predict(train_prefixes)
     y_test_pred = pipeline.predict(test_prefixes)
-
-    # Decode predictions if needed
-    y_train_pred_decoded = dataset.decode_labels(y_train_pred)
-    y_test_pred_decoded = dataset.decode_labels(y_test_pred)
 
     # Compute statistics
     train_bucket_stats_df = compute_bucket_statistics(
@@ -98,21 +92,11 @@ def run_config(
     train_bucket_stats_df.to_csv(output_folder / 'train_bucket_stats.csv', index=False)
     test_bucket_stats_df.to_csv(output_folder / 'test_bucket_stats.csv', index=False)
 
-    # Save configuration
-    with open(output_folder / 'config.yaml', 'w') as f:
-        json.dump(config, f, indent=2, default=str)
-
-    # Save model
-    if hasattr(model, 'save'):
-        model.save(output_folder / 'model')
-
     results = {
         'run_id': run_id,
         'dataset': dataset_name,
         'model': model_name,
         'output_folder': str(output_folder),
-        'train_stats': train_bucket_stats_df.to_dict('records'),
-        'test_stats': test_bucket_stats_df.to_dict('records'),
     }
 
     return results

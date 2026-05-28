@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
 
+from utils.constants import CASE_PREFIX_COL
+
 
 class BaseBucketer(BaseEstimator, ABC):
     """Base class for all bucketing strategies."""
@@ -30,33 +32,35 @@ class BaseBucketer(BaseEstimator, ABC):
 class NoBucketer(BaseBucketer):
     """Assigns all cases to a single bucket (no bucketing)."""
 
-    def __init__(self, case_id_col):
+    def __init__(self, group_col=CASE_PREFIX_COL):
         super().__init__()
-        self.case_id_col = case_id_col
+        self.group_col = group_col
+        self.case_id_col = group_col
         self.n_states = 1
 
     def fit(self, X, y=None):
         return self
 
     def predict(self, X, y=None):
-        n_cases = X[self.case_id_col].nunique()
+        n_cases = X[self.group_col].nunique()
         return np.ones(n_cases, dtype=int)
 
 
 class PrefixLengthBucketer(BaseBucketer):
     """Assigns cases to buckets based on their prefix length."""
 
-    def __init__(self, case_id_col):
+    def __init__(self, group_col=CASE_PREFIX_COL):
         super().__init__()
-        self.case_id_col = case_id_col
+        self.group_col = group_col
+        self.case_id_col = group_col
 
     def fit(self, X, y=None):
-        prefix_lengths = X.groupby(self.case_id_col).size()
+        prefix_lengths = X.groupby(self.group_col).size()
         self.n_states = prefix_lengths.nunique()
         return self
 
     def predict(self, X, y=None):
-        prefix_lengths = X.groupby(self.case_id_col).size().values
+        prefix_lengths = X.groupby(self.group_col).size().values
         return prefix_lengths
 
 

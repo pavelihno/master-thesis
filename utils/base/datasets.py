@@ -5,6 +5,7 @@ import pandas as pd
 import pm4py
 from sklearn.preprocessing import LabelEncoder
 
+from utils.constants import CASE_PREFIX_COL
 from utils.experiment.temporal_splitting import (
     create_unbiased_temporal_split,
     print_split_summary,
@@ -35,8 +36,6 @@ class BaseLogDataset(ABC):
         self.resource_col = resource_col
 
         self.raw_df = None
-
-        print(f'Loading {self.dataset_path}...')
 
         self.raw_df = pm4py.read_xes(self.dataset_path)
         self.raw_df[self.case_id_col] = self.raw_df[self.case_id_col].astype(str)
@@ -106,7 +105,7 @@ class BaseLogDataset(ABC):
             for i in range(self.min_prefix, limit + 1):
                 prefix_slice = [dict(e) for e in events[:i]]
                 for e in prefix_slice:
-                    e['prefix_id'] = f'{case_id}_prefix_{i}'
+                    e[CASE_PREFIX_COL] = f'{case_id}_prefix_{i}'
                     e['prefix_len'] = i
                 prefixes.extend(prefix_slice)
         return pd.DataFrame(prefixes)
@@ -217,7 +216,6 @@ class OutcomeDataset(BaseLogDataset):
             if self.classes_ is None:
                 labels_encoded = self.label_encoder.fit_transform(labels)
                 self.classes_ = self.label_encoder.classes_
-                print(f'Label encoding: {dict(enumerate(self.classes_))}')
             else:
                 labels_encoded = self.label_encoder.transform(labels)
             return pd.Series(labels_encoded, index=labels.index)
@@ -226,8 +224,8 @@ class OutcomeDataset(BaseLogDataset):
 
     def decode_labels(self, encoded_labels):
         """Decode numeric labels back to original string labels."""
-        if self.label_encoder is None or self.classes_ is None:
-            raise ValueError('Label encoder not fitted. Call prepare_labels first.')
+        if self.classes_ is None:
+            raise ValueError('Label encoder not fitted.')
         return self.label_encoder.inverse_transform(encoded_labels)
 
 

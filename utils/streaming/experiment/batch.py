@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from utils.experiment import read_run_info
+from utils.experiment.naming import read_run_info
 
 
 def run_config_process(

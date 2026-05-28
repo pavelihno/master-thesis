@@ -5,15 +5,19 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.base import clone
+from sklearn.dummy import DummyClassifier
+
+from utils.base.bucketers import BaseBucketer
+from utils.base.transformers import BaseTransformer
 
 
 class PredictionPipeline:
     """Pipeline for bucketing, transforming, and predicting on process data."""
 
-    def __init__(self, bucketer, transformer, estimator):
+    def __init__(self, bucketer: BaseBucketer, transformer: BaseTransformer, model):
         self.bucketer = bucketer
         self.transformer = transformer
-        self.estimator = estimator
+        self.model = model
 
         self.bucket_models = {}
         self.bucket_transformers = {}
@@ -25,11 +29,11 @@ class PredictionPipeline:
         aggregated = (
             pd.DataFrame(
                 {
-                    'prefix_id': prefixes_df[prefix_col],
+                    prefix_col: prefixes_df[prefix_col],
                     'label': labels,
                 }
             )
-            .groupby('prefix_id')['label']
+            .groupby(prefix_col)['label']
             .first()
         )
         return aggregated
@@ -71,7 +75,12 @@ class PredictionPipeline:
             )
 
             # Train model
-            bucket_model = clone(self.estimator)
+            # If only one class is present, a dummy classifier to avoid errors
+            if aggregated_labels.nunique() < 2:
+                bucket_model = DummyClassifier(strategy='most_frequent')
+            else:
+                bucket_model = clone(self.model)
+
             bucket_model.fit(transformed_features, aggregated_labels)
 
             # Store for prediction
@@ -129,7 +138,7 @@ class PredictionPipeline:
             'trained_buckets': [int(b) for b in self.trained_buckets],
             'bucketer_type': type(self.bucketer).__name__,
             'transformer_type': type(self.transformer).__name__,
-            'estimator_type': type(self.estimator).__name__,
+            'model_type': type(self.model).__name__,
         }
 
         with open(save_path / 'metadata.json', 'w') as f:
@@ -155,7 +164,7 @@ class PredictionPipeline:
         print(f'Pipeline saved to: {save_path}')
         print(f'  - Bucketer: {metadata["bucketer_type"]}')
         print(f'  - Transformer: {metadata["transformer_type"]}')
-        print(f'  - Estimator: {metadata["estimator_type"]}')
+        print(f'  - Model: {metadata["model_type"]}')
         print(f'  - Trained buckets: {len(self.trained_buckets)}')
 
     @classmethod
@@ -193,7 +202,7 @@ class PredictionPipeline:
         print(f'Pipeline loaded from: {load_path}')
         print(f'  - Bucketer: {metadata["bucketer_type"]}')
         print(f'  - Transformer: {metadata["transformer_type"]}')
-        print(f'  - Estimator: {metadata["estimator_type"]}')
+        print(f'  - Model: {metadata["model_type"]}')
         print(f'  - Trained buckets: {len(pipeline.trained_buckets)}')
 
         return pipeline

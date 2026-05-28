@@ -15,7 +15,13 @@ from utils.base.transformers import (
     IndexBasedTransformer,
     LastStateTransformer,
 )
-from utils.constants import ACTIVITY_COL, CASE_ID_COL, RESOURCE_COL, TIME_COL
+from utils.constants import (
+    ACTIVITY_COL,
+    CASE_ID_COL,
+    CASE_PREFIX_COL,
+    RESOURCE_COL,
+    TIME_COL,
+)
 from utils.loss_functions import LogCoshLoss
 
 
@@ -34,14 +40,11 @@ def create_dataset(config):
     min_prefix = config.get('min_prefix', None)
     max_prefix = config.get('max_prefix', None)
 
-    unbiased_split = config.get('unbiased_split', False)
-
     if dataset_type == 'outcome':
         return OutcomeDataset(
             dataset_path=dataset_path,
             label_path=label_path,
             train_ratio=train_ratio,
-            unbiased_split=unbiased_split,
             min_prefix=min_prefix,
             max_prefix=max_prefix,
             case_id_col=case_id_col,
@@ -54,7 +57,6 @@ def create_dataset(config):
             dataset_path=dataset_path,
             label_path=label_path,
             train_ratio=train_ratio,
-            unbiased_split=unbiased_split,
             min_prefix=min_prefix,
             max_prefix=max_prefix,
             case_id_col=case_id_col,
@@ -73,12 +75,12 @@ def create_dataset(config):
 def create_bucketer(config):
     """Create a bucketer instance from config."""
     bucketer_type = config.get('type', 'prefix_length')
-    case_id_col = config.get('case_id_col', 'prefix_id')
+    group_col = config.get('group_col', CASE_PREFIX_COL)
 
     if bucketer_type == 'none':
-        return NoBucketer(case_id_col=case_id_col)
+        return NoBucketer(group_col=group_col)
     elif bucketer_type == 'prefix_length':
-        return PrefixLengthBucketer(case_id_col=case_id_col)
+        return PrefixLengthBucketer(group_col=group_col)
     elif bucketer_type == 'cluster_based':
         raise NotImplementedError(
             'ClusterBasedBucketer not implemented yet. '
@@ -99,7 +101,7 @@ def create_transformer(config):
 
     if transformer_type == 'aggregate':
         return AggregateTransformer(
-            case_id_col=config.get('case_id_col', 'prefix_id'),
+            group_col=config.get('group_col', CASE_PREFIX_COL),
             cat_cols=config.get('cat_cols', []),
             num_cols=config.get('num_cols', []),
             boolean=config.get('boolean', False),
@@ -107,16 +109,16 @@ def create_transformer(config):
         )
     elif transformer_type == 'last_state':
         return LastStateTransformer(
-            case_id_col=config.get('case_id_col', 'prefix_id'),
+            group_col=config.get('group_col', CASE_PREFIX_COL),
             cat_cols=config.get('cat_cols', []),
             num_cols=config.get('num_cols', []),
         )
     elif transformer_type == 'index_based':
         return IndexBasedTransformer(
-            case_id_col=config.get('case_id_col', 'prefix_id'),
+            group_col=config.get('group_col', CASE_PREFIX_COL),
             cat_cols=config.get('cat_cols', []),
             num_cols=config.get('num_cols', []),
-            max_len=config.get('max_len'),
+            max_events=config.get('max_len'),
         )
     else:
         raise ValueError(f'Unknown transformer type: {transformer_type}')

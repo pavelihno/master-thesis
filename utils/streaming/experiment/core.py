@@ -5,7 +5,7 @@ from typing import Any
 
 import yaml
 
-from utils.experiment import make_json_safe
+from utils.experiment.core import make_json_safe
 
 
 def get_available_metrics(metrics_dict: Any) -> list[str]:

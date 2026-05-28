@@ -33,7 +33,9 @@ def select_device(device_name: str | None) -> torch.device | None:
 
 def get_config_hash(config: dict, length: int = 8) -> str:
     stable_config = {
-        key: config[key] for key in ('model', 'transformer', 'dataset') if key in config
+        key: config[key]
+        for key in ('model', 'transformer', 'dataset', 'bucketer')
+        if key in config
     }
     payload = json.dumps(stable_config, sort_keys=True)
     return hashlib.sha256(payload.encode()).hexdigest()[:length]

@@ -43,7 +43,7 @@ from utils.streaming.base.transformers import (
     DimensionTransformer,
     IndexBasedTransformer,
 )
-from utils.streaming.experiment import load_saved_model
+from utils.streaming.experiment.core import load_saved_model
 from utils.streaming.time import TimeTarget
 
 
