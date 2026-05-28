@@ -5,35 +5,30 @@ import pandas as pd
 import pm4py
 from sklearn.preprocessing import LabelEncoder
 
-from utils.temporal_splitting import create_unbiased_temporal_split, print_split_summary
+from utils.experiment.temporal_splitting import (
+    create_unbiased_temporal_split,
+    print_split_summary,
+)
 
 
 class BaseLogDataset(ABC):
     def __init__(
         self,
-        dataset_name,
-        dataset_folder,
-        labels_folder=None,
-        label_filename=None,
+        dataset_path,
         train_ratio=0.8,
-        min_prefix=3,
+        min_prefix=None,
         max_prefix=None,
         case_id_col='case:concept:name',
         time_col='time:timestamp',
         activity_col='concept:name',
         resource_col='org:resource',
     ):
-        # Path constants
-        self.dataset_folder = dataset_folder
-        self.labels_folder = labels_folder
+        self.dataset_path = dataset_path
 
-        self.dataset_name = dataset_name
-        self.label_filename = label_filename if label_filename else dataset_name
         self.train_ratio = train_ratio
-        self.min_prefix = min_prefix
+        self.min_prefix = min_prefix if min_prefix is not None else 1
         self.max_prefix = max_prefix
 
-        # Column constants
         self.case_id_col = case_id_col
         self.time_col = time_col
         self.activity_col = activity_col
@@ -41,13 +36,9 @@ class BaseLogDataset(ABC):
 
         self.raw_df = None
 
-    def load_and_preprocess(self):
-        """Loads XES and extracts basic temporal features."""
-        print(f'Loading {self.dataset_name}...')
+        print(f'Loading {self.dataset_path}...')
 
-        dataset_path = f'{self.dataset_folder}/{self.dataset_name}.xes'
-
-        self.raw_df = pm4py.read_xes(dataset_path)
+        self.raw_df = pm4py.read_xes(self.dataset_path)
         self.raw_df[self.case_id_col] = self.raw_df[self.case_id_col].astype(str)
         self.raw_df[self.time_col] = pd.to_datetime(
             self.raw_df[self.time_col], utc=True
@@ -105,7 +96,6 @@ class BaseLogDataset(ABC):
         return df
 
     def get_prefixes(self, df):
-        """Optimized Pandas-based prefix generation."""
         prefixes = []
         for case_id, group in df.groupby(self.case_id_col):
             events = group.to_dict('records')
@@ -121,37 +111,12 @@ class BaseLogDataset(ABC):
                 prefixes.extend(prefix_slice)
         return pd.DataFrame(prefixes)
 
-    def train_test_split(self):
-        """Extract features and split into train/test based on chronological order."""
-        # Chronological split by case start time
-        case_starts = (
-            self.raw_df.groupby(self.case_id_col)[self.time_col]
-            .min()
-            .sort_values()
-            .index.tolist()
-        )
-
-        split_idx = int(len(case_starts) * self.train_ratio)
-        train_ids = set(case_starts[:split_idx])
-        test_ids = set(case_starts[split_idx:])
-
-        train_df = self.raw_df[self.raw_df[self.case_id_col].isin(train_ids)]
-        test_df = self.raw_df[self.raw_df[self.case_id_col].isin(test_ids)]
-
-        # Extract features
-        train_df = self._extract_features(train_df)
-        test_df = self._extract_features(test_df)
-
-        print(f'Train cases: {len(train_ids)}, Test cases: {len(test_ids)}')
-        return train_df, test_df
-
-    def unbiased_train_test_split(
+    def train_test_split(
         self,
         start_date=None,
         end_date=None,
         max_days=None,
-        test_len_share=0.2,
-        verbose=True,
+        verbose=False,
     ):
         """
         Create train/test split with temporal debiasing (Weytjens methodology).
@@ -164,18 +129,17 @@ class BaseLogDataset(ABC):
         if self.raw_df is None:
             raise ValueError('Dataset not loaded. Call load_and_preprocess() first.')
 
-        # Apply temporal split with debiasing
         train_df, test_df, split_info = create_unbiased_temporal_split(
             self.raw_df,
             start_date=start_date,
             end_date=end_date,
             max_days=max_days,
-            test_len_share=test_len_share,
+            test_len_share=(1 - self.train_ratio),
             time_col=self.time_col,
             case_id_col=self.case_id_col,
         )
 
-        # Extract features for both sets
+        # Extract features
         train_df = self._extract_features(train_df)
         test_df = self._extract_features(test_df)
 
@@ -186,14 +150,16 @@ class BaseLogDataset(ABC):
         return train_df, test_df
 
     @abstractmethod
-    def prepare_labels(self, **kwargs):
+    def get_labels(self, **kwargs):
         """Task-specific label generation (Outcome, Next Activity, Time)."""
         pass
 
 
 class OutcomeDataset(BaseLogDataset):
-    def __init__(self, dataset_name, dataset_folder, labels_folder, **kwargs):
-        super().__init__(dataset_name, dataset_folder, labels_folder, **kwargs)
+    def __init__(self, label_path, **kwargs):
+        super().__init__(**kwargs)
+
+        self.label_path = label_path
         self.label_encoder = LabelEncoder()
         self.classes_ = None
         self.available_case_ids = None
@@ -205,7 +171,7 @@ class OutcomeDataset(BaseLogDataset):
                 'Must call load_and_preprocess() before filtering by labels'
             )
 
-        labels_path = f'{self.labels_folder}/{self.label_filename}.csv'
+        labels_path = self.label_path
         labels_df = pd.read_csv(labels_path)
 
         # Available case IDs from labels
@@ -224,10 +190,9 @@ class OutcomeDataset(BaseLogDataset):
 
         return self
 
-    def prepare_labels(self, df, encode=True):
+    def get_labels(self, df, encode=True):
         """Map outcome labels to dataframe using case IDs."""
-        labels_path = f'{self.labels_folder}/{self.label_filename}.csv'
-        labels_df = pd.read_csv(labels_path)
+        labels_df = pd.read_csv(self.label_path)
 
         # Assuming CSV has columns: [case_id, outcome]
         label_map = dict(
@@ -255,12 +220,46 @@ class OutcomeDataset(BaseLogDataset):
                 print(f'Label encoding: {dict(enumerate(self.classes_))}')
             else:
                 labels_encoded = self.label_encoder.transform(labels)
-            labels = pd.Series(labels_encoded, index=labels.index)
+            return pd.Series(labels_encoded, index=labels.index)
 
-        return labels if not encode else pd.Series(labels, index=df.index)
+        return labels
 
     def decode_labels(self, encoded_labels):
         """Decode numeric labels back to original string labels."""
         if self.label_encoder is None or self.classes_ is None:
             raise ValueError('Label encoder not fitted. Call prepare_labels first.')
+        return self.label_encoder.inverse_transform(encoded_labels)
+
+
+class NextActivityDataset(BaseLogDataset):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.label_encoder = LabelEncoder()
+        self.classes_ = None
+
+    def get_labels(self, df, encode=True):
+        if df is None:
+            raise ValueError('Dataframe is required.')
+
+        df = df.sort_values([self.case_id_col, self.time_col]).copy()
+
+        next_activity = df.groupby(self.case_id_col)[self.activity_col].shift(-1)
+        mask = next_activity.notna()
+
+        labels = next_activity[mask]
+        df = df[mask]
+
+        if encode:
+            if self.classes_ is None:
+                encoded = self.label_encoder.fit_transform(labels)
+                self.classes_ = self.label_encoder.classes_
+            else:
+                encoded = self.label_encoder.transform(labels)
+            return pd.Series(encoded, index=df.index)
+
+        return labels
+
+    def decode_labels(self, encoded_labels):
+        if self.classes_ is None:
+            raise ValueError('Label encoder not fitted.')
         return self.label_encoder.inverse_transform(encoded_labels)

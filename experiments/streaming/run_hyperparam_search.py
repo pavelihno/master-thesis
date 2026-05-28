@@ -4,12 +4,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from utils.experiment import load_config
+from utils.experiment import load_config, select_device
 from utils.streaming.experiment import (
     build_output_folder_name,
     get_dataset_and_model,
     make_json_safe,
-    select_device,
 )
 from utils.streaming.hyperparam import (
     extract_trial_rows,

@@ -7,7 +7,7 @@ import pandas as pd
 from sklearn.base import clone
 
 
-class ProcessPredictorPipeline:
+class PredictionPipeline:
     """Pipeline for bucketing, transforming, and predicting on process data."""
 
     def __init__(self, bucketer, transformer, estimator):
@@ -18,7 +18,6 @@ class ProcessPredictorPipeline:
         self.bucket_models = {}
         self.bucket_transformers = {}
         self.trained_buckets = []
-        self.n_classes = None
 
     def _aggregate_by_prefix(self, prefixes_df, labels, prefix_col):
         """Helper to aggregate labels by prefix ID."""
@@ -37,10 +36,8 @@ class ProcessPredictorPipeline:
 
     def fit(self, prefixes_df, labels):
         """Train separate models for each bucket."""
-        # Determine number of classes
-        self.n_classes = len(np.unique(labels))
 
-        # Get bucket assignments
+        # Bucket assignments
         bucket_ids_per_prefix = self.bucketer.fit_predict(prefixes_df)
         unique_bucket_ids = np.unique(bucket_ids_per_prefix)
         self.trained_buckets = unique_bucket_ids
@@ -129,7 +126,6 @@ class ProcessPredictorPipeline:
         save_path.mkdir(parents=True, exist_ok=True)
 
         metadata = {
-            'n_classes': self.n_classes,
             'trained_buckets': [int(b) for b in self.trained_buckets],
             'bucketer_type': type(self.bucketer).__name__,
             'transformer_type': type(self.transformer).__name__,
@@ -179,9 +175,7 @@ class ProcessPredictorPipeline:
             bucketer = pickle.load(f)
 
         # Create pipeline instance with loaded bucketer
-        # Note: transformer and estimator will be loaded per bucket
         pipeline = cls(bucketer, None, None)
-        pipeline.n_classes = metadata['n_classes']
         pipeline.trained_buckets = np.array(metadata['trained_buckets'])
 
         # Load each bucket's model and transformer

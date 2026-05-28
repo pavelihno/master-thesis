@@ -1,13 +1,18 @@
 import argparse
-from datetime import datetime
-from pathlib import Path
+import json
 
+from utils.base.pipelines import PredictionPipeline
 from utils.experiment import (
+    build_output_folder_name,
+    compute_bucket_statistics,
     ensure_output_dir,
-    evaluate_model,
+    get_config_hash,
+    get_dataset_name,
+    get_model_name,
+    get_timestamp,
     load_and_prepare_data,
     load_config,
-    save_results,
+    select_device,
 )
 from utils.factories import (
     create_bucketer,
@@ -15,92 +20,136 @@ from utils.factories import (
     create_model,
     create_transformer,
 )
-from utils.pipelines import ProcessPredictorPipeline
 
 
-def run_experiment(config_path, experiment_name=None):
-    """Run a single experiment from config file."""
+def run_config_file(config_path: str) -> dict:
     config = load_config(config_path)
+    return run_config(config, config_path=config_path)
 
-    if experiment_name is None:
-        experiment_name = config.get('experiment_name', 'unnamed_experiment')
 
-    print('=' * 80)
-    print(f'Running experiment: {experiment_name}')
-    print('=' * 80)
+def run_config(
+    config: dict,
+    config_path: str,
+    *,
+    device=None,
+) -> dict:
+    """Run a single experiment from config file."""
+    dataset_name = get_dataset_name(config)
+    model_name = get_model_name(config)
+    config_hash = get_config_hash(config)
+    timestamp = get_timestamp()
+    run_id = build_output_folder_name(
+        dataset_name=dataset_name,
+        model_name=model_name,
+        config_hash=config_hash,
+        fallback_name='run',
+        timestamp=timestamp,
+    )
 
-    print('\n[1/6] Creating dataset...')
+    print('=' * 60)
+    print(f'Run ID: {run_id}')
+    print('=' * 60)
+
+    print(f'Task: {config["task"]["type"]}')
+    print(f'Mode: {config["task"].get("mode")}')
+    print(f'Dataset: {dataset_name}')
+    print(f'Transformer: {config["transformer"]["type"]}')
+    print(f'Model: {model_name}')
+    if device is not None:
+        print(f'Device: {device.type}')
+
+    # Create dataset and load data
     dataset = create_dataset(config['dataset'])
-
-    # Load and prepare data (steps 2-5)
     train_prefixes, test_prefixes, y_train, y_test = load_and_prepare_data(
         dataset, config
     )
 
-    print('\n[6/6] Building and training pipeline...')
+    # Create pipeline components
     bucketer = create_bucketer(config['bucketer'])
     transformer = create_transformer(config['transformer'])
+    model = create_model(config['model'], device=device)
 
-    num_classes = len(dataset.label_encoder.classes_)
-    model = create_model(config['model'], num_classes=num_classes)
-
-    pipeline = ProcessPredictorPipeline(bucketer, transformer, model)
-
-    print('Training...')
+    # Train pipeline
+    pipeline = PredictionPipeline(bucketer, transformer, model)
     pipeline.fit(train_prefixes, y_train)
 
-    # Evaluate model
-    eval_results = evaluate_model(
-        pipeline, test_prefixes, y_test, dataset, bucketer, verbose=True
+    # Generate predictions
+    y_train_pred = pipeline.predict(train_prefixes)
+    y_test_pred = pipeline.predict(test_prefixes)
+
+    # Decode predictions if needed
+    y_train_pred_decoded = dataset.decode_labels(y_train_pred)
+    y_test_pred_decoded = dataset.decode_labels(y_test_pred)
+
+    # Compute statistics
+    train_bucket_stats_df = compute_bucket_statistics(
+        train_prefixes, y_train, y_train_pred, bucketer
+    )
+    test_bucket_stats_df = compute_bucket_statistics(
+        test_prefixes, y_test, y_test_pred, bucketer
     )
 
-    # Save results to output file
+    # Save results to output folder
     output_folder = ensure_output_dir(config)
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    output_file = output_folder / f'{experiment_name}_{timestamp}.txt'
+    output_folder = output_folder / run_id
+    output_folder.mkdir(parents=True, exist_ok=True)
 
-    save_results(
-        output_file, experiment_name, config_path, timestamp, config, eval_results
-    )
+    # Save training statistics
+    train_bucket_stats_df.to_csv(output_folder / 'train_bucket_stats.csv', index=False)
+    test_bucket_stats_df.to_csv(output_folder / 'test_bucket_stats.csv', index=False)
 
-    print(f'\nResults saved to: {output_file}')
+    # Save configuration
+    with open(output_folder / 'config.yaml', 'w') as f:
+        json.dump(config, f, indent=2, default=str)
 
-    # Save model if configured
-    if config.get('output', {}).get('save_model', False):
-        model_dir = Path(config.get('output', {}).get('model_folder', 'models'))
-        model_save_path = model_dir / f'{experiment_name}_{timestamp}'
+    # Save model
+    if hasattr(model, 'save'):
+        model.save(output_folder / 'model')
 
-        print('\nSaving model...')
-        pipeline.save(model_save_path)
-        print(f'Model saved to: {model_save_path}')
-
-    return {
-        'experiment_name': experiment_name,
-        'config_path': config_path,
-        'timestamp': timestamp,
-        'report': eval_results['report'],
-        'output_file': str(output_file),
+    results = {
+        'run_id': run_id,
+        'dataset': dataset_name,
+        'model': model_name,
+        'output_folder': str(output_folder),
+        'train_stats': train_bucket_stats_df.to_dict('records'),
+        'test_stats': test_bucket_stats_df.to_dict('records'),
     }
+
+    return results
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(description='Run one experiment')
+    parser.add_argument('config_path', type=str, help='Path to the YAML config.')
+    parser.add_argument(
+        '--device',
+        type=str,
+        default='auto',
+        help="Execution device: 'auto', 'cuda', or 'cpu'.",
+    )
+    return parser.parse_args()
 
 
 def main():
     """Main entry point for training script."""
-    parser = argparse.ArgumentParser(description='Run experiment from YAML config')
-    parser.add_argument(
-        'config_path',
-        type=str,
-        help='Path to YAML configuration file',
-    )
-    parser.add_argument(
-        '--name',
-        type=str,
-        default=None,
-        help='Experiment name (overrides config file)',
-    )
+    args = parse_args()
+    device = select_device(args.device)
 
-    args = parser.parse_args()
-
-    run_experiment(args.config_path, args.name)
+    try:
+        config = load_config(args.config_path)
+        results = run_config(
+            config,
+            config_path=args.config_path,
+            device=device,
+        )
+        print('\n' + '=' * 60)
+        print('Experiment completed successfully!')
+        print(f'Results saved to: {results["output_folder"]}')
+        print('=' * 60)
+    except Exception as exc:
+        print(f'\nExperiment failed with error: {exc}')
+        raise
 
 
 if __name__ == '__main__':

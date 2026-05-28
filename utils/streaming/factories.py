@@ -13,6 +13,7 @@ from river.tree import HoeffdingAdaptiveTreeClassifier
 from models.streaming.darwin import DARWINClassifier, DARWINRegressor
 from models.streaming.ngram import NGramClassifier, NGramRegressor
 from models.streaming.sequence import LSTMModel, ProcessTransformerModel
+from utils.constants import ACTIVITY_COL, CASE_ID_COL, TIME_COL
 from utils.loss_functions import LogCoshLoss
 from utils.streaming.base.extractors import (
     BinaryOutcomeExtractor,
@@ -43,7 +44,6 @@ from utils.streaming.base.transformers import (
     IndexBasedTransformer,
 )
 from utils.streaming.experiment import load_saved_model
-from utils.streaming.pybeamline import ACTIVITY_COL, CASE_ID_COL, TIME_COL
 from utils.streaming.time import TimeTarget
 
 

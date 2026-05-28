@@ -257,35 +257,3 @@ class PreviousStateTransformer(BaseTransformer):
 
         # Ensure consistent columns across fit/transform calls
         return self._ensure_consistent_columns(result)
-
-
-class StaticTransformer(BaseTransformer):
-    """Extracts features from the first event of each case."""
-
-    def __init__(self, case_id_col, cat_cols, num_cols, fillna=True):
-        super().__init__()
-        self.case_id_col = case_id_col
-        self.cat_cols = cat_cols
-        self.num_cols = num_cols
-        self.fillna = fillna
-
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X, y=None):
-        first_events = X.groupby(self.case_id_col).first()
-
-        # Extract numerical features
-        result = first_events[self.num_cols]
-
-        # One-hot encode categorical features
-        if len(self.cat_cols) > 0:
-            categorical_encoded = pd.get_dummies(first_events[self.cat_cols])
-            result = pd.concat([result, categorical_encoded], axis=1)
-
-        # Fill missing values
-        if self.fillna:
-            result = result.fillna(0)
-
-        # Ensure consistent columns across fit/transform calls
-        return self._ensure_consistent_columns(result)

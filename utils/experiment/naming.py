@@ -3,6 +3,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from .core import load_config
+
 
 def get_timestamp() -> str:
     return datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -15,24 +17,20 @@ def slugify(value: str) -> str:
     return slug.strip('_')
 
 
+def get_dataset_name(config: Mapping[str, Any]) -> str | None:
+    return config.get('dataset', {}).get('dataset_name')
+
+
+def get_model_name(config: Mapping[str, Any]) -> str | None:
+    return config.get('model', {}).get('type')
+
+
 def get_dataset_and_model(config: Mapping[str, Any]) -> tuple[str | None, str | None]:
-    dataset_name = config.get('dataset', {}).get('dataset_name')
-    model_name = config.get('model', {}).get('type')
-    return dataset_name, model_name
-
-
-def load_yaml_config(config_path: str | Path) -> dict | None:
-    try:
-        import yaml
-
-        with open(config_path, encoding='utf-8') as file:
-            return yaml.safe_load(file) or {}
-    except Exception:
-        return None
+    return get_dataset_name(config), get_model_name(config)
 
 
 def read_run_info(config_path: str | Path) -> tuple[str | None, str | None]:
-    config = load_yaml_config(config_path) or {}
+    config = load_config(config_path)
     return get_dataset_and_model(config)
 
 

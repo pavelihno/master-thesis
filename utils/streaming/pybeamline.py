@@ -6,10 +6,7 @@ from pybeamline.bevent import BEvent
 from pybeamline.sources import string_test_source
 from pybeamline.stream.stream import Stream
 
-
-CASE_ID_COL = 'case:concept:name'
-ACTIVITY_COL = 'concept:name'
-TIME_COL = 'time:timestamp'
+from utils.constants import ACTIVITY_COL, CASE_ID_COL, TIME_COL
 
 
 def xes_log_source_from_file(

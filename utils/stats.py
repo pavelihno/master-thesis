@@ -17,14 +17,6 @@ def print_class_balance(labels, label_col='outcome', dataset_names=None):
     counts = labels_series.value_counts().sort_index()
     percentages = labels_series.value_counts(normalize=True).sort_index() * 100
 
-    balance_df = pd.DataFrame(
-        {
-            'Class': counts.index,
-            'Count': counts.values,
-            'Percentage': percentages.values,
-        }
-    )
-
     # Header
     dataset_names_str = ', '.join(dataset_names) if dataset_names else ''
     title = f'Class Balance{f" - {dataset_names_str}" if dataset_names else ""}'

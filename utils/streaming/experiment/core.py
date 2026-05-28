@@ -1,31 +1,11 @@
-import hashlib
 import json
 import pickle
 from pathlib import Path
 from typing import Any
 
-import torch
 import yaml
 
-
-def get_config_hash(config: dict, length: int = 8) -> str:
-    stable_config = {
-        key: config[key] for key in ('model', 'transformer', 'dataset') if key in config
-    }
-    payload = json.dumps(stable_config, sort_keys=True)
-    return hashlib.sha256(payload.encode()).hexdigest()[:length]
-
-
-def make_json_safe(value: Any) -> Any:
-    if isinstance(value, (str, int, float, bool)) or value is None:
-        return value
-    if isinstance(value, Path):
-        return str(value)
-    if isinstance(value, dict):
-        return {str(key): make_json_safe(item) for key, item in value.items()}
-    if isinstance(value, (list, tuple, set)):
-        return [make_json_safe(item) for item in value]
-    return str(value)
+from utils.experiment import make_json_safe
 
 
 def get_available_metrics(metrics_dict: Any) -> list[str]:
@@ -76,20 +56,6 @@ def get_stream_summary_values(results_df) -> dict[str, Any]:
             summary_values[metric_name] = value
 
     return summary_values
-
-
-def select_device(device_name: str | None) -> torch.device | None:
-    if device_name is None:
-        return None
-
-    requested = device_name.lower()
-    if requested == 'auto':
-        return torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    if requested == 'cuda' and not torch.cuda.is_available():
-        print('CUDA requested but not available. Falling back to CPU.')
-        return torch.device('cpu')
-
-    return torch.device(requested)
 
 
 def prepare_results_frame(config: dict, results_df):
