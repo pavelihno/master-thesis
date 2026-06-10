@@ -10,6 +10,11 @@ from models.lstm import LSTM as LSTMModel
 from models.wrapper import SklearnModelWrapper, TorchModelWrapper
 from utils.base.bucketers import NoBucketer, PrefixLengthBucketer
 from utils.base.datasets import NextActivityDataset, OutcomeDataset
+from utils.base.feature_extractors import (
+    CalendarFeatureExtractor,
+    ProcessContextFeatureExtractor,
+    TemporalFeatureExtractor,
+)
 from utils.base.transformers import (
     AggregateTransformer,
     IndexBasedTransformer,
@@ -27,7 +32,7 @@ from utils.loss_functions import LogCoshLoss
 
 def create_dataset(config):
     """Create a dataset instance from config."""
-    dataset_type = config.get('type', 'outcome')
+    dataset_type = config.get('type', None)
     dataset_path = config.pop('dataset_path', None)
     label_path = config.pop('label_path', None)
 
@@ -40,6 +45,11 @@ def create_dataset(config):
     min_prefix = config.get('min_prefix', None)
     max_prefix = config.get('max_prefix', None)
 
+    feature_extractors = [
+        create_feature_extractor(fe_config)
+        for fe_config in config.pop('feature_extractors', [])
+    ]
+
     if dataset_type == 'outcome':
         return OutcomeDataset(
             dataset_path=dataset_path,
@@ -47,6 +57,7 @@ def create_dataset(config):
             train_ratio=train_ratio,
             min_prefix=min_prefix,
             max_prefix=max_prefix,
+            feature_extractors=feature_extractors,
             case_id_col=case_id_col,
             time_col=time_col,
             activity_col=activity_col,
@@ -59,6 +70,7 @@ def create_dataset(config):
             train_ratio=train_ratio,
             min_prefix=min_prefix,
             max_prefix=max_prefix,
+            feature_extractors=feature_extractors,
             case_id_col=case_id_col,
             time_col=time_col,
             activity_col=activity_col,
@@ -70,6 +82,25 @@ def create_dataset(config):
         )
     else:
         raise ValueError(f'Unknown dataset type: {dataset_type}')
+
+
+def create_feature_extractor(config):
+    """Create a feature extractor instance from config."""
+    config = {'type': config} if isinstance(config, str) else config
+
+    extractor_type = config.get('type', None)
+    params = config.get('params', {})
+
+    if extractor_type is None:
+        return None
+    elif extractor_type == 'calendar':
+        return CalendarFeatureExtractor(**params)
+    elif extractor_type == 'temporal':
+        return TemporalFeatureExtractor(**params)
+    elif extractor_type == 'process_context':
+        return ProcessContextFeatureExtractor(**params)
+    else:
+        raise ValueError(f'Unknown feature extractor type: {extractor_type}')
 
 
 def create_bucketer(config):
@@ -124,7 +155,7 @@ def create_transformer(config):
         raise ValueError(f'Unknown transformer type: {transformer_type}')
 
 
-def create_model(config, device=None):
+def create_model(config, device=None, num_classes=None):
     """Create a model instance from config."""
     model_type = config['type']
     params = config.get('params', {})
@@ -138,6 +169,8 @@ def create_model(config, device=None):
     elif model_type == 'lstm':
         optimizer_cls = create_optimizer_cls(params.pop('optimizer', {'type': 'adam'}))
         loss_fn = create_loss_fn(params.pop('loss_fn', {'type': 'cross_entropy'}))
+
+        params['num_classes'] = num_classes
         epochs = params.pop('epochs', 20)
         batch_size = params.pop('batch_size', 32)
 

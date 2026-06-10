@@ -49,8 +49,8 @@ class AggregateTransformer(BaseTransformer):
         super().__init__()
         self.group_col = group_col
         self.case_id_col = group_col
-        self.cat_cols = cat_cols or []
-        self.num_cols = num_cols or []
+        self.cat_cols = cat_cols
+        self.num_cols = num_cols
         self.boolean = boolean
         self.fillna = fillna
 
@@ -58,9 +58,12 @@ class AggregateTransformer(BaseTransformer):
         return self
 
     def transform(self, X, y=None):
+        cat_cols = self.cat_cols or []
+        num_cols = self.num_cols or []
+
         # Aggregate numerical features
-        if len(self.num_cols) > 0:
-            numeric_agg = X.groupby(self.group_col)[self.num_cols].agg(
+        if len(num_cols) > 0:
+            numeric_agg = X.groupby(self.group_col)[num_cols].agg(
                 ['mean', 'max', 'min', 'sum', 'std']
             )
             numeric_agg.columns = [
@@ -68,7 +71,7 @@ class AggregateTransformer(BaseTransformer):
             ]
 
         # One-hot encode and aggregate categorical features
-        categorical_encoded = pd.get_dummies(X[self.cat_cols])
+        categorical_encoded = pd.get_dummies(X[cat_cols])
         categorical_encoded[self.group_col] = X[self.group_col]
 
         if self.boolean:
@@ -79,7 +82,7 @@ class AggregateTransformer(BaseTransformer):
             categorical_agg = categorical_encoded.groupby(self.group_col).sum()
 
         # Combine numerical and categorical aggregations
-        if len(self.num_cols) > 0:
+        if len(num_cols) > 0:
             result = pd.concat([categorical_agg, numeric_agg], axis=1)
         else:
             result = categorical_agg
@@ -107,8 +110,8 @@ class IndexBasedTransformer(BaseTransformer):
         super().__init__()
         self.group_col = group_col
         self.case_id_col = group_col
-        self.cat_cols = cat_cols or []
-        self.num_cols = num_cols or []
+        self.cat_cols = cat_cols
+        self.num_cols = num_cols
         self.max_events = max_events
         self.fillna = fillna
         self.create_dummies = create_dummies
@@ -117,6 +120,8 @@ class IndexBasedTransformer(BaseTransformer):
         return self
 
     def transform(self, X, y=None):
+        cat_cols = self.cat_cols or []
+        num_cols = self.num_cols or []
         grouped = X.groupby(self.group_col, as_index=False)
 
         # Determine max_events if not specified
@@ -128,13 +133,11 @@ class IndexBasedTransformer(BaseTransformer):
 
         # Extract features for each event position
         for i in range(self.max_events):
-            event_at_position = grouped.nth(i)[
-                [self.group_col] + self.cat_cols + self.num_cols
-            ]
+            event_at_position = grouped.nth(i)[[self.group_col] + cat_cols + num_cols]
             event_at_position.columns = (
                 [self.group_col]
-                + [f'{col}_{i}' for col in self.cat_cols]
-                + [f'{col}_{i}' for col in self.num_cols]
+                + [f'{col}_{i}' for col in cat_cols]
+                + [f'{col}_{i}' for col in num_cols]
             )
             result = pd.merge(result, event_at_position, on=self.group_col, how='left')
 
@@ -143,7 +146,7 @@ class IndexBasedTransformer(BaseTransformer):
         # One-hot encode categorical columns
         if self.create_dummies:
             cat_col_names = [
-                f'{col}_{i}' for col in self.cat_cols for i in range(self.max_events)
+                f'{col}_{i}' for col in cat_cols for i in range(self.max_events)
             ]
             result = pd.get_dummies(result, columns=cat_col_names).drop(
                 self.group_col, axis=1
@@ -170,23 +173,25 @@ class LastStateTransformer(BaseTransformer):
         super().__init__()
         self.group_col = group_col
         self.case_id_col = group_col
-        self.cat_cols = cat_cols or []
-        self.num_cols = num_cols or []
+        self.cat_cols = cat_cols
+        self.num_cols = num_cols
         self.fillna = fillna
 
     def fit(self, X, y=None):
         return self
 
     def transform(self, X, y=None):
+        cat_cols = self.cat_cols or []
+        num_cols = self.num_cols or []
 
         last_events = X.groupby(self.group_col).last()
 
         # Extract numerical features
-        result = last_events[self.num_cols]
+        result = last_events[num_cols]
 
         # One-hot encode categorical features
-        if len(self.cat_cols) > 0:
-            categorical_encoded = pd.get_dummies(last_events[self.cat_cols])
+        if len(cat_cols) > 0:
+            categorical_encoded = pd.get_dummies(last_events[cat_cols])
             result = pd.concat([result, categorical_encoded], axis=1)
 
         # Fill missing values
@@ -210,23 +215,25 @@ class PreviousStateTransformer(BaseTransformer):
         super().__init__()
         self.group_col = group_col
         self.case_id_col = group_col
-        self.cat_cols = cat_cols or []
-        self.num_cols = num_cols or []
+        self.cat_cols = cat_cols
+        self.num_cols = num_cols
         self.fillna = fillna
 
     def fit(self, X, y=None):
         return self
 
     def transform(self, X, y=None):
+        cat_cols = self.cat_cols or []
+        num_cols = self.num_cols or []
         # Get second-to-last event
         penultimate_events = X.groupby(self.group_col).nth(-2)
 
         # Extract numerical features
-        result = penultimate_events[self.num_cols]
+        result = penultimate_events[num_cols]
 
         # One-hot encode categorical features
-        if len(self.cat_cols) > 0:
-            categorical_encoded = pd.get_dummies(penultimate_events[self.cat_cols])
+        if len(cat_cols) > 0:
+            categorical_encoded = pd.get_dummies(penultimate_events[cat_cols])
             result = pd.concat([result, categorical_encoded], axis=1)
 
         # Reindex to include all cases (fill with 0 for cases with <2 events)

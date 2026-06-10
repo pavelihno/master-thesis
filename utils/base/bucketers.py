@@ -34,6 +34,7 @@ class NoBucketer(BaseBucketer):
 
     def __init__(self, group_col=CASE_PREFIX_COL):
         super().__init__()
+
         self.group_col = group_col
         self.case_id_col = group_col
         self.n_states = 1
@@ -51,6 +52,7 @@ class PrefixLengthBucketer(BaseBucketer):
 
     def __init__(self, group_col=CASE_PREFIX_COL):
         super().__init__()
+
         self.group_col = group_col
         self.case_id_col = group_col
 

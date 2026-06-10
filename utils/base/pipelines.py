@@ -83,7 +83,7 @@ class PredictionPipeline:
 
             bucket_model.fit(transformed_features, aggregated_labels)
 
-            # Store for prediction
+            # Store model and transformer for prediction
             self.bucket_models[bucket_id] = bucket_model
             self.bucket_transformers[bucket_id] = bucket_transformer
 

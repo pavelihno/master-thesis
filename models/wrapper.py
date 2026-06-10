@@ -2,7 +2,9 @@ import pickle
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+import numpy as np
 import torch
+from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import DataLoader, TensorDataset
 
 
@@ -36,6 +38,14 @@ class SklearnModelWrapper(ModelWrapper):
     def predict(self, X):
         return self.model.predict(X)
 
+    def get_params(self, deep=True):
+        return {'model': self.model}
+
+    def set_params(self, **params):
+        for key, value in params.items():
+            setattr(self, key, value)
+        return self
+
     def save(self, path):
         path = Path(path)
         with open(path / 'model.pkl', 'wb') as f:
@@ -60,10 +70,30 @@ class TorchModelWrapper(ModelWrapper):
         self.epochs = epochs
         self.batch_size = batch_size
         self.optimizer = None
+        self.label_encoder = LabelEncoder()
+        self.classes_ = None
+
+    def _encode_labels(self, y, fit=False):
+        labels = np.asarray(y).ravel()
+        if fit:
+            encoded = self.label_encoder.fit_transform(labels)
+            self.classes_ = self.label_encoder.classes_
+            return encoded
+
+        if self.classes_ is None:
+            raise ValueError('Label encoder not fitted.')
+
+        return self.label_encoder.transform(labels)
+
+    def decode_labels(self, encoded_labels):
+        if self.classes_ is None:
+            raise ValueError('Label encoder not fitted.')
+        return self.label_encoder.inverse_transform(np.asarray(encoded_labels).ravel())
 
     def fit(self, X, y):
         X_tensor = torch.as_tensor(X, dtype=torch.float32)
-        y_tensor = torch.as_tensor(y)
+        y_encoded = self._encode_labels(y, fit=True)
+        y_tensor = torch.as_tensor(y_encoded, dtype=torch.long)
         loader = DataLoader(
             TensorDataset(X_tensor, y_tensor), batch_size=self.batch_size, shuffle=True
         )
@@ -88,11 +118,19 @@ class TorchModelWrapper(ModelWrapper):
         X_tensor = torch.as_tensor(X, dtype=torch.float32).to(self.device)
         with torch.no_grad():
             out = self.model(X_tensor)
-            return torch.argmax(out, dim=1).cpu().numpy()
+            predictions = torch.argmax(out, dim=1).cpu().numpy()
+            return self.decode_labels(predictions)
 
     def save(self, path):
         path = Path(path)
-        torch.save({'state_dict': self.model.state_dict()}, path / 'model.pt')
+        torch.save(
+            {
+                'state_dict': self.model.state_dict(),
+                'label_encoder': self.label_encoder,
+                'classes_': self.classes_,
+            },
+            path / 'model.pt',
+        )
 
     @classmethod
     def load(
@@ -109,7 +147,7 @@ class TorchModelWrapper(ModelWrapper):
         checkpoint = torch.load(path / 'model.pt', map_location=device)
         model = model_factory()
         model.load_state_dict(checkpoint['state_dict'])
-        return cls(
+        wrapper = cls(
             model,
             optimizer_cls,
             loss_fn,
@@ -117,3 +155,6 @@ class TorchModelWrapper(ModelWrapper):
             batch_size=batch_size,
             device=device,
         )
+        wrapper.label_encoder = checkpoint.get('label_encoder', LabelEncoder())
+        wrapper.classes_ = checkpoint.get('classes_')
+        return wrapper

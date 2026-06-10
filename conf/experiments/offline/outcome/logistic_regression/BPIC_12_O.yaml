@@ -1,0 +1,24 @@
+dataset:
+  type: outcome
+  dataset_name: BPIC_12_O
+  dataset_path: C:/Users/Pavel/Desktop/PROJECTS/master-thesis/datasets/raw/BPIC_12_O.xes
+  label_path: C:/Users/Pavel/Desktop/PROJECTS/master-thesis/datasets/labels/benchmarks/Weytjens_2021/BPIC_12_O.csv
+  train_ratio: 0.8
+
+bucketer:
+  type: prefix_length
+
+transformer:
+  type: aggregate
+  cat_cols:
+    - concept:name
+
+model:
+  type: logistic_regression
+  params:
+    C: 1.0
+    max_iter: 1000
+    random_state: 42
+
+output:
+  folder: experiments/outputs

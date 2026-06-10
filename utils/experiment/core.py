@@ -14,8 +14,6 @@ from sklearn.metrics import (
     recall_score,
 )
 
-from utils.base.datasets import BaseLogDataset, OutcomeDataset
-
 
 def select_device(device_name: str | None) -> torch.device | None:
     if device_name is None:
@@ -106,23 +104,6 @@ def compute_bucket_statistics(prefixes_df, y_true, y_pred, bucketer):
         )
 
     return pd.DataFrame(bucket_stats)
-
-
-def load_and_prepare_data(dataset: BaseLogDataset):
-    """Load and prepare dataset for training/evaluation."""
-
-    if isinstance(dataset, OutcomeDataset):
-        dataset.filter_by_labels()
-
-    train_df, test_df = dataset.train_test_split()
-
-    train_prefixes = dataset.get_prefixes(train_df)
-    test_prefixes = dataset.get_prefixes(test_df)
-
-    y_train = dataset.get_labels(train_prefixes)
-    y_test = dataset.get_labels(test_prefixes)
-
-    return train_prefixes, test_prefixes, y_train, y_test
 
 
 def ensure_output_dir(config):

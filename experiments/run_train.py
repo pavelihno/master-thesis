@@ -1,11 +1,12 @@
 import argparse
 
+import pandas as pd
+
 from utils.base.pipelines import PredictionPipeline
 from utils.experiment.core import (
     compute_bucket_statistics,
     ensure_output_dir,
     get_config_hash,
-    load_and_prepare_data,
     load_config,
     select_device,
 )
@@ -60,12 +61,19 @@ def run_config(
 
     # Create dataset and load data
     dataset = create_dataset(config['dataset'])
-    train_prefixes, test_prefixes, y_train, y_test = load_and_prepare_data(dataset)
+
+    train_df, test_df = dataset.train_test_split()
+
+    train_prefixes, y_train = dataset.get_prefixes_and_labels(train_df)
+    test_prefixes, y_test = dataset.get_prefixes_and_labels(test_df)
+
+    num_classes = pd.concat([y_train, y_test]).nunique()
 
     # Create pipeline components
     bucketer = create_bucketer(config['bucketer'])
     transformer = create_transformer(config['transformer'])
-    model = create_model(config['model'], device=device)
+
+    model = create_model(config['model'], device=device, num_classes=num_classes)
 
     # Train pipeline
     pipeline = PredictionPipeline(bucketer, transformer, model)
