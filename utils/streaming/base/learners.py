@@ -172,3 +172,53 @@ class RemainingTimeLearner(LearnerMap):
         metadata = {**metadata, 'drift_detected': drift_detected, 'loss': loss}
 
         return [(trace_id, features, y_true, y_pred, metadata)]
+
+
+class NextActivityTimeLearner(LearnerMap):
+    def __init__(self, model, target: TimeTarget = TimeTarget.SECONDS):
+        super().__init__(model)
+
+        self._target = target
+
+        # Features from the previous event per trace
+        self._pending_features: dict[str, dict] = {}
+
+        # Time from the previous event per trace
+        self._pending_times: dict[str, Any] = {}
+
+    @catch_and_reraise
+    def transform(
+        self, item: tuple[str, dict, Any, Any, dict]
+    ) -> list[tuple[str, dict, Any, Any, dict]] | None:
+        trace_id, features, cur_time, y_pred, metadata = item
+
+        is_terminal = metadata.get('is_terminal', False)
+        drift_detected = False
+
+        y_true = None
+
+        # Learn on features from previous event of the same trace
+        if trace_id in self._pending_features:
+            prev_features = self._pending_features[trace_id]
+            prev_time = self._pending_times[trace_id]
+            y_true = convert_time(
+                cur_time - prev_time,
+                target=self._target,
+            )
+            self._model.learn_one(prev_features, y_true)
+            drift_detected = self._is_drift_detected()
+
+        # Store current features for the next event of the same trace
+        if not is_terminal:
+            self._pending_features[trace_id] = features
+            self._pending_times[trace_id] = cur_time
+        else:
+            self._pending_features.pop(trace_id, None)
+            self._pending_times.pop(trace_id, None)
+            self._clear(trace_id)
+
+        loss = self._get_loss()
+
+        metadata = {**metadata, 'drift_detected': drift_detected, 'loss': loss}
+
+        return [(trace_id, features, y_true, y_pred, metadata)]

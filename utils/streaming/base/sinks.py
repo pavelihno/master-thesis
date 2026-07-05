@@ -341,6 +341,62 @@ class RemainingTimeEvaluator(RegressionEvaluator):
         self._pending_predictions.clear()
 
 
+class NextActivityTimeEvaluator(RegressionEvaluator):
+    def __init__(self):
+        super().__init__()
+
+        self._pending_predictions: dict[str, Any] = {}
+
+    def consume(self, item: tuple[str, dict, Any, Any, dict]) -> None:
+        trace_id, features, y_true, y_pred, metadata = item
+
+        metadata = self._get_metadata(dict(metadata))
+        drift_detected = metadata['drift_detected']
+        is_terminal = metadata['is_terminal']
+
+        if drift_detected:
+            self._n_drifts += 1
+
+        # Evaluate on prediction from the previous event of the same trace
+        if trace_id in self._pending_predictions:
+            self._n_pred += 1
+            prev_y_pred = self._pending_predictions[trace_id]
+            if prev_y_pred is not None:
+                metric_vals = self._update_metrics(y_true, prev_y_pred)
+            else:
+                metric_vals = self._current_metric_values()
+        else:
+            prev_y_pred = None
+            metric_vals = self._current_metric_values()
+
+        self.records.append(
+            {
+                'trace_id': trace_id,
+                'trace_n': metadata['trace_n'],
+                'event_n': metadata['event_n'],
+                'event_name': metadata['event_name'],
+                'event_time': metadata['event_time'],
+                'y_true': y_true,
+                'y_pred': prev_y_pred,
+                'n_pred': self._n_pred,
+                'n_drifts': self._n_drifts,
+                'drift_detected': metadata['drift_detected'],
+                'prefix_len': metadata['prefix_len'],
+                'loss': metadata['loss'],
+                **metric_vals,
+            }
+        )
+
+        # Store current prediction for the next event of the same trace
+        if not is_terminal:
+            self._pending_predictions[trace_id] = y_pred
+        else:
+            self._pending_predictions.pop(trace_id, None)
+
+    def close(self) -> None:
+        self._pending_predictions.clear()
+
+
 class TraceCollector(BaseSink):
     """Groups BEvents by trace_id into a dict."""
 

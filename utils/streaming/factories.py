@@ -21,6 +21,7 @@ from utils.streaming.base.extractors import (
 )
 from utils.streaming.base.pipelines import (
     NextActivityPredictionPipeline,
+    NextActivityTimePredictionPipeline,
     OutcomePredictionPipeline,
     PipelineMode,
     RemainingTimePredictionPipeline,
@@ -372,6 +373,18 @@ def create_pipeline(
         target = TimeTarget(config.pop('time_target', None))
 
         return RemainingTimePredictionPipeline(
+            model=model,
+            transformer=transformer,
+            terminator=terminator,
+            pipeline_mode=pipeline_mode,
+            source_mode=source_mode,
+            target=target,
+            max_events=max_events,
+        )
+    elif task_type == 'next_activity_time':
+        target = TimeTarget(config.pop('time_target', None))
+
+        return NextActivityTimePredictionPipeline(
             model=model,
             transformer=transformer,
             terminator=terminator,

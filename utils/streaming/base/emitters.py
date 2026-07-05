@@ -174,3 +174,38 @@ class RemainingTimeEmitter(EmitterMap):
         )
 
         return [(trace_id, features, y_true, None, metadata)]
+
+
+class NextActivityTimeEmitter(EmitterMap):
+    @catch_and_reraise
+    def transform(self, event: BEvent) -> list[tuple[str, dict, Any, Any, dict]] | None:
+        trace_id = event.get_trace_name()
+        y_true = event.get_event_time()
+
+        is_first = trace_id not in self._trace_index
+        is_terminal = self._terminator.is_terminal(event)
+
+        if is_first:
+            self._trace_n += 1
+            self._trace_index[trace_id] = self._trace_n
+
+        self._transformer.update(trace_id, event)
+        prefix_len = self._transformer.prefix_len(trace_id)
+        trace_n = self._trace_index[trace_id]
+        event_n = self._next_event_n()
+
+        if is_terminal:
+            features = {}
+            self._transformer.clear(trace_id)
+        else:
+            features = self._transformer.get_features(trace_id)
+
+        metadata = self._build_metadata(
+            event,
+            trace_n=trace_n,
+            event_n=event_n,
+            prefix_len=prefix_len,
+            is_terminal=is_terminal,
+        )
+
+        return [(trace_id, features, y_true, None, metadata)]
