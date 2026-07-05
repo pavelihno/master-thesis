@@ -4,6 +4,7 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from pm4py import read_xes
 from pybeamline.sources import BEvent
 from river.drift import ADWIN, KSWIN, NoDrift
 from river.ensemble import SRPClassifier
@@ -75,7 +76,11 @@ def create_transformer(config: dict):
         raise ValueError(f"Unknown transformer type: '{transformer_type}'.")
 
 
-def create_model(config: dict, device: torch.device | None = None):
+def create_model(
+    config: dict,
+    device: torch.device | None = None,
+    allowed_events: set[str] | None = None,
+):
     """Create a river streaming classifier from a config dict."""
     config = dict(config)
     model_type = config.pop('type', None)
@@ -123,6 +128,7 @@ def create_model(config: dict, device: torch.device | None = None):
             drift_detector=drift_detector,
             sample_buffer=sample_buffer,
             device=device,
+            allowed_events=allowed_events,
         )
     else:
         raise ValueError(f"Unknown model type: '{model_type}'.")
@@ -137,11 +143,12 @@ def create_model(config: dict, device: torch.device | None = None):
     return model
 
 
-def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator]:
+def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator, set[str]]:
     config = dict(config)
     source_mode = SourceMode(config.pop('source', None))
     terminator = create_terminator(config.pop('terminator', None))
     inject_terminal = isinstance(terminator, OracleTerminator)
+    allowed_events = set(config.pop('allowed_events', []))
 
     if source_mode == SourceMode.LOG:
         dataset_path = config.pop('dataset_path', None)
@@ -151,6 +158,10 @@ def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator]:
         case_id_col = config.pop('case_id_col', CASE_ID_COL)
         time_col = config.pop('time_col', TIME_COL)
         activity_col = config.pop('activity_col', ACTIVITY_COL)
+
+        allowed_events = set(
+            allowed_events or read_xes(dataset_path)[activity_col].unique().tolist()
+        )
 
         run_kwargs = {
             'dataset_path': dataset_path,
@@ -165,6 +176,8 @@ def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator]:
         if not stream_string:
             raise ValueError('trace must be provided for StringSource')
 
+        allowed_events = set(allowed_events or list(stream_string))
+
         run_kwargs = {'string': stream_string, 'inject_terminal': inject_terminal}
 
     elif source_mode == SourceMode.DATA_FRAME:
@@ -175,6 +188,10 @@ def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator]:
         case_id_col = config.pop('case_id_col', CASE_ID_COL)
         time_col = config.pop('time_col', TIME_COL)
         activity_col = config.pop('activity_col', ACTIVITY_COL)
+
+        allowed_events = set(
+            allowed_events or data_frame[activity_col].unique().tolist()
+        )
 
         run_kwargs = {
             'data_frame': data_frame,
@@ -193,18 +210,23 @@ def create_dataset(config: dict) -> tuple[dict, SourceMode, TraceTerminator]:
         case_id = 0
         bevents = []
 
+        unique_events = set()
+
         for trace, count in trace_specs:
             for _ in range(count):
                 case_id += 1
                 for event in trace:
+                    unique_events.add(event)
                     bevents.append(BEvent(event, case_id, process_name))
+
+        allowed_events = set(allowed_events or unique_events)
 
         run_kwargs = {'bevents': bevents, 'inject_terminal': inject_terminal}
 
     else:
         raise ValueError(f"Unknown dataset source mode: '{source_mode}'.")
 
-    return run_kwargs, source_mode, terminator
+    return run_kwargs, source_mode, terminator, allowed_events
 
 
 def create_terminator(config: dict | None) -> TraceTerminator:

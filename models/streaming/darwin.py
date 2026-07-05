@@ -37,6 +37,7 @@ class DARWINBase(ABC):
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
         device: torch.device | None = None,
+        allowed_events: set[str] | None = None,
     ):
         self.embedding_dim = embedding_dim
         self.w2v_window = w2v_window
@@ -52,6 +53,7 @@ class DARWINBase(ABC):
         self.initialized: bool = False
         self.device = device or torch.device('cpu')
 
+        self.allowed_events = allowed_events
         self.w2v = None
 
         self.sequence_model = sequence_model.to(self.device)
@@ -641,6 +643,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         n_classes: int | None = None,
         max_n_classes: int | None = None,
         device: torch.device | None = None,
+        allowed_events: set[str] | None = None,
     ):
         DARWINBase.__init__(
             self,
@@ -657,6 +660,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             feature_size=feature_size,
             sample_buffer=sample_buffer,
             device=device,
+            allowed_events=allowed_events,
         )
 
         # Class number configuration
@@ -823,6 +827,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
         device: torch.device | None = None,
+        allowed_events: set[str] | None = None,
     ):
         DARWINBase.__init__(
             self,
@@ -839,6 +844,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             feature_size=feature_size,
             sample_buffer=sample_buffer,
             device=device,
+            allowed_events=allowed_events
         )
 
     def _init_head(self) -> None:
