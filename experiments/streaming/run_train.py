@@ -67,9 +67,11 @@ def run_config(
     if device is not None:
         print(f'Device: {device.type}')
 
+    dataset_kwargs, dataset_source, terminator, allowed_events = create_dataset(
+        config['dataset']
+    )
+    model = create_model(config['model'], device=device, allowed_events=allowed_events)
     transformer = create_transformer(config['transformer'])
-    model = create_model(config['model'], device=device)
-    dataset_kwargs, dataset_source, terminator = create_dataset(config['dataset'])
 
     pipeline = create_pipeline(
         config['task'],

@@ -108,9 +108,17 @@ def create_model(
             DARWINClassifier if model_type == 'darwin_classifier' else DARWINRegressor
         )
 
+        encoding = params.get('encoding', 'word2vec').lower()
+        if encoding == 'word2vec':
+            event_vector_dim = params.get('embedding_dim', 0)
+        elif encoding == 'one_hot':
+            event_vector_dim = len(allowed_events) if allowed_events else 0
+        else:
+            raise ValueError(f"Unknown encoding type: '{encoding}'.")
+
         sequence_model = create_sequence_model(
             params.pop('sequence_model', {'type': 'lstm'}),
-            embedding_dim=params.get('embedding_dim', 0),
+            event_vector_dim=event_vector_dim,
             feature_size=params.get('feature_size', 0),
             sequence_window=params.get('sequence_window', 0),
         )
@@ -259,12 +267,12 @@ def create_drift_detector(config: dict):
 
 
 def create_sequence_model(
-    config: dict, embedding_dim: int, feature_size: int, sequence_window: int
+    config: dict, event_vector_dim: int, feature_size: int, sequence_window: int
 ):
     """Create DARWIN sequence backbone from DARWIN model params."""
     config = dict(config)
     architecture_type = config.pop('type', 'lstm').lower()
-    input_dim = embedding_dim + feature_size
+    input_dim = event_vector_dim + feature_size
 
     if architecture_type == 'lstm':
         return LSTMModel(input_dim=input_dim, **config)

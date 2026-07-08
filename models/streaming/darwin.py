@@ -24,8 +24,6 @@ from utils.streaming.base.sample_buffers import (
 class DARWINBase(ABC):
     def __init__(
         self,
-        embedding_dim: int,
-        w2v_window: int,
         sequence_window: int,
         sequence_model: SequenceModel,
         optimizer_cls: Callable,
@@ -33,18 +31,42 @@ class DARWINBase(ABC):
         batch_size: int,
         drift_detector: base.DriftDetector | None,
         init_size: int,
+        encoding: str = 'word2vec',
+        w2v_window: int | None = None,
+        embedding_dim: int | None = None,
         epochs: int = 1,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
         device: torch.device | None = None,
         allowed_events: set[str] | None = None,
     ):
-        self.embedding_dim = embedding_dim
+        self.allowed_events = (
+            set(allowed_events) if allowed_events is not None else None
+        )
+        self.encoding = encoding.lower()
+        self.w2v = None
         self.w2v_window = w2v_window
-        self.sequence_window = sequence_window
-        self.init_size = init_size
-        self.batch_size = batch_size
-        self.epochs = epochs
+
+        if self.encoding == 'word2vec':
+            if embedding_dim is None or embedding_dim <= 0:
+                raise ValueError(
+                    "embedding_dim must be specified for 'word2vec' encoding."
+                )
+            self.event_vector_dim = embedding_dim
+            self.event_to_idx = {}
+
+        elif self.encoding == 'one_hot':
+            if not self.allowed_events:
+                raise ValueError(
+                    "allowed_events must be specified for 'one_hot' encoding"
+                )
+            self.event_to_idx = {
+                event: i for i, event in enumerate(sorted(self.allowed_events))
+            }
+            self.event_vector_dim = len(self.event_to_idx)
+
+        else:
+            raise ValueError("encoding must be either 'word2vec' or 'one_hot'.")
 
         self.feature_size = feature_size
         self.feature_scalers = [StandardScaler() for _ in range(self.feature_size)]
@@ -53,11 +75,13 @@ class DARWINBase(ABC):
         self.initialized: bool = False
         self.device = device or torch.device('cpu')
 
-        self.allowed_events = allowed_events
-        self.w2v = None
-
         self.sequence_model = sequence_model.to(self.device)
         self.head = None
+
+        self.sequence_window = sequence_window
+        self.init_size = init_size
+        self.batch_size = batch_size
+        self.epochs = epochs
 
         self.optimizer_cls = optimizer_cls
         self.optimizer = None
@@ -142,6 +166,10 @@ class DARWINBase(ABC):
             if self.optimizer is not None
             else None,
             'runtime_state': {
+                'encoding': self.encoding,
+                'allowed_events': self.allowed_events,
+                'event_to_idx': self.event_to_idx,
+                'event_vector_dim': self.event_vector_dim,
                 'w2v': self.w2v,
                 'prefix_tree': self.prefix_tree,
                 'header_table': self.header_table,
@@ -180,6 +208,20 @@ class DARWINBase(ABC):
         self.sequence_model.to(self.device)
 
         runtime_state = checkpoint['runtime_state']
+        self.encoding = runtime_state.get('encoding', self.encoding)
+        self.allowed_events = runtime_state.get('allowed_events', self.allowed_events)
+        self.event_to_idx = runtime_state.get(
+            'event_to_idx', getattr(self, 'event_to_idx', {})
+        )
+        self.event_vector_dim = runtime_state.get(
+            'event_vector_dim', getattr(self, 'event_vector_dim', 0)
+        )
+        if self.encoding == 'one_hot' and not self.event_to_idx and self.allowed_events:
+            self.event_to_idx = {
+                event: i for i, event in enumerate(sorted(self.allowed_events))
+            }
+            self.event_vector_dim = len(self.event_to_idx)
+
         self.w2v = runtime_state['w2v']
         self.prefix_tree = runtime_state['prefix_tree']
         self.header_table = runtime_state['header_table']
@@ -294,11 +336,22 @@ class DARWINBase(ABC):
             if n.event_name is not None
         ]
 
-    def _get_embedding(self, event_name: str) -> np.ndarray:
-        """Retrieve the Word2Vec embedding for an event."""
-        if self.w2v is not None and event_name in self.w2v.wv:
-            return self.w2v.wv[event_name]
-        return np.zeros(self.embedding_dim, dtype=np.float32)
+    def _get_event_vector(self, event_name: str) -> np.ndarray:
+        """Retrieve either a continuous W2V vector or a pure static one-hot vector."""
+        if self.encoding == 'word2vec':
+            if self.w2v is not None and event_name in self.w2v.wv:
+                return self.w2v.wv[event_name]
+            return np.zeros(self.event_vector_dim, dtype=np.float32)
+
+        elif self.encoding == 'one_hot':
+            idx = self.event_to_idx.get(event_name)
+            if idx is None:
+                return np.zeros(self.event_vector_dim, dtype=np.float32)
+            vector = np.zeros(self.event_vector_dim, dtype=np.float32)
+            vector[idx] = 1.0
+            return vector
+
+        return np.zeros(self.event_vector_dim, dtype=np.float32)
 
     def _get_features(
         self,
@@ -347,7 +400,7 @@ class DARWINBase(ABC):
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Prepare zero-padded tensors and padding mask for sequence model input."""
         # Handle single sequence
-        input_dim = self.embedding_dim + self.feature_size
+        input_dim = self.event_vector_dim + self.feature_size
         zero_vector = np.zeros(input_dim, dtype=np.float32)
 
         vectors_batch = []
@@ -357,7 +410,7 @@ class DARWINBase(ABC):
             vectors = []
 
             for i, node in enumerate(window_nodes):
-                event_name_embedding = self._get_embedding(node.event_name)
+                event_name_embedding = self._get_event_vector(node.event_name)
 
                 features = self._get_features(
                     case_id,
@@ -433,29 +486,31 @@ class DARWINBase(ABC):
         #     sequence = self._get_event_sequence(s['prefix_node'])
         #     target = s['target']
         #     print(f'Sequence: {sequence}, Target: {target}')
-
-        # Word2Vec update
         sequences = [self._get_event_sequence(s.prefix_node) for s in samples]
         # for s in samples:
         # print(f'Sample: {s.case_id} {s.prefix_node}, Target: {s.target}')
 
-        if self.w2v is None:
-            self.w2v = Word2Vec(
-                sg=0,
-                vector_size=self.embedding_dim,
-                window=self.w2v_window,
-                min_count=1,
-                workers=1,
-            )
-            self.w2v.build_vocab(sequences)
-        else:
-            self.w2v.build_vocab(sequences, update=True)
+        if self.encoding == 'word2vec':
+            if self.w2v is None:
+                self.w2v = Word2Vec(
+                    sg=0,
+                    vector_size=self.event_vector_dim,
+                    window=self.w2v_window,
+                    min_count=1,
+                    workers=1,
+                )
+                self.w2v.build_vocab(sequences)
+            else:
+                self.w2v.build_vocab(sequences, update=True)
 
-        self.w2v.train(
-            sequences,
-            total_examples=len(sequences),
-            epochs=max(1, self.epochs),
-        )
+            self.w2v.train(
+                sequences,
+                total_examples=len(sequences),
+                epochs=max(1, self.epochs),
+            )
+
+        elif self.encoding == 'one_hot':
+            pass
 
         if self.head is None:
             self._init_head()
@@ -627,8 +682,6 @@ class DARWINBase(ABC):
 class DARWINClassifier(base.Classifier, DARWINBase):
     def __init__(
         self,
-        embedding_dim: int,
-        w2v_window: int,
         sequence_window: int,
         sequence_model: SequenceModel,
         optimizer_cls: Callable,
@@ -636,10 +689,13 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         batch_size: int,
         drift_detector: base.DriftDetector | None,
         init_size: int,
+        encoding: str = 'word2vec',
+        w2v_window: int | None = None,
+        embedding_dim: int | None = None,
         epochs: int = 1,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
-        dynamic_n_classes: bool = False,
+        dynamic_n_classes: bool = False, # NOTE: archive
         n_classes: int | None = None,
         max_n_classes: int | None = None,
         device: torch.device | None = None,
@@ -661,18 +717,20 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             sample_buffer=sample_buffer,
             device=device,
             allowed_events=allowed_events,
+            encoding=encoding,
         )
 
         # Class number configuration
-        self.dynamic_n_classes = dynamic_n_classes
-        if dynamic_n_classes:
+        if max_n_classes is not None:
             self.max_n_classes = max_n_classes
             self.n_classes = 0
+            self.dynamic_n_classes = True
         else:
             if n_classes is None or n_classes <= 0:
                 raise ValueError('In fixed mode n_classes must be a positive integer')
             self.max_n_classes = n_classes
             self.n_classes = n_classes
+            self.dynamic_n_classes = False
 
         self.vocab: dict[Any, int] = {}  # label -> index
         self.idx_to_label: dict[int, Any] = {}  # index -> label
@@ -688,16 +746,15 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         if self.head is not None:
             return
 
-        if self.dynamic_n_classes:
-            self.n_classes = len(self.vocab)
-            if self.n_classes == 0:
-                raise ValueError('Cannot initialize head with zero classes')
-        elif self.n_classes <= 0:
-            raise ValueError('In fixed mode n_classes must be a positive integer')
+        out_dim = self.n_classes if self.n_classes > 0 else len(self.vocab)
 
-        self.head = nn.Linear(self.sequence_model.output_dim, self.n_classes).to(
+        if out_dim <= 0:
+            raise ValueError('Cannot initialize head with zero classes')
+
+        self.head = nn.Linear(self.sequence_model.output_dim, out_dim).to(
             self.device
         )
+        self.n_classes = out_dim
 
     def _prepare_target(self, y: Any) -> torch.Tensor:
         if isinstance(y, list):
@@ -814,8 +871,6 @@ class DARWINClassifier(base.Classifier, DARWINBase):
 class DARWINRegressor(base.Regressor, DARWINBase):
     def __init__(
         self,
-        embedding_dim: int,
-        w2v_window: int,
         sequence_window: int,
         sequence_model: SequenceModel,
         optimizer_cls: Callable,
@@ -823,6 +878,9 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         batch_size: int,
         drift_detector: base.DriftDetector | None,
         init_size: int,
+        encoding: str = 'word2vec',
+        w2v_window: int | None = None,
+        embedding_dim: int | None = None,
         epochs: int = 1,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
@@ -844,7 +902,8 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             feature_size=feature_size,
             sample_buffer=sample_buffer,
             device=device,
-            allowed_events=allowed_events
+            allowed_events=allowed_events,
+            encoding=encoding,
         )
 
     def _init_head(self) -> None:
