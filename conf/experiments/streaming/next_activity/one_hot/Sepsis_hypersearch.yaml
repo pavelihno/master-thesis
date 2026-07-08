@@ -1,0 +1,69 @@
+hyperparam_search: true
+task:
+  type: next_activity
+  mode: predict_and_learn
+  max_events: 1522
+dataset:
+  dataset_name: Sepsis
+  source: log
+  dataset_path: datasets/raw/Sepsis.xes
+  terminator:
+    type: oracle
+transformer:
+  type: darwin
+model:
+  type: darwin_classifier
+  params:
+    encoding: one_hot
+    sequence_window:
+      search: choice
+      options:
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+    batch_size:
+      search: choice
+      options:
+      - 32
+      - 64
+    epochs: 30
+    n_classes: 16
+    init_size: 1000
+    sequence_model:
+      type: lstm
+      hidden_dim:
+        search: int
+        low: 10
+        high: 150
+        log: true
+      num_layers:
+        search: choice
+        options:
+        - 1
+        - 2
+        - 3
+      dropout:
+        search: float
+        low: 0.0
+        high: 1.0
+    optimizer:
+      type: nadam
+      lr:
+        search: float
+        low: -4
+        high: -1
+        exp: true
+        base: 10
+    loss_fn:
+      type: cross_entropy
+    drift_detector:
+      type: adwin
+search:
+  metric: macro_f1
+  maximize: true
+  max_trials: 200
+  seed: 123
+output:
+  folder: experiments/outputs/streaming/Sepsis
