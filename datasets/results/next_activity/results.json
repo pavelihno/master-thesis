@@ -106,6 +106,53 @@
                 "arf": "traffic_fines_arf_b0a8348d_2026-05-17_03-39-48",
                 "srp": "traffic_fines_srp_d21f59ad_2026-05-17_07-43-34"
             }
+        },
+        "one_hot": {
+            "BPIC_12": {
+                "darwin": "bpic_12_darwin_classifier_2621ec7b_2026-07-09_08-52-18"
+            },
+            "BPIC_13_C": {
+                "darwin": "bpic_13_c_darwin_classifier_e436a840_2026-07-09_08-52-41"
+            },
+            "BPIC_13_I": {
+                "darwin": "bpic_13_i_darwin_classifier_bb5fb92e_2026-07-09_08-52-41"
+            },
+            "BPIC_15_1": {
+                "darwin": "bpic_15_1_darwin_classifier_49c48ddf_2026-07-09_09-00-25"
+            },
+            "BPIC_18_C": {
+                "darwin": "bpic_18_c_darwin_classifier_75d333cb_2026-07-09_09-07-25"
+            },
+            "BPIC_18_G": {
+                "darwin": "bpic_18_g_darwin_classifier_55cd0410_2026-07-09_09-27-33"
+            },
+            "BPIC_18_P": {
+                "darwin": "bpic_18_p_darwin_classifier_4a53eaea_2026-07-09_09-18-03"
+            },
+            "BPIC_20_DD": {
+                "darwin": "bpic_20_dd_darwin_classifier_b02e22e5_2026-07-09_08-54-54"
+            },
+            "BPIC_20_ID": {
+                "darwin": "bpic_20_id_darwin_classifier_39f74ff7_2026-07-09_09-02-24"
+            },
+            "BPIC_20_PTC": {
+                "darwin": "bpic_20_ptc_darwin_classifier_4045a26b_2026-07-09_10-07-05"
+            },
+            "BPIC_20_RFP": {
+                "darwin": "bpic_20_rfp_darwin_classifier_0299342b_2026-07-09_09-07-24"
+            },
+            "BPIC_20_TPD": {
+                "darwin": "bpic_20_tpd_darwin_classifier_b59e38c4_2026-07-09_09-12-45"
+            },
+            "Helpdesk": {
+                "darwin": "helpdesk_darwin_classifier_f49cecb4_2026-07-09_10-02-40"
+            },
+            "Sepsis": {
+                "darwin": "sepsis_darwin_classifier_5e87d0be_2026-07-09_10-04-51"
+            },
+            "Traffic_Fines": {
+                "darwin": "traffic_fines_darwin_classifier_7bb66518_2026-07-09_09-21-26"
+            }
         }
     },
     "remaining_time": {
