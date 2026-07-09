@@ -1,0 +1,34 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_20_ID
+  source: log
+  dataset_path: datasets/raw/BPIC_20_ID.xes
+  terminator:
+    type: oracle
+transformer:
+  type: darwin
+model:
+  params:
+    batch_size: 64
+    drift_detector:
+      type: adwin
+    encoding: one_hot
+    epochs: 30
+    init_size: 7216
+    loss_fn:
+      type: cross_entropy
+    n_classes: 34
+    optimizer:
+      lr: 0.009075121971672137
+      type: nadam
+    sequence_model:
+      dropout: 0.23331348402957158
+      hidden_dim: 33
+      num_layers: 2
+      type: lstm
+    sequence_window: 7
+  type: darwin_classifier
+output:
+  folder: experiments/outputs/streaming/next_activity/one_hot
