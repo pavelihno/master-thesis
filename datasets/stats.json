@@ -44,35 +44,35 @@
     "BPIC_15_1": {
         "num_cases": 1199,
         "num_events": 52217,
-        "num_activities": 398,
+        "num_activities": 289,
         "mean_cycle": 95.71857049084113,
         "normalization_factor": 1486.0
     },
     "BPIC_15_2": {
         "num_cases": 832,
         "num_events": 44354,
-        "num_activities": 410,
+        "num_activities": 304,
         "mean_cycle": 160.1060730641248,
         "normalization_factor": 1325.9583333333333
     },
     "BPIC_15_3": {
         "num_cases": 1409,
         "num_events": 59681,
-        "num_activities": 383,
+        "num_activities": 277,
         "mean_cycle": 62.23151074113503,
         "normalization_factor": 1512.0
     },
     "BPIC_15_4": {
         "num_cases": 1053,
         "num_events": 47293,
-        "num_activities": 356,
+        "num_activities": 272,
         "mean_cycle": 116.80170310356654,
         "normalization_factor": 926.9583333333334
     },
     "BPIC_15_5": {
         "num_cases": 1156,
         "num_events": 59083,
-        "num_activities": 389,
+        "num_activities": 285,
         "mean_cycle": 98.34008178945598,
         "normalization_factor": 1343.9583333333333
     },

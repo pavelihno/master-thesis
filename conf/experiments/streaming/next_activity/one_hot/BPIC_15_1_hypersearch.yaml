@@ -45,7 +45,7 @@ model:
       - 32
       - 64
     epochs: 30
-    n_classes: 398
+    n_classes: 289
     init_size: 4006
     optimizer:
       type: nadam
