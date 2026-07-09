@@ -20,13 +20,13 @@ model:
     init_size: 5222
     loss_fn:
       type: cross_entropy
-    n_classes: 398
+    n_classes: 289
     optimizer:
-      lr: 0.0048565498137524915
+      lr: 0.009751640389335996
       type: nadam
     sequence_model:
-      dropout: 0.4397319347416505
-      hidden_dim: 47
+      dropout: 0.6070686105239718
+      hidden_dim: 59
       num_layers: 2
       type: lstm
     sequence_window: 50
