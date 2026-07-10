@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from utils.constants import CASE_PREFIX_COL
+from utils.constants import CASE_PREFIX_COL, TIME_COL
 
 
 class BaseTransformer(BaseEstimator, TransformerMixin, ABC):
@@ -48,7 +49,6 @@ class AggregateTransformer(BaseTransformer):
     ):
         super().__init__()
         self.group_col = group_col
-        self.case_id_col = group_col
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.boolean = boolean
@@ -109,7 +109,6 @@ class IndexBasedTransformer(BaseTransformer):
     ):
         super().__init__()
         self.group_col = group_col
-        self.case_id_col = group_col
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.max_events = max_events
@@ -172,7 +171,6 @@ class LastStateTransformer(BaseTransformer):
     ):
         super().__init__()
         self.group_col = group_col
-        self.case_id_col = group_col
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.fillna = fillna
@@ -214,7 +212,6 @@ class PreviousStateTransformer(BaseTransformer):
     ):
         super().__init__()
         self.group_col = group_col
-        self.case_id_col = group_col
         self.cat_cols = cat_cols
         self.num_cols = num_cols
         self.fillna = fillna
@@ -246,3 +243,97 @@ class PreviousStateTransformer(BaseTransformer):
 
         # Ensure consistent columns across fit/transform calls
         return self._ensure_consistent_columns(result)
+
+
+class LSTMTransformer(BaseTransformer):
+    """Prepares sequences of events for LSTM model."""
+
+    def __init__(
+        self,
+        group_col=CASE_PREFIX_COL,
+        time_col=TIME_COL,
+        cat_cols=None,
+        num_cols=None,
+        max_events=None,
+    ):
+        self.group_col = group_col
+        self.time_col = time_col
+        self.cat_cols = cat_cols or []
+        self.num_cols = num_cols or []
+        self.max_events = max_events
+
+        self.vocab = {}
+        self.vocab_sizes = {}
+
+        self.numeric_mean = {}
+        self.numeric_std = {}
+
+    def fit(self, X, y=None):
+        X = X.sort_values([self.group_col, self.time_col])
+
+        if self.max_events is None:
+            self.max_events = int(X.groupby(self.group_col).size().max())
+
+        # Build Vocabularies
+        for col in self.cat_cols:
+            vocab = {'<PAD>': 0, '<UNK>': 1}
+            for idx, val in enumerate(X[col].dropna().unique(), start=2):
+                vocab[val] = idx
+            self.vocab[col] = vocab
+            self.vocab_sizes[col] = len(vocab)
+
+        # Calculate standard scaling parameters
+        for col in self.num_cols:
+            self.numeric_mean[col] = float(X[col].mean())
+            std = float(X[col].std())
+            self.numeric_std[col] = 1.0 if pd.isna(std) or std == 0 else std
+
+        return self
+
+    def transform(self, X):
+        if not self.vocab and self.cat_cols:
+            raise ValueError('Transformer not fitted.')
+
+        X = X.sort_values([self.group_col, self.time_col]).copy()
+
+        # Scale numeric vectors
+        for col in self.num_cols:
+            mean = self.numeric_mean[col]
+            std = self.numeric_std[col]
+            X[col] = (X[col].fillna(mean) - mean) / std
+
+        # Map categoricals to token IDs
+        for col in self.cat_cols:
+            unk_idx = self.vocab[col]['<UNK>']
+            X[col] = X[col].map(self.vocab[col]).fillna(unk_idx).astype(np.int64)
+
+        # Build sequence index constraints
+        X['__event_idx'] = X.groupby(self.group_col).cumcount()
+        X = X[X['__event_idx'] < self.max_events]
+
+        # Extract uniquely identified case sequences
+        case_ids = X[self.group_col].unique()
+        n_cases = len(case_ids)
+
+        case_to_row = {cid: idx for idx, cid in enumerate(case_ids)}
+        row_indices = X[self.group_col].map(case_to_row).values
+        col_indices = X['__event_idx'].values
+
+        # Build categorical structure matrix
+        cat_features = np.zeros(
+            (n_cases, self.max_events, len(self.cat_cols)), dtype=np.int64
+        )
+        if self.cat_cols:
+            cat_features[row_indices, col_indices] = X[self.cat_cols].values
+
+        # Build numerical structure matrix
+        num_features = np.zeros(
+            (n_cases, self.max_events, len(self.num_cols)), dtype=np.float32
+        )
+        if self.num_cols:
+            num_features[row_indices, col_indices] = X[self.num_cols].values
+
+        return {
+            'cat_features': cat_features,
+            'num_features': num_features,
+        }

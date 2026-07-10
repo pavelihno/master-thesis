@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from sklearn.preprocessing import LabelEncoder
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, Dataset
 
 
 class ModelWrapper(ABC):
@@ -59,11 +59,47 @@ class SklearnModelWrapper(ModelWrapper):
         return cls(model)
 
 
+class DictDataset(Dataset):
+    """Dataset that preserves dictionary structure for PyTorch DataLoaders."""
+
+    def __init__(self, X: dict, y_tensor=None):
+        self.cat_features = X.get('cat_features')
+        self.num_features = X.get('num_features')
+        self.y_tensor = y_tensor
+
+        if self.cat_features is not None and self.cat_features.shape[-1] > 0:
+            self.length = len(self.cat_features)
+        elif self.num_features is not None and self.num_features.shape[-1] > 0:
+            self.length = len(self.num_features)
+        else:
+            raise ValueError(
+                "Both 'cat_features' and 'num_features' are empty or missing."
+            )
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, idx):
+        item = {}
+        if self.cat_features is not None and self.cat_features.shape[-1] > 0:
+            item['cat_features'] = torch.as_tensor(
+                self.cat_features[idx], dtype=torch.long
+            )
+        if self.num_features is not None and self.num_features.shape[-1] > 0:
+            item['num_features'] = torch.as_tensor(
+                self.num_features[idx], dtype=torch.float32
+            )
+
+        if self.y_tensor is not None:
+            return item, self.y_tensor[idx]
+        return item
+
+
 class TorchModelWrapper(ModelWrapper):
     def __init__(
         self, model, optimizer_cls, loss_fn, epochs=20, batch_size=64, device='cpu'
     ):
-        self.model = model
+        self.model = model.to(device)
         self.device = device
         self.optimizer_cls = optimizer_cls
         self.loss_fn = loss_fn
@@ -79,10 +115,8 @@ class TorchModelWrapper(ModelWrapper):
             encoded = self.label_encoder.fit_transform(labels)
             self.classes_ = self.label_encoder.classes_
             return encoded
-
         if self.classes_ is None:
             raise ValueError('Label encoder not fitted.')
-
         return self.label_encoder.transform(labels)
 
     def decode_labels(self, encoded_labels):
@@ -90,21 +124,26 @@ class TorchModelWrapper(ModelWrapper):
             raise ValueError('Label encoder not fitted.')
         return self.label_encoder.inverse_transform(np.asarray(encoded_labels).ravel())
 
-    def fit(self, X, y):
-        X_tensor = torch.as_tensor(X, dtype=torch.float32)
+    def fit(self, X: dict, y):
         y_encoded = self._encode_labels(y, fit=True)
         y_tensor = torch.as_tensor(y_encoded, dtype=torch.long)
-        loader = DataLoader(
-            TensorDataset(X_tensor, y_tensor), batch_size=self.batch_size, shuffle=True
-        )
 
-        self.model.to(self.device)
+        dataset = DictDataset(X, y_tensor)
+        loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+
+        if not self.model.initialized:
+            sample_item = dataset[0][0]
+            init_x = {k: v.unsqueeze(0).to(self.device) for k, v in sample_item.items()}
+            self.model.init_layers(init_x)
+
         self.optimizer = self.optimizer_cls(self.model.parameters())
 
         self.model.train()
         for _ in range(self.epochs):
             for xb, yb in loader:
-                xb, yb = xb.to(self.device), yb.to(self.device)
+                xb = {k: v.to(self.device) for k, v in xb.items()}
+                yb = yb.to(self.device)
+
                 self.optimizer.zero_grad()
                 out = self.model(xb)
                 loss = self.loss_fn(out, yb)
@@ -113,16 +152,26 @@ class TorchModelWrapper(ModelWrapper):
 
         return self
 
-    def predict(self, X):
+    def predict(self, X: dict):
         self.model.eval()
-        X_tensor = torch.as_tensor(X, dtype=torch.float32).to(self.device)
+
+        dataset = DictDataset(X)
+        loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=False)
+
+        predictions_list = []
         with torch.no_grad():
-            out = self.model(X_tensor)
-            predictions = torch.argmax(out, dim=1).cpu().numpy()
-            return self.decode_labels(predictions)
+            for xb in loader:
+                xb = {k: v.to(self.device) for k, v in xb.items()}
+
+                out = self.model(xb)
+                preds = torch.argmax(out, dim=1).cpu().numpy()
+                predictions_list.append(preds)
+
+        return self.decode_labels(np.concatenate(predictions_list))
 
     def save(self, path):
         path = Path(path)
+        path.mkdir(parents=True, exist_ok=True)
         torch.save(
             {
                 'state_dict': self.model.state_dict(),
@@ -147,6 +196,7 @@ class TorchModelWrapper(ModelWrapper):
         checkpoint = torch.load(path / 'model.pt', map_location=device)
         model = model_factory()
         model.load_state_dict(checkpoint['state_dict'])
+
         wrapper = cls(
             model,
             optimizer_cls,

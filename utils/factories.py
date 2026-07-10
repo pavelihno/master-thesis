@@ -19,6 +19,7 @@ from utils.base.transformers import (
     AggregateTransformer,
     IndexBasedTransformer,
     LastStateTransformer,
+    LSTMTransformer,
 )
 from utils.constants import (
     ACTIVITY_COL,
@@ -150,6 +151,15 @@ def create_transformer(config):
             cat_cols=config.get('cat_cols', []),
             num_cols=config.get('num_cols', []),
             max_events=config.get('max_len'),
+        )
+    elif transformer_type == 'lstm':
+        return LSTMTransformer(
+            group_col=config.get('group_col', CASE_PREFIX_COL),
+            time_col=config.get('time_col', TIME_COL),
+            cat_cols=config.get('cat_cols', []),
+            num_cols=config.get('num_cols', []),
+            max_events=config.get('max_len', None),
+            encoding_method=config.get('encoding_method', 'vocab'),
         )
     else:
         raise ValueError(f'Unknown transformer type: {transformer_type}')
