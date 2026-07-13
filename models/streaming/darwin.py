@@ -12,6 +12,7 @@ import torch.nn as nn
 from gensim.models import Word2Vec
 from river import base
 from river.preprocessing import StandardScaler
+from scipy.spatial.distance import jensenshannon
 
 from models.streaming.sequence import SequenceModel
 from utils.streaming.base.feature_buffers import FeatureBuffer
@@ -29,8 +30,10 @@ class DARWINBase(ABC):
         optimizer_cls: Callable,
         loss_fn: nn.Module,
         batch_size: int,
-        drift_detector: base.DriftDetector | None,
         init_size: int,
+        drift_detector: base.DriftDetector | None,
+        drift_trigger: str = 'error',
+        task: str = 'classification',
         encoding: str = 'word2vec',
         w2v_window: int | None = None,
         embedding_dim: int | None = None,
@@ -46,6 +49,11 @@ class DARWINBase(ABC):
         self.encoding = encoding.lower()
         self.w2v = None
         self.w2v_window = w2v_window
+        self.event_to_idx = (
+            {event: i for i, event in enumerate(sorted(self.allowed_events))}
+            if self.allowed_events is not None
+            else {}
+        )
 
         if self.encoding == 'word2vec':
             if embedding_dim is None or embedding_dim <= 0:
@@ -53,16 +61,12 @@ class DARWINBase(ABC):
                     "embedding_dim must be specified for 'word2vec' encoding."
                 )
             self.event_vector_dim = embedding_dim
-            self.event_to_idx = {}
 
         elif self.encoding == 'one_hot':
-            if not self.allowed_events:
+            if not self.allowed_events or len(self.allowed_events) == 0:
                 raise ValueError(
                     "allowed_events must be specified for 'one_hot' encoding"
                 )
-            self.event_to_idx = {
-                event: i for i, event in enumerate(sorted(self.allowed_events))
-            }
             self.event_vector_dim = len(self.event_to_idx)
 
         else:
@@ -90,6 +94,20 @@ class DARWINBase(ABC):
         self.loss_history = []
 
         self.drift_detector = drift_detector
+        self.drift_trigger = drift_trigger
+        if self.drift_trigger == 'error':
+            if task not in ['classification', 'regression']:
+                raise ValueError('Invalid task for error-based drift detection.')
+            self.task = task
+
+        elif self.drift_trigger == 'control_flow':
+            if not self.allowed_events or len(self.allowed_events) == 0:
+                raise ValueError('allowed_events must be specified')
+            self.baseline_dfg_matrix = None
+            self.dfg_matrix = None
+
+        else:
+            raise ValueError("drift_trigger must be either 'error' or 'control_flow'.")
 
         # Prefix tree and header table for the most recent event of each case
         self.prefix_tree = PrefixTreeNode(event_name=None, parent=None)
@@ -138,11 +156,6 @@ class DARWINBase(ABC):
         self, logits: torch.Tensor, targets: torch.Tensor
     ) -> torch.Tensor:
         """Compute loss between model output and targets."""
-        pass
-
-    @abstractmethod
-    def _get_drift_signal(self, y_true, y_pred) -> float:
-        """Compute drift signal from true and predicted values."""
         pass
 
     @abstractmethod
@@ -319,7 +332,7 @@ class DARWINBase(ABC):
         return child
 
     def _get_prefix_nodes(self, node: PrefixTreeNode) -> list[PrefixTreeNode]:
-        """Reconstruct prefix nodes by backtracking the tree."""
+        """Reconstruct last sequence_window prefix nodes by backtracking the tree."""
         path: list[PrefixTreeNode] = []
         curr = node
         while curr.parent is not None:
@@ -557,6 +570,49 @@ class DARWINBase(ABC):
             avg_epoch_loss = np.mean(epoch_loss_history)
             self.loss_history.append(avg_epoch_loss)
 
+    def _get_dfg_matrix(self, sample_buffer: SampleBuffer) -> np.ndarray:
+        """Compute the directly-follows graph (DFG) matrix from the sample buffer."""
+        dfg_matrix = np.zeros((len(self.event_to_idx), len(self.event_to_idx)))
+
+        for sample in sample_buffer.get_samples():
+            node = sample.prefix_node
+
+            if (
+                node is not None
+                and node.parent is not None
+                and node.parent.event_name is not None
+            ):
+                event_a = node.parent.event_name
+                event_b = node.event_name
+
+                idx_a = self.event_to_idx.get(event_a)
+                idx_b = self.event_to_idx.get(event_b)
+
+                if idx_a is not None and idx_b is not None:
+                    dfg_matrix[idx_a, idx_b] += 1
+
+        return dfg_matrix
+
+    def _print_dfg_matrix(self, dfg_matrix: np.ndarray) -> None:
+        """Print the DFG matrix in a readable format."""
+        ordered_events = sorted(
+            self.event_to_idx.keys(), key=lambda k: self.event_to_idx[k]
+        )
+        max_w = max(len(str(e)) for e in ordered_events)
+        max_w = max(max_w, 5)
+
+        header = (
+            ' ' * max_w + ' | ' + ' | '.join(f'{e:>{max_w}}' for e in ordered_events)
+        )
+        print(header)
+        print('-' * len(header))
+
+        for event_name, row in zip(ordered_events, dfg_matrix, strict=True):
+            row_str = ' | '.join(f'{int(val):>{max_w}}' for val in row)
+            print(f'{event_name:>{max_w}} | {row_str}')
+
+        print()
+
     def learn_one(self, x: dict, y: Any):
         """Process one event and update the online learner state."""
         case_id, event_name, event_id = x['case_id'], x['event_name'], x['event_id']
@@ -587,18 +643,21 @@ class DARWINBase(ABC):
                 if init_buffer_size > 0:
                     self._adapt_model(self.sample_buffer)
 
+                    if self.drift_trigger == 'error':
+                        pass
+
+                    elif self.drift_trigger == 'control_flow':
+                        self.baseline_dfg_matrix = self._get_dfg_matrix(
+                            self.sample_buffer
+                        )
+                        self.dfg_matrix = self.baseline_dfg_matrix.copy()
+
+                        # print('Initial DFG matrix:')
+                        # self._print_dfg_matrix(self.baseline_dfg_matrix)
+
                     self.sample_buffer.clear()
                     self.initialized = True
 
-                    # print('Initialization completed')
-                    # print(f'{self.events_processed} events processed')
-                    # print(f'Initial vocabulary size: {len(self.vocab)}')
-                    # print(set(self.vocab.keys()), '\n')
-
-                    # for event_name in self.vocab.keys():
-                    #     if event_name in self.w2v.wv:
-                    #         vector = self.w2v.wv[event_name][:5]
-                    #         print(f'Event: "{event_name}", Vector: {vector}...')
                 else:
                     pass
                     # print('Initialization skipped due to empty buffer')
@@ -609,19 +668,66 @@ class DARWINBase(ABC):
             logits = self._get_pred_logits(case_id, node, is_learn=True)
             y_pred, y_pred_target = self._get_pred(logits)
 
-            # Only if label is known
-            if y_target is not None:
-                drift_signal = self._get_drift_signal(
-                    y_target,
-                    y_pred_target,
+            drift_detected = False
+
+            if self.drift_trigger == 'error':
+                # Only if label is known
+                if y_target is not None:
+                    drift_signal = None
+                    if self.task == 'classification':
+                        drift_signal = 0.0 if y_target == y_pred_target else 1.0
+
+                    elif self.task == 'regression':
+                        drift_signal = float(abs(y_target - y_pred_target))
+
+                    self.drift_detector.update(drift_signal)
+
+                    drift_detected = self.drift_detector.drift_detected
+
+            elif self.drift_trigger == 'control_flow':
+                current_event = node.event_name
+                previous_event = (
+                    node.parent.event_name if node.parent is not None else None
                 )
+
+                # Add the new directly-follows relation
+                if current_event is not None and previous_event is not None:
+                    idx_prev = self.event_to_idx.get(previous_event)
+                    idx_curr = self.event_to_idx.get(current_event)
+
+                    if idx_prev is not None and idx_curr is not None:
+                        self.dfg_matrix[idx_prev, idx_curr] += 1
+
+                # Normalize dfg matrices by rows
+                epsilon = 1e-5
+                p_matrix_raw = self.baseline_dfg_matrix + epsilon
+                base_sums = p_matrix_raw.sum(axis=1, keepdims=True)
+                p_matrix = p_matrix_raw / base_sums
+
+                q_matrix_raw = self.dfg_matrix + epsilon
+                curr_sums = q_matrix_raw.sum(axis=1, keepdims=True)
+                q_matrix = q_matrix_raw / curr_sums
+
+                js_distances = jensenshannon(p_matrix, q_matrix, axis=1)
+
+                # Row distance aggregated into scalar
+                drift_signal = float(np.mean(js_distances))
+
                 self.drift_detector.update(drift_signal)
 
-                self.sample_buffer.add_sample(node, case_id, y_target)
+                drift_detected = self.drift_detector.drift_detected
 
-                if self.drift_detector.drift_detected:
-                    self._adapt_model(self.sample_buffer)
-                    self.sample_buffer.clear()
+                if drift_detected:
+                    # print('Updated DFG matrix (with drift):')
+                    # self._print_dfg_matrix(self.dfg_matrix)
+
+                    self.baseline_dfg_matrix = self.dfg_matrix.copy()
+
+            self.sample_buffer.add_sample(node, case_id, y_target)
+
+            if drift_detected:
+                self._adapt_model(self.sample_buffer)
+                self.sample_buffer.clear()
 
         return self
 
@@ -687,15 +793,16 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         optimizer_cls: Callable,
         loss_fn: nn.Module,
         batch_size: int,
-        drift_detector: base.DriftDetector | None,
         init_size: int,
+        drift_detector: base.DriftDetector | None,
+        drift_trigger: str = 'error',
         encoding: str = 'word2vec',
         w2v_window: int | None = None,
         embedding_dim: int | None = None,
         epochs: int = 1,
         feature_size: int = 0,
         sample_buffer: SampleBuffer | None = None,
-        dynamic_n_classes: bool = False, # NOTE: archive
+        dynamic_n_classes: bool = False,  # NOTE: archive
         n_classes: int | None = None,
         max_n_classes: int | None = None,
         device: torch.device | None = None,
@@ -711,6 +818,8 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             loss_fn=loss_fn,
             batch_size=batch_size,
             drift_detector=drift_detector,
+            drift_trigger=drift_trigger,
+            task='classification',
             init_size=init_size,
             epochs=epochs,
             feature_size=feature_size,
@@ -751,9 +860,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         if out_dim <= 0:
             raise ValueError('Cannot initialize head with zero classes')
 
-        self.head = nn.Linear(self.sequence_model.output_dim, out_dim).to(
-            self.device
-        )
+        self.head = nn.Linear(self.sequence_model.output_dim, out_dim).to(self.device)
         self.n_classes = out_dim
 
     def _prepare_target(self, y: Any) -> torch.Tensor:
@@ -773,9 +880,6 @@ class DARWINClassifier(base.Classifier, DARWINBase):
     ) -> torch.Tensor:
         return self.loss_fn(logits, targets)
 
-    def _get_drift_signal(self, y_true: int, y_pred: int) -> float:
-        return 0.0 if y_true == y_pred else 1.0
-
     def _map_label(self, label: str) -> int | None:
         """Map label to categorical classification index."""
         if label not in self.vocab:
@@ -789,7 +893,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
 
             if self.dynamic_n_classes:
                 if self.initialized and idx >= self.n_classes:
-                    # print(f'Expanding vocabulary: {label}')
+                    # print(f'Expanding classification vocabulary: {label}')
                     # print(f'Current vocabulary size: {len(self.vocab)}')
                     # print(set(self.vocab.keys()))
                     # print(set(self.vocab.keys()), '\n')
@@ -876,8 +980,9 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         optimizer_cls: Callable,
         loss_fn: nn.Module,
         batch_size: int,
-        drift_detector: base.DriftDetector | None,
         init_size: int,
+        drift_detector: base.DriftDetector | None,
+        drift_trigger: str = 'error',
         encoding: str = 'word2vec',
         w2v_window: int | None = None,
         embedding_dim: int | None = None,
@@ -897,6 +1002,8 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             loss_fn=loss_fn,
             batch_size=batch_size,
             drift_detector=drift_detector,
+            drift_trigger=drift_trigger,
+            task='regression',
             init_size=init_size,
             epochs=epochs,
             feature_size=feature_size,
