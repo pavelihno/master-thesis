@@ -16,18 +16,18 @@ model:
       type: adwin
     drift_trigger: control_flow
     dynamic_n_classes: true
-    embedding_dim: 128
+    embedding_dim: 256
     epochs: 30
     init_size: 1522
     loss_fn:
       type: cross_entropy
     max_n_classes: 30
     optimizer:
-      lr: 0.08185001109725444
+      lr: 0.0970947296698585
       type: nadam
     sequence_model:
-      dropout: 0.4211905377372768
-      hidden_dim: 31
+      dropout: 0.2928599125187744
+      hidden_dim: 63
       num_layers: 1
       type: lstm
     sequence_window: 3

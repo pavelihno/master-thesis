@@ -23,12 +23,12 @@ model:
       type: cross_entropy
     max_n_classes: 30
     optimizer:
-      lr: 0.014071405702030306
+      lr: 0.007781584049296768
       type: nadam
     sequence_model:
-      dropout: 0.09869157046121738
-      hidden_dim: 93
-      num_layers: 1
+      dropout: 0.07515374336319824
+      hidden_dim: 141
+      num_layers: 2
       type: lstm
     sequence_window: 7
     w2v_window: 5
