@@ -21,7 +21,7 @@ model:
     init_size: 7216
     loss_fn:
       type: cross_entropy
-    max_n_classes: 30
+    max_n_classes: 40
     optimizer:
       lr: 0.001466209571511212
       type: nadam
