@@ -1,0 +1,37 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: Helpdesk
+  source: log
+  dataset_path: datasets/raw/Helpdesk.xes
+  terminator:
+    type: oracle
+transformer:
+  type: darwin
+model:
+  params:
+    batch_size: 64
+    drift_detector:
+      type: adwin
+    drift_trigger: control_flow
+    dynamic_n_classes: true
+    embedding_dim: 128
+    epochs: 30
+    init_size: 2135
+    loss_fn:
+      type: cross_entropy
+    max_n_classes: 30
+    optimizer:
+      lr: 0.014071405702030306
+      type: nadam
+    sequence_model:
+      dropout: 0.09869157046121738
+      hidden_dim: 93
+      num_layers: 1
+      type: lstm
+    sequence_window: 7
+    w2v_window: 5
+  type: darwin_classifier
+output:
+  folder: experiments/outputs/streaming/next_activity/control_flow_drift
