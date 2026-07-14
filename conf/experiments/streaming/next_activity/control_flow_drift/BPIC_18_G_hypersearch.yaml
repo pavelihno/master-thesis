@@ -52,7 +52,7 @@ model:
       - 32
       - 64
     epochs: 30
-    init_size: 17217
+    init_size: 15000
     optimizer:
       type: nadam
       lr:
