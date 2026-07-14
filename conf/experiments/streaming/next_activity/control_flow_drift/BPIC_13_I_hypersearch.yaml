@@ -51,8 +51,6 @@ model:
       - 32
       - 64
     epochs: 30
-    dynamic_n_classes: true
-    max_n_classes: 30
     init_size: 5243
     optimizer:
       type: nadam
@@ -67,6 +65,8 @@ model:
     drift_detector:
       type: adwin
     drift_trigger: control_flow
+    encoding: one_hot
+    n_classes: 4
 search:
   metric: macro_f1
   maximize: true
