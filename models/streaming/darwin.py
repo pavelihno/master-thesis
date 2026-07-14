@@ -103,8 +103,11 @@ class DARWINBase(ABC):
         elif self.drift_trigger == 'control_flow':
             if not self.allowed_events or len(self.allowed_events) == 0:
                 raise ValueError('allowed_events must be specified')
+
             self.baseline_dfg_matrix = None
             self.dfg_matrix = None
+            effective_window = max(self.init_size, 1000)
+            self.dfg_decay_factor = 1.0 - (1.0 / effective_window)
 
         else:
             raise ValueError("drift_trigger must be either 'error' or 'control_flow'.")
@@ -696,6 +699,7 @@ class DARWINBase(ABC):
                     idx_curr = self.event_to_idx.get(current_event)
 
                     if idx_prev is not None and idx_curr is not None:
+                        self.dfg_matrix *= self.dfg_decay_factor
                         self.dfg_matrix[idx_prev, idx_curr] += 1
 
                 # Normalize dfg matrices by rows
@@ -710,8 +714,22 @@ class DARWINBase(ABC):
 
                 js_distances = jensenshannon(p_matrix, q_matrix, axis=1)
 
-                # Row distance aggregated into scalar
-                drift_signal = float(np.mean(js_distances))
+                # Aggregation into scalar
+
+                # 1. Mean
+                # drift_signal = float(np.mean(js_distances))
+
+                # 2. Max
+                # drift_signal = float(np.max(js_distances))
+
+                # 3. Frequency-Weighted Mean
+                state_weights = base_sums.flatten() / base_sums.sum()
+                drift_signal = float(np.average(js_distances, weights=state_weights))
+
+                # 4. Top-k Mean
+                # k = 3
+                # top_k_indices = np.argsort(js_distances)[-k:]
+                # drift_signal = float(np.mean(js_distances[top_k_indices]))
 
                 self.drift_detector.update(drift_signal)
 
