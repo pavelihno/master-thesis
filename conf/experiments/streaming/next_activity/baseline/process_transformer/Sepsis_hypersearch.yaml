@@ -15,20 +15,7 @@ model:
   type: darwin_classifier
   params:
     w2v_window: 5
-    sequence_window:
-      search: choice
-      options:
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-    embedding_dim:
-      search: choice
-      options:
-      - 64
-      - 128
-      - 256
+    sequence_window: 128
     sequence_model:
       type: process_transformer
       head_dim:
@@ -55,7 +42,7 @@ model:
         search: choice
         options:
         - max
-        - mean
+        - last
       pooling_dropout: 0.1
     batch_size:
       search: choice
@@ -63,8 +50,6 @@ model:
       - 32
       - 64
     epochs: 30
-    dynamic_n_classes: true
-    max_n_classes: 30
     init_size: 1000
     optimizer:
       type: nadam
@@ -78,6 +63,8 @@ model:
       type: cross_entropy
     drift_detector:
       type: adwin
+    encoding: one_hot
+    n_classes: 16
 search:
   metric: macro_f1
   maximize: true

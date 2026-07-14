@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from abc import ABC, abstractmethod
 
 import torch
@@ -50,7 +51,7 @@ class ProcessTransformerModel(SequenceModel):
         dropout: float,
         max_len: int,
         pooling_dropout: float,
-        pooling_type: str = 'max',
+        pooling_type: str = 'last',
     ) -> None:
         super().__init__()
 
@@ -59,7 +60,21 @@ class ProcessTransformerModel(SequenceModel):
         self.output_dim = 128
 
         self.input_projection = nn.Linear(input_dim, self.encoder_dim)
-        self.pos_embedding = nn.Parameter(torch.randn(1, max_len, self.encoder_dim))
+
+        pos_embedding = torch.zeros(max_len, self.encoder_dim)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(
+            torch.arange(0, self.encoder_dim, 2).float()
+            * (-math.log(10000.0) / self.encoder_dim)
+        )
+
+        pos_embedding[:, 0::2] = torch.sin(position * div_term)
+        pos_embedding[:, 1::2] = torch.cos(position * div_term)
+
+        # Reshape to (1, max_len, encoder_dim)
+        pos_embedding = pos_embedding.unsqueeze(0)
+        self.register_buffer('pos_embedding', pos_embedding)
+
         self.pooling_dropout = nn.Dropout(pooling_dropout)
         self.dense_layers = nn.Sequential(
             nn.Linear(self.encoder_dim, 32),
