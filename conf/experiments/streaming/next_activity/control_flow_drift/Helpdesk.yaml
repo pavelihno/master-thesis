@@ -11,27 +11,25 @@ transformer:
   type: darwin
 model:
   params:
-    batch_size: 64
+    batch_size: 32
     drift_detector:
       type: adwin
     drift_trigger: control_flow
-    dynamic_n_classes: true
-    embedding_dim: 128
+    encoding: one_hot
     epochs: 30
     init_size: 2135
     loss_fn:
       type: cross_entropy
-    max_n_classes: 30
+    n_classes: 14
     optimizer:
-      lr: 0.007781584049296768
+      lr: 0.012414228315795492
       type: nadam
     sequence_model:
-      dropout: 0.07515374336319824
-      hidden_dim: 141
-      num_layers: 2
+      dropout: 0.2475979325052119
+      hidden_dim: 104
+      num_layers: 1
       type: lstm
-    sequence_window: 7
-    w2v_window: 5
+    sequence_window: 5
   type: darwin_classifier
 output:
   folder: experiments/outputs/streaming/next_activity/control_flow_drift

@@ -15,7 +15,6 @@ transformer:
 model:
   type: darwin_classifier
   params:
-    w2v_window: 5
     sequence_window: 128
     sequence_model:
       type: process_transformer

@@ -14,7 +14,6 @@ transformer:
 model:
   type: darwin_classifier
   params:
-    w2v_window: 5
     sequence_window:
       search: choice
       options:
@@ -23,12 +22,6 @@ model:
       - 5
       - 6
       - 7
-    embedding_dim:
-      search: choice
-      options:
-      - 128
-      - 256
-      - 512
     sequence_model:
       type: lstm
       hidden_dim:

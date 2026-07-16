@@ -15,13 +15,12 @@ model:
     drift_detector:
       type: adwin
     drift_trigger: control_flow
-    dynamic_n_classes: true
-    embedding_dim: 128
+    encoding: one_hot
     epochs: 30
     init_size: 10764
     loss_fn:
       type: cross_entropy
-    max_n_classes: 30
+    n_classes: 7
     optimizer:
       lr: 0.0005751154174754405
       type: nadam
@@ -31,7 +30,6 @@ model:
       num_layers: 3
       type: lstm
     sequence_window: 4
-    w2v_window: 5
   type: darwin_classifier
 output:
   folder: experiments/outputs/streaming/next_activity/control_flow_drift
