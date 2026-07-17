@@ -10,30 +10,28 @@ dataset:
 transformer:
   type: darwin
 model:
-  type: darwin_classifier
   params:
     batch_size: 64
     drift_detector:
       type: adwin
-    dynamic_n_classes: true
-    embedding_dim: 128
+    encoding: one_hot
     epochs: 30
     init_size: 7216
     loss_fn:
       type: cross_entropy
-    max_n_classes: 40
+    n_classes: 34
     optimizer:
-      lr: 0.0015068979368865738
+      lr: 0.0030628914962905333
       type: nadam
     sequence_model:
-      dropout: 0.1964036493087466
+      dropout: 0.08414787107539465
       head_dim: 16
       num_heads: 4
-      num_layers: 2
+      num_layers: 1
       pooling_dropout: 0.1
-      pooling_type: mean
+      pooling_type: max
       type: process_transformer
-    sequence_window: 6
-    w2v_window: 5
+    sequence_window: 128
+  type: darwin_classifier
 output:
-  folder: experiments/outputs/streaming/BPIC_20_ID
+  folder: experiments/outputs/streaming/next_activity/baseline/process_transformer

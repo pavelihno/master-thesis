@@ -14,26 +14,24 @@ model:
     batch_size: 64
     drift_detector:
       type: adwin
-    dynamic_n_classes: true
-    embedding_dim: 64
+    encoding: one_hot
     epochs: 30
     init_size: 56147
     loss_fn:
       type: cross_entropy
-    max_n_classes: 30
+    n_classes: 11
     optimizer:
-      lr: 0.00108188969783814
+      lr: 0.0020123938750786024
       type: nadam
     sequence_model:
-      dropout: 0.3287991801895341
+      dropout: 0.17160830807134536
       head_dim: 32
-      num_heads: 4
+      num_heads: 8
       num_layers: 1
       pooling_dropout: 0.1
       pooling_type: max
       type: process_transformer
-    sequence_window: 5
-    w2v_window: 5
+    sequence_window: 128
   type: darwin_classifier
 output:
-  folder: experiments/outputs/streaming/next_activity/baseline
+  folder: experiments/outputs/streaming/next_activity/baseline/process_transformer
