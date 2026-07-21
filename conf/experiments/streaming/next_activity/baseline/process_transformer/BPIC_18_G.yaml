@@ -19,7 +19,7 @@ model:
     init_size: 43601
     loss_fn:
       type: cross_entropy
-    n_classes: 7
+    n_classes: 16
     optimizer:
       lr: 0.0018299399204731598
       type: nadam
