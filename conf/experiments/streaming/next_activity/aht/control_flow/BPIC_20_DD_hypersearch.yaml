@@ -1,0 +1,70 @@
+hyperparam_search: true
+task:
+  type: next_activity
+  mode: predict_and_learn
+  max_events: 5644
+dataset:
+  dataset_name: BPIC_20_DD
+  source: log
+  dataset_path: datasets/raw/BPIC_20_DD.xes
+  terminator:
+    type: oracle
+transformer:
+  type: freq
+  params:
+    include_prefix_len: false
+    include_trace_attrs: false
+    last_events: 0
+model:
+  type: aht
+  params:
+    drift_detector:
+      type: adwin
+    grace_period:
+      search: int
+      low: 50
+      high: 250
+    delta:
+      search: float
+      low: -6
+      high: -2
+      exp: true
+      base: 10
+    tau:
+      search: float
+      low: 0.01
+      high: 0.2
+    split_criterion:
+      search: choice
+      options:
+      - info_gain
+      - gini
+    leaf_prediction:
+      search: choice
+      options:
+      - mc
+      - nb
+      - nba
+    nb_threshold:
+      search: int
+      low: 0
+      high: 30
+    switch_significance:
+      search: float
+      low: 0.01
+      high: 0.15
+    max_depth:
+      search: choice
+      options:
+      - 10
+      - 20
+      - 30
+      - 40
+    seed: 42
+search:
+  metric: macro_f1
+  max_trials: 100
+  maximize: true
+  seed: 123
+output:
+  folder: experiments/outputs/streaming/next_activity/aht/control_flow

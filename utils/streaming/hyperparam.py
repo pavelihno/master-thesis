@@ -153,7 +153,9 @@ def run_hyperopt(cfg: dict, device: torch.device | None = None) -> dict:
         model = create_model(
             sampled_model_cfg, device=device, allowed_events=allowed_events
         )
-        transformer = create_transformer(sampled_transformer_cfg)
+        transformer = create_transformer(
+            sampled_transformer_cfg, unique_events=allowed_events
+        )
 
         pipeline = create_pipeline(
             task_cfg,

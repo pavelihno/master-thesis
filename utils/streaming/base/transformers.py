@@ -254,6 +254,86 @@ class DimensionTransformer(StreamingTransformer):
         self._prefix_lens.pop(trace_id, None)
 
 
+class FrequencyBasedTransformer(StreamingTransformer):
+    """
+    Frequency-based encoding.
+
+    Stores a counter of event occurrences per trace.
+    Assumes the vocabulary of events (unique_events) is fixed and fully known.
+
+    Optional capabilities:
+    - last_events: captures immediate sequential context.
+    - include_trace_attrs: captures static trace-level payload.
+    """
+
+    def __init__(
+        self,
+        unique_events: set[str],
+        last_events: int = 0,
+        include_trace_attrs: bool = False,
+        include_prefix_len: bool = True,
+    ):
+        super().__init__(include_prefix_len)
+
+        self._unique_events = unique_events
+        self._last_events = last_events
+        self._include_trace_attrs = include_trace_attrs
+
+        self._event_counts: dict[str, dict[str, int]] = {}
+        self._event_deques: dict[str, deque] = {}
+        self._trace_attrs: dict[str, dict] = {}
+
+    def update(self, trace_id: str, event: 'BEvent') -> None:
+        event_name = event.get_event_name()
+
+        if trace_id not in self._event_counts:
+            self._event_counts[trace_id] = dict.fromkeys(self._unique_events, 0)
+            self._prefix_lens[trace_id] = 0
+
+            if self._last_events > 0:
+                self._event_deques[trace_id] = deque(maxlen=self._last_events)
+
+            if self._include_trace_attrs:
+                self._trace_attrs[trace_id] = _trace_data(event)
+
+        self._event_counts[trace_id][event_name] += 1
+
+        if self._last_events > 0:
+            self._event_deques[trace_id].append(event_name)
+
+        self._prefix_lens[trace_id] += 1
+
+    def get_features(self, trace_id: str) -> dict[str, Any]:
+        features: dict[str, Any] = {}
+
+        # Trace-level features
+        if self._include_trace_attrs:
+            for k, v in self._trace_attrs.get(trace_id, {}).items():
+                _encode_value(features, f'trace_{k}', v)
+
+        # Frequency features
+        counts = self._event_counts.get(trace_id, dict.fromkeys(self._unique_events, 0))
+        for event_name, count in counts.items():
+            features[f'count_{event_name}'] = count
+
+        # Local sequence features
+        if self._last_events > 0:
+            recent_events = self._event_deques.get(trace_id, deque())
+            for i, name in enumerate(reversed(recent_events)):
+                features[f'last_act_{i}'] = name
+
+        if self._include_prefix_len:
+            features['prefix_len'] = self.prefix_len(trace_id)
+
+        return features
+
+    def clear(self, trace_id: str) -> None:
+        self._event_counts.pop(trace_id, None)
+        self._event_deques.pop(trace_id, None)
+        self._trace_attrs.pop(trace_id, None)
+        self._prefix_lens.pop(trace_id, None)
+
+
 class DARWINTransformer(StreamingTransformer):
     """
     Transformer for DARWIN-style streaming models.

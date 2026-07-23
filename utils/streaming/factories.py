@@ -43,18 +43,23 @@ from utils.streaming.base.transformers import (
     DARWINTransformer,
     DataTransformer,
     DimensionTransformer,
+    FrequencyBasedTransformer,
     IndexBasedTransformer,
 )
 from utils.streaming.experiment.core import load_saved_model
 from utils.streaming.time import TimeTarget
 
 
-def create_transformer(config: dict):
+def create_transformer(config: dict, unique_events: set[str] | None = None):
     """Create a streaming transformer from a config dict."""
     config = dict(config)
     transformer_type = config.pop('type', None)
     max_events = config.pop('max_events', None)
     include_prefix_len = config.pop('include_prefix_len', True)
+    include_trace_attrs = config.pop('include_trace_attrs', False)
+    last_events = config.pop('last_events', 0)
+
+    print(f'Unique events: {unique_events}')
 
     if transformer_type == 'cf':
         return ControlFlowTransformer(include_prefix_len=include_prefix_len)
@@ -67,6 +72,13 @@ def create_transformer(config: dict):
     elif transformer_type == 'dim':
         return DimensionTransformer(
             max_events=max_events, include_prefix_len=include_prefix_len
+        )
+    elif transformer_type == 'freq':
+        return FrequencyBasedTransformer(
+            unique_events=unique_events,
+            last_events=last_events,
+            include_trace_attrs=include_trace_attrs,
+            include_prefix_len=include_prefix_len,
         )
     elif transformer_type == 'darwin':
         return DARWINTransformer()

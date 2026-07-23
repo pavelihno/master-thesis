@@ -71,7 +71,9 @@ def run_config(
         config['dataset']
     )
     model = create_model(config['model'], device=device, allowed_events=allowed_events)
-    transformer = create_transformer(config['transformer'])
+    transformer = create_transformer(
+        config['transformer'], unique_events=allowed_events
+    )
 
     pipeline = create_pipeline(
         config['task'],
