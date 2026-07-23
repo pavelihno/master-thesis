@@ -59,8 +59,6 @@ def create_transformer(config: dict, unique_events: set[str] | None = None):
     include_trace_attrs = config.pop('include_trace_attrs', False)
     last_events = config.pop('last_events', 0)
 
-    print(f'Unique events: {unique_events}')
-
     if transformer_type == 'cf':
         return ControlFlowTransformer(include_prefix_len=include_prefix_len)
     elif transformer_type == 'data':
