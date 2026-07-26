@@ -1,0 +1,31 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: Helpdesk
+  source: log
+  dataset_path: datasets/raw/Helpdesk.xes
+  terminator:
+    type: oracle
+transformer:
+  params:
+    include_prefix_len: false
+    include_trace_attrs: true
+    last_events: 7
+  type: freq
+model:
+  params:
+    delta: 0.009788910834776825
+    drift_detector:
+      type: adwin
+    grace_period: 53
+    leaf_prediction: nba
+    max_depth: 40
+    nb_threshold: 25
+    seed: 42
+    split_criterion: info_gain
+    switch_significance: 0.0976942773139947
+    tau: 0.12558278923118138
+  type: aht
+output:
+  folder: experiments/outputs/streaming/next_activity/aht/control_flow_last_attr

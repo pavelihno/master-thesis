@@ -90,158 +90,60 @@ class ControlFlowTransformer(StreamingTransformer):
         self._prefix_lens.pop(trace_id, None)
 
 
-class DataTransformer(StreamingTransformer):
-    """
-    Data only encoding.
-
-    Stores running aggregates per trace:
-    - Numeric: running sum + count for mean, last observed value
-    - Categorical: last observed value per attribute
-    - Trace-level: captured from the first event
-    """
-
-    def __init__(self, include_prefix_len: bool = True):
-        super().__init__(include_prefix_len)
-
-        self._trace_attrs: dict[str, dict] = {}
-        self._numeric_sums: dict[str, dict[str, float]] = {}
-        self._numeric_counts: dict[str, dict[str, int]] = {}
-        self._numeric_last: dict[str, dict[str, float]] = {}
-        self._categorical_last: dict[str, dict[str, Any]] = {}
-
-    def update(self, trace_id: str, event: BEvent) -> None:
-        if trace_id not in self._trace_attrs:
-            self._trace_attrs[trace_id] = _trace_data(event)
-            self._numeric_sums[trace_id] = {}
-            self._numeric_counts[trace_id] = {}
-            self._numeric_last[trace_id] = {}
-            self._categorical_last[trace_id] = {}
-            self._prefix_lens[trace_id] = 0
-
-        for k, v in _event_data(event).items():
-            if isinstance(v, (int, float)):
-                float_v = float(v)
-                self._numeric_sums[trace_id][k] = (
-                    self._numeric_sums[trace_id].get(k, 0.0) + float_v
-                )
-                self._numeric_counts[trace_id][k] = (
-                    self._numeric_counts[trace_id].get(k, 0) + 1
-                )
-                self._numeric_last[trace_id][k] = float_v
-            else:
-                self._categorical_last[trace_id][k] = v
-
-        self._prefix_lens[trace_id] += 1
-
-    def get_features(self, trace_id: str) -> dict[str, Any]:
-        features: dict[str, Any] = {}
-
-        for k, v in self._trace_attrs.get(trace_id, {}).items():
-            _encode_value(features, f'trace_{k}', v)
-
-        for k, last_v in self._numeric_last.get(trace_id, {}).items():
-            features[f'data_{k}_last'] = last_v
-            count = self._numeric_counts[trace_id][k]
-            features[f'data_{k}_mean'] = self._numeric_sums[trace_id][k] / count
-
-        for k, v in self._categorical_last.get(trace_id, {}).items():
-            features[f'data_{k}_{v}'] = 1
-
-        if self._include_prefix_len:
-            features['prefix_len'] = self.prefix_len(trace_id)
-
-        return features
-
-    def clear(self, trace_id: str) -> None:
-        self._trace_attrs.pop(trace_id, None)
-        self._numeric_sums.pop(trace_id, None)
-        self._numeric_counts.pop(trace_id, None)
-        self._numeric_last.pop(trace_id, None)
-        self._categorical_last.pop(trace_id, None)
-        self._prefix_lens.pop(trace_id, None)
-
-
 class IndexBasedTransformer(StreamingTransformer):
     """
     Index-based encoding.
 
-    Stores last max_events event names per trace in a deque.
-    - Static part: trace-level attributes encoded once
-    - Dynamic part: event name per position
+    Stores the last `max_events` events per trace in a deque.
+    Configurable to include trace-level static and event-level dynamic attributes.
     """
 
-    def __init__(self, max_events: int = 10, include_prefix_len: bool = True):
+    def __init__(
+        self,
+        max_events: int = 10,
+        include_trace_attrs: bool = False,
+        include_event_attrs: bool = False,
+        include_prefix_len: bool = True,
+    ):
         super().__init__(include_prefix_len)
 
         self._max_events = max_events
+        self._include_trace_attrs = include_trace_attrs
+        self._include_event_attrs = include_event_attrs
+
         self._trace_attrs: dict[str, dict] = {}
         self._event_deques: dict[str, deque] = {}
 
-    def update(self, trace_id: str, event: BEvent) -> None:
-        if trace_id not in self._trace_attrs:
-            self._trace_attrs[trace_id] = _trace_data(event)
+    def update(self, trace_id: str, event: 'BEvent') -> None:
+        if trace_id not in self._event_deques:
             self._event_deques[trace_id] = deque(maxlen=self._max_events)
             self._prefix_lens[trace_id] = 0
-        self._event_deques[trace_id].append(event.get_event_name())
+
+            if self._include_trace_attrs:
+                self._trace_attrs[trace_id] = _trace_data(event)
+
+        event_name = event.get_event_name()
+        event_data = _event_data(event) if self._include_event_attrs else {}
+
+        self._event_deques[trace_id].append((event_name, event_data))
         self._prefix_lens[trace_id] += 1
 
     def get_features(self, trace_id: str) -> dict[str, Any]:
         features: dict[str, Any] = {}
 
-        for k, v in self._trace_attrs.get(trace_id, {}).items():
-            _encode_value(features, f'trace_{k}', v)
+        # Trace-level features
+        if self._include_trace_attrs:
+            for k, v in self._trace_attrs.get(trace_id, {}).items():
+                _encode_value(features, f'trace_{k}', v)
 
-        for i, name in enumerate(reversed(self._event_deques.get(trace_id, deque()))):
+        # Local sequence and event attributes
+        recent_events = self._event_deques.get(trace_id, deque())
+        for i, (name, data) in enumerate(reversed(recent_events)):
             features[f'act_{i}'] = name
 
-        if self._include_prefix_len:
-            features['prefix_len'] = self.prefix_len(trace_id)
-
-        return features
-
-    def clear(self, trace_id: str) -> None:
-        self._trace_attrs.pop(trace_id, None)
-        self._event_deques.pop(trace_id, None)
-        self._prefix_lens.pop(trace_id, None)
-
-
-class DimensionTransformer(StreamingTransformer):
-    """
-    Dimension encoding.
-
-    Stores last max_events (event_name, event_data) tuples per trace in a deque.
-    Full combination of control-flow and data features.
-    """
-
-    def __init__(self, max_events: int = 10, include_prefix_len: bool = True):
-        super().__init__(include_prefix_len)
-
-        self._max_events = max_events
-        self._trace_attrs: dict[str, dict] = {}
-        self._event_deques: dict[str, deque] = {}
-
-    def update(self, trace_id: str, event: BEvent) -> None:
-        if trace_id not in self._trace_attrs:
-            self._trace_attrs[trace_id] = _trace_data(event)
-            self._event_deques[trace_id] = deque(maxlen=self._max_events)
-            self._prefix_lens[trace_id] = 0
-        self._event_deques[trace_id].append(
-            (event.get_event_name(), _event_data(event))
-        )
-        self._prefix_lens[trace_id] += 1
-
-    def get_features(self, trace_id: str) -> dict[str, Any]:
-        features: dict[str, Any] = {}
-
-        for k, v in self._trace_attrs.get(trace_id, {}).items():
-            _encode_value(features, f'trace_{k}', v)
-
-        for i, (name, data) in enumerate(
-            reversed(self._event_deques.get(trace_id, deque()))
-        ):
-            features[f'act_{i}'] = name
-            for k, v in data.items():
-                _encode_value(features, f'data_{i}_{k}', v)
+            if self._include_event_attrs:
+                for k, v in data.items():
+                    _encode_value(features, f'data_{i}_{k}', v)
 
         if self._include_prefix_len:
             features['prefix_len'] = self.prefix_len(trace_id)

@@ -41,8 +41,6 @@ from utils.streaming.base.transformers import (
     ControlFlowTransformer,
     DARWINTimeTransformer,
     DARWINTransformer,
-    DataTransformer,
-    DimensionTransformer,
     FrequencyBasedTransformer,
     IndexBasedTransformer,
 )
@@ -57,19 +55,24 @@ def create_transformer(config: dict, unique_events: set[str] | None = None):
     max_events = config.pop('max_events', None)
     include_prefix_len = config.pop('include_prefix_len', True)
     include_trace_attrs = config.pop('include_trace_attrs', False)
+    include_event_attrs = config.pop('include_event_attrs', False)
     last_events = config.pop('last_events', 0)
 
     if transformer_type == 'cf':
         return ControlFlowTransformer(include_prefix_len=include_prefix_len)
-    elif transformer_type == 'data':
-        return DataTransformer(include_prefix_len=include_prefix_len)
     elif transformer_type == 'index':
         return IndexBasedTransformer(
-            max_events=max_events, include_prefix_len=include_prefix_len
+            max_events=max_events,
+            include_prefix_len=include_prefix_len,
+            include_trace_attrs=include_trace_attrs,
+            include_event_attrs=include_event_attrs,
         )
     elif transformer_type == 'dim':
-        return DimensionTransformer(
-            max_events=max_events, include_prefix_len=include_prefix_len
+        return IndexBasedTransformer(
+            max_events=max_events,
+            include_prefix_len=include_prefix_len,
+            include_trace_attrs=True,
+            include_event_attrs=True,
         )
     elif transformer_type == 'freq':
         return FrequencyBasedTransformer(

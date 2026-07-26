@@ -1,0 +1,31 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: Sepsis
+  source: log
+  dataset_path: datasets/raw/Sepsis.xes
+  terminator:
+    type: oracle
+transformer:
+  params:
+    include_prefix_len: false
+    include_trace_attrs: true
+    last_events: 6
+  type: freq
+model:
+  params:
+    delta: 0.00788922090147196
+    drift_detector:
+      type: adwin
+    grace_period: 62
+    leaf_prediction: nba
+    max_depth: 40
+    nb_threshold: 2
+    seed: 42
+    split_criterion: gini
+    switch_significance: 0.06014142639232867
+    tau: 0.13660718233693125
+  type: aht
+output:
+  folder: experiments/outputs/streaming/next_activity/aht/control_flow_last_attr
