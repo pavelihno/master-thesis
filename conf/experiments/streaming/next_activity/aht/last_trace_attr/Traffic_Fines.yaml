@@ -1,0 +1,32 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: Traffic_Fines
+  source: log
+  dataset_path: datasets/raw/Traffic_Fines.xes
+  terminator:
+    type: oracle
+transformer:
+  params:
+    include_event_attrs: false
+    include_prefix_len: false
+    include_trace_attrs: true
+    last_events: 6
+  type: index
+model:
+  params:
+    delta: 8.464837345373845e-05
+    drift_detector:
+      type: adwin
+    grace_period: 104
+    leaf_prediction: nb
+    max_depth: 10
+    nb_threshold: 29
+    seed: 42
+    split_criterion: gini
+    switch_significance: 0.0702051621135991
+    tau: 0.05790819420764474
+  type: aht
+output:
+  folder: experiments/outputs/streaming/next_activity/aht/last_trace_attr

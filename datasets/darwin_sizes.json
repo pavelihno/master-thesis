@@ -1,0 +1,53 @@
+{
+    "hyperparam_init_sizes": {
+        "BPIC_12": 9667,
+        "BPIC_13_C": 440,
+        "BPIC_13_I": 5243,
+        "BPIC_15_1": 4006,
+        "BPIC_18_C": 4312,
+        "BPIC_18_G": 17217,
+        "BPIC_18_P": 3752,
+        "BPIC_20_DD": 3572,
+        "BPIC_20_ID": 5390,
+        "BPIC_20_PTC": 1303,
+        "BPIC_20_RFP": 2307,
+        "BPIC_20_TPD": 6272,
+        "Helpdesk": 1430,
+        "Sepsis": 1000,
+        "Traffic_Fines": 30367
+    },
+    "hyperparam_max_events": {
+        "BPIC_12": 13110,
+        "BPIC_13_C": 666,
+        "BPIC_13_I": 6554,
+        "BPIC_15_1": 5222,
+        "BPIC_18_C": 8065,
+        "BPIC_18_G": 28461,
+        "BPIC_18_P": 6649,
+        "BPIC_20_DD": 5644,
+        "BPIC_20_ID": 7216,
+        "BPIC_20_PTC": 1825,
+        "BPIC_20_RFP": 3680,
+        "BPIC_20_TPD": 8659,
+        "Helpdesk": 2135,
+        "Sepsis": 1522,
+        "Traffic_Fines": 56147
+    },
+    "init_sizes": {
+        "BPIC_12": 25040,
+        "BPIC_13_C": 666,
+        "BPIC_13_I": 6554,
+        "BPIC_15_1": 5222,
+        "BPIC_18_C": 10764,
+        "BPIC_18_G": 43601,
+        "BPIC_18_P": 9304,
+        "BPIC_20_DD": 5644,
+        "BPIC_20_ID": 7216,
+        "BPIC_20_PTC": 1825,
+        "BPIC_20_RFP": 3680,
+        "BPIC_20_TPD": 8659,
+        "Helpdesk": 2135,
+        "Sepsis": 1522,
+        "Traffic_Fines": 56147
+    }
+}
