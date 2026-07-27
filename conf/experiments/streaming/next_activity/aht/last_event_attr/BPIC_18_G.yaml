@@ -1,0 +1,32 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_18_G
+  source: log
+  dataset_path: datasets/raw/BPIC_18_G.xes
+  terminator:
+    type: oracle
+transformer:
+  params:
+    include_event_attrs: true
+    include_prefix_len: false
+    include_trace_attrs: false
+    last_events: 4
+  type: index
+model:
+  params:
+    delta: 0.006309558551199209
+    drift_detector:
+      type: adwin
+    grace_period: 59
+    leaf_prediction: mc
+    max_depth: 20
+    nb_threshold: 19
+    seed: 42
+    split_criterion: info_gain
+    switch_significance: 0.09610775893912545
+    tau: 0.12398169331869151
+  type: aht
+output:
+  folder: experiments/outputs/streaming/next_activity/aht/last_event_attr

@@ -545,6 +545,53 @@
                 "aht": "traffic_fines_aht_cb860666_2026-07-27_10-11-48"
             }
         },
+        "aht_last_event_attr": {
+            "BPIC_12": {
+                "aht": "bpic_12_aht_2a88f058_2026-07-27_12-15-38"
+            },
+            "BPIC_13_C": {
+                "aht": "bpic_13_c_aht_5938bdbf_2026-07-27_12-15-38"
+            },
+            "BPIC_13_I": {
+                "aht": "bpic_13_i_aht_f1c59e0d_2026-07-27_12-15-38"
+            },
+            "BPIC_15_1": {
+                "aht": "bpic_15_1_aht_f81e03b2_2026-07-27_12-15-38"
+            },
+            "BPIC_18_C": {
+                "aht": "bpic_18_c_aht_fcaa7ab3_2026-07-27_12-15-46"
+            },
+            "BPIC_18_G": {
+                "aht": "bpic_18_g_aht_e674ca61_2026-07-27_12-16-24"
+            },
+            "BPIC_18_P": {
+                "aht": "bpic_18_p_aht_33f0fb07_2026-07-27_12-17-35"
+            },
+            "BPIC_20_DD": {
+                "aht": "bpic_20_dd_aht_9627d8a9_2026-07-27_12-19-07"
+            },
+            "BPIC_20_ID": {
+                "aht": "bpic_20_id_aht_a7f51eae_2026-07-27_12-19-37"
+            },
+            "BPIC_20_PTC": {
+                "aht": "bpic_20_ptc_aht_8d5eaf04_2026-07-27_12-19-57"
+            },
+            "BPIC_20_RFP": {
+                "aht": "bpic_20_rfp_aht_bbf7f7d4_2026-07-27_12-20-14"
+            },
+            "BPIC_20_TPD": {
+                "aht": "bpic_20_tpd_aht_d444cebf_2026-07-27_12-20-35"
+            },
+            "Helpdesk": {
+                "aht": "helpdesk_aht_e21a07c6_2026-07-27_12-20-36"
+            },
+            "Sepsis": {
+                "aht": "sepsis_aht_5967244c_2026-07-27_12-20-56"
+            },
+            "Traffic_Fines": {
+                "aht": "traffic_fines_aht_14366906_2026-07-27_12-21-12"
+            }
+        },
         "aht_last_trace_attr_event_attr": {
             "BPIC_12": {
                 "aht": "bpic_12_aht_105b5c76_2026-07-27_10-24-01"
