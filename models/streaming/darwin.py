@@ -42,7 +42,13 @@ class DARWINBase(ABC):
         sample_buffer: SampleBuffer | None = None,
         device: torch.device | None = None,
         allowed_events: set[str] | None = None,
+        seed: int | None = None,
     ):
+        if seed is not None:
+            torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+
         self.allowed_events = (
             set(allowed_events) if allowed_events is not None else None
         )
@@ -825,6 +831,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
         max_n_classes: int | None = None,
         device: torch.device | None = None,
         allowed_events: set[str] | None = None,
+        seed: int | None = None,
     ):
         DARWINBase.__init__(
             self,
@@ -845,6 +852,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             device=device,
             allowed_events=allowed_events,
             encoding=encoding,
+            seed=seed,
         )
 
         # Class number configuration
@@ -854,7 +862,7 @@ class DARWINClassifier(base.Classifier, DARWINBase):
             self.dynamic_n_classes = True
         else:
             if n_classes is None or n_classes <= 0:
-                raise ValueError('In fixed mode n_classes must be a positive integer')
+                raise ValueError('n_classes must be positive.')
             self.max_n_classes = n_classes
             self.n_classes = n_classes
             self.dynamic_n_classes = False
@@ -1009,6 +1017,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
         sample_buffer: SampleBuffer | None = None,
         device: torch.device | None = None,
         allowed_events: set[str] | None = None,
+        seed: int | None = None,
     ):
         DARWINBase.__init__(
             self,
@@ -1029,6 +1038,7 @@ class DARWINRegressor(base.Regressor, DARWINBase):
             device=device,
             allowed_events=allowed_events,
             encoding=encoding,
+            seed=seed,
         )
 
     def _init_head(self) -> None:

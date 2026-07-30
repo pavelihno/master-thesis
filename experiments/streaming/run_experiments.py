@@ -16,7 +16,7 @@ from utils.streaming.experiment.batch import (
 def run_batch(
     config_files: list[Path],
     workers: int = 1,
-    save_artifacts: bool = False,
+    save_artifacts: bool = True,
     device: str | None = None,
 ) -> list[dict]:
     runner_path = Path(__file__).with_name('run_train.py')
@@ -164,7 +164,7 @@ def main() -> None:
     results = run_batch(
         config_files,
         workers=args.workers,
-        save_artifacts=False,
+        save_artifacts=True,
         device=device.type if device is not None else None,
     )
 

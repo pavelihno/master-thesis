@@ -93,11 +93,15 @@ def create_model(
     config: dict,
     device: torch.device | None = None,
     allowed_events: set[str] | None = None,
+    seed: int | None = None,
 ):
     """Create a river streaming classifier from a config dict."""
     config = dict(config)
     model_type = config.pop('type', None)
     params = dict(config.pop('params', {}))
+
+    if seed is not None:
+        params['seed'] = seed
 
     drift_detector = create_drift_detector(params.pop('drift_detector', {}))
     warning_detector = create_drift_detector(params.pop('warning_detector', {}))

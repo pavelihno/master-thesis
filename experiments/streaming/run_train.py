@@ -1,6 +1,9 @@
 import argparse
 import json
+import random
 from pathlib import Path
+
+import numpy as np
 
 from utils.experiment.core import (
     ensure_output_dir,
@@ -39,11 +42,16 @@ def run_config(
     config: dict,
     config_path: str,
     *,
-    save_artifacts: bool = True,
+    no_save_artifacts: bool = False,
     metrics_json_path: str | None = None,
     results_csv_path: str | None = None,
     device=None,
+    seed: int | None = None,
 ) -> dict:
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+
     dataset_name, model_name = get_dataset_and_model(config)
     config_hash = get_config_hash(config)
     timestamp = get_timestamp()
@@ -66,11 +74,18 @@ def run_config(
     print(f'Model: {model_name}')
     if device is not None:
         print(f'Device: {device.type}')
+    if seed is not None:
+        print(f'Seed: {seed}')
 
     dataset_kwargs, dataset_source, terminator, allowed_events = create_dataset(
         config['dataset']
     )
-    model = create_model(config['model'], device=device, allowed_events=allowed_events)
+    model = create_model(
+        config['model'],
+        device=device,
+        allowed_events=allowed_events,
+        seed=seed,
+    )
     transformer = create_transformer(
         config['transformer'], unique_events=allowed_events
     )
@@ -102,7 +117,7 @@ def run_config(
 
     output_folder = None
 
-    if save_artifacts:
+    if not no_save_artifacts:
         output_folder = ensure_output_dir(config) / run_id
         output_folder.mkdir(parents=True, exist_ok=True)
         write_results(
@@ -146,9 +161,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Run one streaming experiment.')
     parser.add_argument('config_path', type=str, help='Path to the YAML config.')
     parser.add_argument(
-        '--save-artifacts',
-        type=bool,
-        default=True,
+        '--no-save-artifacts',
+        action='store_true',
         help='Optional saving artifacts.',
     )
     parser.add_argument(
@@ -169,6 +183,7 @@ def parse_args() -> argparse.Namespace:
         default='auto',
         help="Execution device: 'auto', 'cuda', or 'cpu'.",
     )
+    parser.add_argument('--seed', type=int, default=None, help='Optional seed.')
     return parser.parse_args()
 
 
@@ -180,10 +195,11 @@ def main():
         run_config(
             load_config(args.config_path),
             config_path=args.config_path,
-            save_artifacts=args.save_artifacts,
+            no_save_artifacts=args.no_save_artifacts,
             metrics_json_path=args.metrics_json,
             results_csv_path=args.results_csv,
             device=device,
+            seed=args.seed,
         )
     except Exception as exc:
         if args.metrics_json:

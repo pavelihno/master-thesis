@@ -14,12 +14,15 @@ def run_config_process(
     python_executable: str,
     metrics_dir: Path,
     results_dir: Path,
-    save_artifacts: bool,
+    save_artifacts: bool = True,
     device: str | None = None,
+    extra_args: list[str] | None = None,
+    run_suffix: str | None = None,
 ) -> dict:
     path_key = hashlib.sha1(str(config_path).encode()).hexdigest()[:10]
-    metrics_path = metrics_dir / f'{config_path.stem}_{path_key}.json'
-    results_path = results_dir / f'{config_path.stem}_{path_key}.csv'
+    suffix = f'_{run_suffix}' if run_suffix else ''
+    metrics_path = metrics_dir / f'{config_path.stem}_{path_key}{suffix}.json'
+    results_path = results_dir / f'{config_path.stem}_{path_key}{suffix}.csv'
     command = [
         python_executable,
         str(runner_path),
@@ -29,8 +32,10 @@ def run_config_process(
         '--results-csv',
         str(results_path),
     ]
-    if save_artifacts:
-        command.append('--save-artifacts')
+    if not save_artifacts:
+        command.append('--no-save-artifacts')
+    if extra_args:
+        command.extend(extra_args)
     if device is not None:
         command.extend(['--device', device])
 
