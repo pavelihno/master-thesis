@@ -1,4 +1,5 @@
 import argparse
+import csv
 import json
 import random
 import sys
@@ -41,13 +42,9 @@ REGRESSION_METRIC_FACTORIES = {
 
 
 def get_metric_factories(task: str = 'next_activity') -> dict:
-    if task == 'next_activity':
+    if task in ('next_activity', 'outcome'):
         return CLASSIFICATION_METRIC_FACTORIES
-    elif task == 'outcome':
-        return CLASSIFICATION_METRIC_FACTORIES
-    elif task == 'remaining_time':
-        return REGRESSION_METRIC_FACTORIES
-    elif task == 'next_activity_time':
+    elif task in ('remaining_time', 'next_activity_time'):
         return REGRESSION_METRIC_FACTORIES
     else:
         raise ValueError(f'Unknown task: {task}')
@@ -70,92 +67,89 @@ def recompute_running_metrics(
     predictions_df: pd.DataFrame,
     metric_factories: dict = CLASSIFICATION_METRIC_FACTORIES,
     start_event_num: int = 0,
-) -> tuple[pd.DataFrame, dict[str, float]]:
-    """Recompute running metrics from a given event onwards."""
-    filtered_df = (
-        predictions_df[predictions_df['event_n'] >= start_event_num]
-        .sort_values('event_n')
-        .reset_index(drop=True)
-        .copy()
-    )
+) -> dict[str, float]:
+    # Filter only necessary columns and rows
+    filtered_df = predictions_df.loc[
+        predictions_df['event_n'] >= start_event_num, ['y_true', 'y_pred']
+    ].dropna()
 
     if filtered_df.empty:
-        return filtered_df, {}
+        return {}
 
     metrics_dict = {name: factory() for name, factory in metric_factories.items()}
 
-    y_trues = filtered_df['y_true'].values
-    y_preds = filtered_df['y_pred'].values
-    running_values = {name: [] for name in metrics_dict}
+    # Iterate over numpy arrays directly
+    for y_true, y_pred in zip(
+        filtered_df['y_true'].values, filtered_df['y_pred'].values, strict=True
+    ):
+        t_val = int(y_true) if isinstance(y_true, (int, np.integer)) else y_true
+        p_val = int(y_pred) if isinstance(y_pred, (int, np.integer)) else y_pred
 
-    for y_true, y_pred in zip(y_trues, y_preds, strict=True):
-        if pd.notna(y_true) and pd.notna(y_pred):
-            t_val = int(y_true) if isinstance(y_true, (int, np.integer)) else y_true
-            p_val = int(y_pred) if isinstance(y_pred, (int, np.integer)) else y_pred
+        for metric in metrics_dict.values():
+            metric.update(t_val, p_val)
 
-            for metric in metrics_dict.values():
-                metric.update(t_val, p_val)
-
-        for metric_name, metric in metrics_dict.items():
-            running_values[metric_name].append(metric.get())
-
-    for metric_name, values in running_values.items():
-        filtered_df[metric_name] = values
-
-    final_metrics = {name: metric.get() for name, metric in metrics_dict.items()}
-    return filtered_df, final_metrics
+    return {name: metric.get() for name, metric in metrics_dict.items()}
 
 
-def recompute_metrics(
+def recompute_metrics_and_cleanup(
     result_dict: dict,
     start_event: int,
     metric_factories: dict | None = None,
 ) -> dict[str, float]:
     metric_factories = metric_factories or CLASSIFICATION_METRIC_FACTORIES
+    results_csv_path = result_dict.get('results_csv_path')
+    metrics_json_path = result_dict.get('metrics_json_path')
 
-    results_csv_path = Path(result_dict.get('results_csv_path'))
+    final_metrics = {}
 
-    if not results_csv_path.exists():
-        raise FileNotFoundError(f'Results CSV file not found: {results_csv_path}')
+    if results_csv_path:
+        csv_path = Path(results_csv_path)
+        if csv_path.exists():
+            try:
+                df_preds = pd.read_csv(csv_path, low_memory=False)
+                required_columns = {'event_n', 'y_true', 'y_pred'}
+                if required_columns.issubset(df_preds.columns):
+                    final_metrics = recompute_running_metrics(
+                        df_preds,
+                        metric_factories=metric_factories,
+                        start_event_num=start_event,
+                    )
+                del df_preds
+            finally:
+                csv_path.unlink(missing_ok=True)
 
-    df_preds = pd.read_csv(results_csv_path, low_memory=False)
+    if metrics_json_path:
+        Path(metrics_json_path).unlink(missing_ok=True)
 
-    required_columns = {'event_n', 'y_true', 'y_pred'}
-    if not required_columns.issubset(df_preds.columns):
+    if not final_metrics:
         metrics = result_dict.get('metrics') or {}
         if isinstance(metrics, dict):
-            return {
+            final_metrics = {
                 key: value for key, value in metrics.items() if key in metric_factories
             }
-        return {}
 
-    _, final_metrics = recompute_running_metrics(
-        df_preds,
-        metric_factories=metric_factories,
-        start_event_num=start_event,
-    )
     return final_metrics
 
 
-def save_metrics_csv(
-    output_dir: Path,
-    config_path: Path,
-    rows: list[dict],
-) -> Path:
-    output_dir.mkdir(parents=True, exist_ok=True)
-    config_name = config_path.stem
-    metrics_path = output_dir / f'{config_name}.csv'
+def init_csv_file(metrics_path: Path, metric_names: list[str]) -> None:
     metrics_path.parent.mkdir(parents=True, exist_ok=True)
+    header = ['run_idx', 'seed', 'ok', 'returncode'] + metric_names
+    with metrics_path.open('w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
 
-    if not rows:
-        pd.DataFrame().to_csv(metrics_path, index=False)
-        return metrics_path
 
-    rows_df = pd.DataFrame(rows)
-    rows_df = rows_df.sort_values(['run_idx'], kind='stable')
+def append_row_to_csv(metrics_path: Path, row: dict, metric_names: list[str]) -> None:
+    row_values = [
+        row.get('run_idx'),
+        row.get('seed'),
+        row.get('ok'),
+        row.get('returncode'),
+    ] + [row.get(m, '') for m in metric_names]
 
-    rows_df.to_csv(metrics_path, index=False)
-    return metrics_path
+    with metrics_path.open('a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(row_values)
 
 
 def run_batch_with_seeds(
@@ -177,7 +171,6 @@ def run_batch_with_seeds(
     results_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp = get_timestamp()
-
     output_dir_name = build_output_folder_name(
         custom_name=experiment_name, timestamp=timestamp
     )
@@ -185,12 +178,17 @@ def run_batch_with_seeds(
     output_dir = Path(
         f'experiments/outputs/streaming/robustness_reports/{output_dir_name}'
     )
-
     output_dir.mkdir(parents=True, exist_ok=True)
 
     start_events = load_start_events(task)
-
     metric_factories = get_metric_factories(task)
+    metric_names = list(metric_factories.keys())
+
+    metrics_paths_by_config = {}
+    for config_path in config_files:
+        csv_path = output_dir / f'{config_path.stem}.csv'
+        init_csv_file(csv_path, metric_names)
+        metrics_paths_by_config[config_path] = csv_path
 
     rng = random.Random(base_seed)
     tasks = []
@@ -200,19 +198,16 @@ def run_batch_with_seeds(
             tasks.append((config_path, run_idx, seed))
 
     print(
-        'Found '
-        f'{len(config_files)} config(s). Total runs: {len(tasks)} '
+        f'Found {len(config_files)} config(s). Total runs: {len(tasks)} '
         f'({runs_per_config} runs/config).'
     )
 
-    results: list[dict] = []
-    rows_by_config: dict[Path, list[dict]] = {}
+    minimal_results = []
 
     def _execute_single_run(config_path: Path, run_idx: int, seed: int) -> dict:
         dataset_name, model_name = read_run_info(config_path)
         extra_args = ['--seed', str(seed)]
         run_suffix = f'seed{seed}_run{run_idx}'
-
         start_event = start_events.get(dataset_name, 0)
 
         res = run_config_process(
@@ -226,41 +221,40 @@ def run_batch_with_seeds(
             extra_args=extra_args,
             run_suffix=run_suffix,
         )
-        res['seed'] = seed
-        res['run_idx'] = run_idx
-        res['dataset_name'] = dataset_name or 'unknown'
-        res['model_name'] = model_name or 'unknown'
 
-        recomputed_metrics = recompute_metrics(
+        recomputed_metrics = recompute_metrics_and_cleanup(
             res,
             start_event=start_event,
             metric_factories=metric_factories,
         )
-        res['recomputed_metrics'] = recomputed_metrics
 
         row = {
             'run_idx': run_idx,
             'seed': seed,
             'ok': res['ok'],
             'returncode': res['returncode'],
+            **recomputed_metrics,
         }
-        row.update(recomputed_metrics)
-        res['metrics_row'] = row
-        return res
+
+        append_row_to_csv(metrics_paths_by_config[config_path], row, metric_names)
+
+        return {
+            'config_path': config_path,
+            'ok': res['ok'],
+            'returncode': res['returncode'],
+            'stderr_tail': res.get('stderr_tail', ''),
+        }
 
     if workers == 1:
         for config_path, run_idx, seed in tasks:
-            dataset_name, model_name = read_run_info(config_path)
             print(f'\n{"=" * 60}')
             print(
-                'Running '
-                f'[{run_idx + 1}/{runs_per_config}]: {config_path.name} '
+                f'Running [{run_idx + 1}/{runs_per_config}]: {config_path.name} '
                 f'| Seed: {seed}'
             )
             print('=' * 60)
-            res = _execute_single_run(config_path, run_idx, seed)
-            results.append(res)
-            rows_by_config.setdefault(config_path, []).append(res['metrics_row'])
+            res_summary = _execute_single_run(config_path, run_idx, seed)
+            minimal_results.append(res_summary)
     else:
         print(f'Launching up to {workers} workers in parallel.\n')
         with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -269,23 +263,17 @@ def run_batch_with_seeds(
                 for cfg, r_idx, s in tasks
             }
             for future in as_completed(futures):
-                res = future.result()
+                res_summary = future.result()
                 cfg, r_idx, s = futures[future]
-                status = 'OK' if res['ok'] else 'FAILED'
+                status = 'OK' if res_summary['ok'] else 'FAILED'
                 print(f'[{status}] {cfg.name} | Run {r_idx + 1}/{runs_per_config}')
-                results.append(res)
-                rows_by_config.setdefault(cfg, []).append(res['metrics_row'])
+                minimal_results.append(res_summary)
 
     print()
-    metrics_paths_by_config = {}
-    for config_path, rows in rows_by_config.items():
-        metrics_path = save_metrics_csv(output_dir, config_path, rows)
-        metrics_paths_by_config[config_path] = metrics_path
-        print(f'Metrics CSV -> {metrics_path}')
 
     summary_path = output_dir / 'summary.txt'
     total_runs = len(tasks)
-    success_count = sum(1 for r in results if r.get('ok'))
+    success_count = sum(1 for r in minimal_results if r.get('ok'))
     with summary_path.open('w', encoding='utf-8') as fh:
         fh.write(f'Experiment: {experiment_name}\n')
         fh.write(f'Timestamp: {timestamp}\n')
@@ -302,17 +290,13 @@ def run_batch_with_seeds(
             fh.write(f'- {cfg.stem}: {path}\n')
 
     print(f'Summary -> {summary_path}')
-
-    return results
+    return minimal_results
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=(
-            'Run multi-seed streaming experiments and save raw metric CSV tables.'
-        )
+        description='Run multi-seed streaming experiments.'
     )
-
     parser.add_argument('--model', type=str, default=None)
     parser.add_argument('--dataset', type=str, default=None)
     parser.add_argument('--base-path', type=str, default='conf/experiments/streaming')
@@ -323,12 +307,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--base-seed', type=int, default=42)
     parser.add_argument(
         '--task', type=str, default='next_activity', help='Prediction task.'
-    )
-    parser.add_argument(
-        '--start-event',
-        type=int,
-        default=None,
-        help='Optional global start event override.',
     )
     parser.add_argument(
         '--experiment-name',
