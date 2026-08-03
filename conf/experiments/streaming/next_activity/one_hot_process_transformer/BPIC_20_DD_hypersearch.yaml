@@ -1,0 +1,73 @@
+hyperparam_search: true
+task:
+  type: next_activity
+  mode: predict_and_learn
+  max_events: 5644
+dataset:
+  dataset_name: BPIC_20_DD
+  source: log
+  dataset_path: datasets/raw/BPIC_20_DD.xes
+  terminator:
+    type: oracle
+transformer:
+  type: darwin
+model:
+  type: darwin_classifier
+  params:
+    sequence_window: 128
+    sequence_model:
+      type: process_transformer
+      head_dim:
+        search: choice
+        options:
+        - 16
+        - 32
+        - 64
+      num_heads:
+        search: choice
+        options:
+        - 4
+        - 8
+      num_layers:
+        search: choice
+        options:
+        - 1
+        - 2
+      dropout:
+        search: float
+        low: 0.0
+        high: 0.5
+      pooling_type:
+        search: choice
+        options:
+        - max
+        - last
+      pooling_dropout: 0.1
+    batch_size:
+      search: choice
+      options:
+      - 32
+      - 64
+    epochs: 30
+    init_size: 3572
+    optimizer:
+      type: nadam
+      lr:
+        search: float
+        low: -3
+        high: -1
+        exp: true
+        base: 10
+    loss_fn:
+      type: cross_entropy
+    drift_detector:
+      type: adwin
+    encoding: one_hot
+    n_classes: 17
+search:
+  metric: macro_f1
+  maximize: true
+  max_trials: 75
+  seed: 123
+output:
+  folder: experiments/outputs/streaming/BPIC_20_DD
