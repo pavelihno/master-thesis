@@ -46,8 +46,8 @@ class DARWINBase(ABC):
     ):
         if seed is not None:
             torch.manual_seed(seed)
-        if torch.cuda.is_available():
-            torch.cuda.manual_seed_all(seed)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(seed)
 
         self.allowed_events = (
             set(allowed_events) if allowed_events is not None else None
