@@ -25,6 +25,7 @@ export PM4PY_SHOW_PROGRESS_BAR=False
 export PM4PY_SHOW_INTERNAL_WARNINGS=False
 
 # -- Configurable Parameters --
+CONFIGS="${CONFIGS:-all}"
 RUNS="${RUNS:-10}"
 BASE_SEED="${BASE_SEED:-42}"
 TASK="${TASK:-next_activity}"
@@ -34,6 +35,7 @@ WORKERS="${WORKERS:--1}"
 # -- Run Script --
 python -u experiments/streaming/run_robustness_experiments.py \
   --base-path="$BASE_PATH" \
+  --configs="$CONFIGS" \
   --workers="$WORKERS" \
   --runs="$RUNS" \
   --base-seed="$BASE_SEED" \

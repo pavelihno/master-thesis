@@ -5,6 +5,7 @@ from utils.experiment.core import load_config
 
 def find_config_files(
     base_dir: str,
+    configs: list[str] | None = None,
     model_name: str | None = None,
     dataset_name: str | None = None,
     exclude_hyperparam_search: bool = False,
@@ -39,6 +40,15 @@ def find_config_files(
                 continue
             filtered_files.append(file_path)
 
+        config_files = filtered_files
+
+    if configs:
+        config_names = [name.lower() for name in configs]
+        filtered_files = []
+        for file_path in config_files:
+            config_name = Path(file_path).stem.lower()
+            if config_name in config_names:
+                filtered_files.append(file_path)
         config_files = filtered_files
 
     if exclude_hyperparam_search:

@@ -300,6 +300,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--model', type=str, default=None)
     parser.add_argument('--dataset', type=str, default=None)
     parser.add_argument('--base-path', type=str, default='conf/experiments/streaming')
+    parser.add_argument(
+        '--configs',
+        type=str,
+        default='all',
+        help='Comma-separated list of config names or "all".',
+    )
     parser.add_argument('--workers', type=int, default=1)
     parser.add_argument(
         '--runs', type=int, default=5, help='Number of random seeds per config.'
@@ -322,9 +328,11 @@ def main() -> None:
     args = parse_args()
     device = select_device(args.device)
     base_path = Path(args.base_path)
+    configs = args.configs.split(',') if args.configs != 'all' else None
 
     config_files = find_config_files(
         base_path,
+        configs=configs,
         model_name=args.model,
         dataset_name=args.dataset,
         exclude_hyperparam_search=True,
