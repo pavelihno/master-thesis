@@ -62,12 +62,22 @@ model:
       type: cross_entropy
     drift_detector:
       type: adwin
-    encoding: one_hot
+    encoding: word2vec
+    w2v_window: 5
+    dynamic_n_classes: true
+    embedding_dim:
+      search: choice
+      options:
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
     n_classes: 24
 search:
   metric: macro_f1
   maximize: true
   max_trials: 50
-  seed: 123
+  seed: 12345
 output:
   folder: experiments/outputs/streaming/BPIC_12
