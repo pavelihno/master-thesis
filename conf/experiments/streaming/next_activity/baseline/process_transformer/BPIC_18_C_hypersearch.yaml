@@ -77,7 +77,7 @@ model:
 search:
   metric: macro_f1
   maximize: true
-  max_trials: 75
+  max_trials: 50
   seed: 12345
 output:
   folder: experiments/outputs/streaming/BPIC_18_C
