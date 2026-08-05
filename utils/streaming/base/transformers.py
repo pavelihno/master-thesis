@@ -107,6 +107,9 @@ class IndexBasedTransformer(StreamingTransformer):
     ):
         super().__init__(include_prefix_len)
 
+        if max_events is None or max_events <= 0:
+            raise ValueError('max_events must be a positive integer.')
+
         self._max_events = max_events
         self._include_trace_attrs = include_trace_attrs
         self._include_event_attrs = include_event_attrs

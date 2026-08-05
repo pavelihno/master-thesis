@@ -11,21 +11,20 @@ transformer:
   params:
     include_prefix_len: false
     include_trace_attrs: false
-    last_events: 7
+    last_events: 3
   type: freq
 model:
   params:
-    delta: 0.009788910834776825
+    delta: 0.0018654594107406078
     drift_detector:
       type: adwin
-    grace_period: 53
+    grace_period: 107
     leaf_prediction: nba
-    max_depth: 40
-    nb_threshold: 25
-    seed: 42
-    split_criterion: info_gain
-    switch_significance: 0.0976942773139947
-    tau: 0.12558278923118138
+    max_depth: 20
+    nb_threshold: 7
+    split_criterion: gini
+    switch_significance: 0.08340852495054088
+    tau: 0.13241284835845274
   type: aht
 output:
   folder: experiments/outputs/streaming/next_activity/aht/control_flow_last

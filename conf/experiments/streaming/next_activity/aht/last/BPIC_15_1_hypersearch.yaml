@@ -16,7 +16,7 @@ transformer:
     include_prefix_len: false
     include_trace_attrs: false
     include_event_attrs: false
-    last_events:
+    max_events:
       search: choice
       options:
       - 2
@@ -24,6 +24,7 @@ transformer:
       - 6
       - 8
       - 10
+      - 20
 model:
   type: aht
   params:
@@ -69,11 +70,10 @@ model:
       - 20
       - 30
       - 40
-    seed: 42
 search:
   metric: macro_f1
-  max_trials: 100
+  max_trials: 25
   maximize: true
-  seed: 123
+  seed: 4321
 output:
   folder: experiments/outputs/streaming/next_activity/aht/last

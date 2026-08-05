@@ -15,17 +15,16 @@ transformer:
   type: freq
 model:
   params:
-    delta: 7.104060639331029e-06
+    delta: 4.8027536773291625e-06
     drift_detector:
       type: adwin
-    grace_period: 241
+    grace_period: 238
     leaf_prediction: nb
     max_depth: 20
-    nb_threshold: 9
-    seed: 42
-    split_criterion: info_gain
-    switch_significance: 0.09219075784205873
-    tau: 0.16608417213413107
+    nb_threshold: 30
+    split_criterion: gini
+    switch_significance: 0.125800379542155
+    tau: 0.077944072209408
   type: aht
 output:
   folder: experiments/outputs/streaming/next_activity/aht/control_flow_last_attr

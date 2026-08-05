@@ -52,11 +52,13 @@ def create_transformer(config: dict, unique_events: set[str] | None = None):
     """Create a streaming transformer from a config dict."""
     config = dict(config)
     transformer_type = config.pop('type', None)
-    max_events = config.pop('max_events', None)
-    include_prefix_len = config.pop('include_prefix_len', True)
-    include_trace_attrs = config.pop('include_trace_attrs', False)
-    include_event_attrs = config.pop('include_event_attrs', False)
-    last_events = config.pop('last_events', 0)
+
+    params = dict(config.pop('params', {}))
+    max_events = params.pop('max_events', None)
+    last_events = params.pop('last_events', 0)
+    include_prefix_len = params.pop('include_prefix_len', False)
+    include_trace_attrs = params.pop('include_trace_attrs', False)
+    include_event_attrs = params.pop('include_event_attrs', False)
 
     if transformer_type == 'cf':
         return ControlFlowTransformer(include_prefix_len=include_prefix_len)
