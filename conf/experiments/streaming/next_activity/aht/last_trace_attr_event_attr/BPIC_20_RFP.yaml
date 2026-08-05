@@ -1,0 +1,31 @@
+task:
+  type: next_activity
+  mode: predict_and_learn
+dataset:
+  dataset_name: BPIC_20_RFP
+  source: log
+  dataset_path: datasets/raw/BPIC_20_RFP.xes
+  terminator:
+    type: oracle
+transformer:
+  params:
+    include_event_attrs: true
+    include_prefix_len: false
+    include_trace_attrs: true
+    max_events: 4
+  type: index
+model:
+  params:
+    delta: 0.0002789880551189894
+    drift_detector:
+      type: adwin
+    grace_period: 222
+    leaf_prediction: nba
+    max_depth: 40
+    nb_threshold: 24
+    split_criterion: gini
+    switch_significance: 0.010027884308686933
+    tau: 0.17352619407804376
+  type: aht
+output:
+  folder: experiments/outputs/streaming/next_activity/aht/last_trace_attr_event_attr

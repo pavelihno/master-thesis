@@ -38,4 +38,4 @@ python -u experiments/streaming/run_robustness_experiments.py \
   --base-seed="$BASE_SEED" \
   --task="$TASK" \
   --experiment-name="$EXPERIMENT_NAME" \
-  --device="cpu"
+  --device=cpu
