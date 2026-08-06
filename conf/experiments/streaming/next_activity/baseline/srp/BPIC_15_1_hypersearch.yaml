@@ -12,10 +12,11 @@ dataset:
     type: oracle
 transformer:
   params:
+    include_event_attrs: false
     include_prefix_len: false
     include_trace_attrs: false
-    last_events: 3
-  type: freq
+    max_events: 8
+  type: index
 model:
   type: srp
   params:
