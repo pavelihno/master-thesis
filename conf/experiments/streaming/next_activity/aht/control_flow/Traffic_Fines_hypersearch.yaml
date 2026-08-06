@@ -63,8 +63,8 @@ model:
     seed: 42
 search:
   metric: macro_f1
-  max_trials: 50
+  max_trials: 100
   maximize: true
-  seed: 123
+  seed: 43221
 output:
   folder: experiments/outputs/streaming/next_activity/aht/control_flow
