@@ -56,7 +56,7 @@ model:
         base: 10
 search:
   metric: macro_f1
-  max_trials: 20
+  max_trials: 15
   maximize: true
   seed: 54321
 output:
