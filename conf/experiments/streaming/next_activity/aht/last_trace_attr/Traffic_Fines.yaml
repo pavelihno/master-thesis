@@ -16,16 +16,16 @@ transformer:
   type: index
 model:
   params:
-    delta: 0.00023112732825351896
+    delta: 0.0051214797712572585
     drift_detector:
       type: adwin
-    grace_period: 82
+    grace_period: 137
     leaf_prediction: mc
-    max_depth: 20
-    nb_threshold: 24
-    split_criterion: info_gain
-    switch_significance: 0.07533330598997862
-    tau: 0.08380760595669612
+    max_depth: 10
+    nb_threshold: 5
+    split_criterion: gini
+    switch_significance: 0.1406222174961332
+    tau: 0.19024006278018163
   type: aht
 output:
   folder: experiments/outputs/streaming/next_activity/aht/last_trace_attr

@@ -1,0 +1,31 @@
+{
+    "next_activity": {
+        "aht": {
+            "control_flow": "aht_control_flow",
+            "control_flow_last": "aht_control_flow_last",
+            "control_flow_last_count": "aht_control_flow_last_count",
+            "control_flow_last_attr": "aht_control_flow_last_attr",
+            "last": "aht_last",
+            "last_trace_attr": "aht_last_trace_attr",
+            "last_event_attr": "aht_last_event_attr",
+            "last_trace_attr_event_attr": "aht_last_trace_attr_event_attr"
+        },
+        "baseline": {
+            "darwin": "",
+            "darwin_transformer": "",
+            "aht": "",
+            "arf": "",
+            "srp": ""
+        },
+        "one_hot": {
+            "darwin": "one_hot",
+            "darwin_transformer": "one_hot_process_transformer"
+        },
+        "no_drift": {
+            "darwin": "no_drift_2026-08-01_10-51-39"
+        },
+        "control_flow_drift": {
+            "darwin": ""
+        }
+    }
+}
