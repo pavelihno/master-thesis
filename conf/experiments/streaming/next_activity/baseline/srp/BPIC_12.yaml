@@ -8,23 +8,24 @@ dataset:
   terminator:
     type: oracle
 transformer:
-  include_prefix_len: false
-  max_events: 4
-  type: index
+  params:
+    include_prefix_len: false
+    include_trace_attrs: false
+    last_events: 3
+  type: freq
 model:
   params:
     disable_detector: 'off'
     disable_weighted_vote: false
     drift_detector:
-      delta: 1.0791801179344957e-05
+      delta: 1.2124843560020962e-05
       type: adwin
-    lam: 6
+    lam: 8
     n_models: 50
-    seed: 42
     subspace_size: 0.8
     training_method: patches
     warning_detector:
-      delta: 0.00014183260190931646
+      delta: 0.0005056462560585958
       type: adwin
   type: srp
 output:

@@ -8,28 +8,29 @@ dataset:
   terminator:
     type: oracle
 transformer:
-  include_prefix_len: false
-  max_events: 8
-  type: index
+  params:
+    include_prefix_len: false
+    include_trace_attrs: false
+    last_events: 0
+  type: freq
 model:
   params:
-    delta: 0.0028752340730075314
+    delta: 0.0005663607324352675
     disable_weighted_vote: false
     drift_detector:
-      delta: 1.4202224936905427e-05
+      delta: 0.0001251220846884537
       type: adwin
-    grace_period: 73
-    lambda_value: 8
+    grace_period: 117
+    lambda_value: 10
     leaf_prediction: nba
-    max_depth: 30
-    max_features: 0.5
+    max_depth: 40
+    max_features: log2
     n_models: 50
-    nb_threshold: 25
-    seed: 42
+    nb_threshold: 23
     split_criterion: info_gain
-    tau: 0.1083074375436725
+    tau: 0.11647089390127877
     warning_detector:
-      delta: 0.006688524518395085
+      delta: 0.008637288831276254
       type: adwin
   type: arf
 output:
