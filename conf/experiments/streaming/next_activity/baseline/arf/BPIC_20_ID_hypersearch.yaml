@@ -2,6 +2,7 @@ hyperparam_search: true
 task:
   type: next_activity
   mode: predict_and_learn
+  max_events: 7216
 dataset:
   dataset_name: BPIC_20_ID
   source: log
@@ -9,14 +10,11 @@ dataset:
   terminator:
     type: oracle
 transformer:
-  type: index
-  max_events:
-    search: choice
-    options:
-    - 4
-    - 6
-    - 8
-  include_prefix_len: false
+  params:
+    include_prefix_len: false
+    include_trace_attrs: false
+    last_events: 2
+  type: freq
 model:
   type: arf
   params:
@@ -86,11 +84,10 @@ model:
         high: -2
         exp: true
         base: 10
-    seed: 42
 search:
   metric: macro_f1
   max_trials: 15
   maximize: true
-  seed: 123
+  seed: 54321
 output:
   folder: experiments/outputs/streaming/BPIC_20_ID

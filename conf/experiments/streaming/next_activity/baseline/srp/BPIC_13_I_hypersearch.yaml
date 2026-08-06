@@ -2,6 +2,7 @@ hyperparam_search: true
 task:
   type: next_activity
   mode: predict_and_learn
+  max_events: 6554
 dataset:
   dataset_name: BPIC_13_I
   source: log
@@ -9,13 +10,12 @@ dataset:
   terminator:
     type: oracle
 transformer:
+  params:
+    include_event_attrs: false
+    include_prefix_len: false
+    include_trace_attrs: false
+    max_events: 6
   type: index
-  max_events:
-    search: choice
-    options:
-    - 8
-    - 10
-  include_prefix_len: false
 model:
   type: srp
   params:
@@ -53,11 +53,10 @@ model:
         high: -3
         exp: true
         base: 10
-    seed: 42
 search:
   metric: macro_f1
-  max_trials: 7
+  max_trials: 20
   maximize: true
-  seed: 123
+  seed: 54321
 output:
   folder: experiments/outputs/streaming/BPIC_13_I

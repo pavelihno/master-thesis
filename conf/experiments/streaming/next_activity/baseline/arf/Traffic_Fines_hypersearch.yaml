@@ -2,7 +2,7 @@ hyperparam_search: true
 task:
   type: next_activity
   mode: predict_and_learn
-  max_events: 30367
+  max_events: 56147
 dataset:
   dataset_name: Traffic_Fines
   source: log
@@ -10,19 +10,12 @@ dataset:
   terminator:
     type: oracle
 transformer:
-  type:
-    search: choice
-    options:
-    - index
-    - dim
-  max_events:
-    search: choice
-    options:
-    - 4
-    - 6
-    - 8
-    - 10
-  include_prefix_len: false
+  params:
+    include_event_attrs: false
+    include_prefix_len: false
+    include_trace_attrs: false
+    max_events: 6
+  type: index
 model:
   type: arf
   params:
@@ -84,11 +77,10 @@ model:
         high: -2
         exp: true
         base: 10
-    seed: 42
 search:
   metric: macro_f1
-  max_trials: 50
+  max_trials: 25
   maximize: true
-  seed: 123
+  seed: 54321
 output:
   folder: experiments/outputs/streaming/Traffic_Fines

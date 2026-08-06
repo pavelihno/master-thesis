@@ -2,6 +2,7 @@ hyperparam_search: true
 task:
   type: next_activity
   mode: predict_and_learn
+  max_events: 1522
 dataset:
   dataset_name: Sepsis
   source: log
@@ -9,13 +10,12 @@ dataset:
   terminator:
     type: oracle
 transformer:
+  params:
+    include_event_attrs: false
+    include_prefix_len: false
+    include_trace_attrs: false
+    max_events: 4
   type: index
-  max_events:
-    search: choice
-    options:
-    - 8
-    - 10
-  include_prefix_len: false
 model:
   type: arf
   params:
@@ -77,11 +77,10 @@ model:
         high: -2
         exp: true
         base: 10
-    seed: 42
 search:
   metric: macro_f1
-  max_trials: 40
+  max_trials: 25
   maximize: true
-  seed: 123
+  seed: 54321
 output:
   folder: experiments/outputs/streaming/Sepsis
