@@ -8,19 +8,21 @@ dataset:
   terminator:
     type: oracle
 transformer:
-  include_prefix_len: false
-  max_events: 6
+  params:
+    include_event_attrs: false
+    include_prefix_len: false
+    include_trace_attrs: false
+    max_events: 6
   type: index
 model:
   params:
     delta: 0.0051214797712572585
     drift_detector:
-      type: none
+      type: adwin
     grace_period: 137
     leaf_prediction: mc
     max_depth: 10
     nb_threshold: 5
-    seed: 42
     split_criterion: gini
     switch_significance: 0.1406222174961332
     tau: 0.19024006278018163

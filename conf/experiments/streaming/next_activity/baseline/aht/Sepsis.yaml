@@ -8,22 +8,24 @@ dataset:
   terminator:
     type: oracle
 transformer:
-  include_prefix_len: false
-  max_events: 4
+  params:
+    include_event_attrs: false
+    include_prefix_len: false
+    include_trace_attrs: false
+    max_events: 4
   type: index
 model:
   params:
-    delta: 0.000257218100587125
+    delta: 0.00963294032038653
     drift_detector:
-      type: none
-    grace_period: 77
+      type: adwin
+    grace_period: 88
     leaf_prediction: mc
-    max_depth: 40
+    max_depth: 20
     nb_threshold: 30
-    seed: 42
     split_criterion: gini
-    switch_significance: 0.047200941008389286
-    tau: 0.15316158800154267
+    switch_significance: 0.09874608189590868
+    tau: 0.19453839134795328
   type: aht
 output:
   folder: experiments/outputs/streaming/next_activity/baseline
