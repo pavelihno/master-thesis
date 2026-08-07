@@ -26,10 +26,10 @@ model:
       type: nadam
     sequence_model:
       dropout: 0.3804765093542517
-      hidden_dim: 80
-      num_layers: 3
+      hidden_dim: 42
+      num_layers: 2
       type: lstm
-    sequence_window: 6
+    sequence_window: 7
     w2v_window: 5
   type: darwin_classifier
 output:
