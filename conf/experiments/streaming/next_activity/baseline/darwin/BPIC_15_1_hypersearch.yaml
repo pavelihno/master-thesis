@@ -26,9 +26,10 @@ model:
     embedding_dim:
       search: choice
       options:
-      - 64
-      - 128
-      - 256
+      - 4
+      - 8
+      - 16
+      - 32
     sequence_model:
       type: lstm
       hidden_dim:
@@ -51,8 +52,6 @@ model:
       - 32
       - 64
     epochs: 30
-    dynamic_n_classes: true
-    max_n_classes: 290
     init_size: 4006
     optimizer:
       type: nadam
@@ -66,10 +65,12 @@ model:
       type: cross_entropy
     drift_detector:
       type: adwin
+    n_classes: 289
+    encoding: word2vec
 search:
   metric: macro_f1
   maximize: true
-  max_trials: 100
-  seed: 123
+  max_trials: 20
+  seed: 4324235
 output:
   folder: experiments/outputs/streaming/BPIC_15_1
