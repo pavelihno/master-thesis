@@ -11,23 +11,23 @@ transformer:
   type: darwin
 model:
   params:
-    batch_size: 64
+    batch_size: 32
     drift_detector:
       type: adwin
-    dynamic_n_classes: true
-    embedding_dim: 256
+    embedding_dim: 16
+    encoding: word2vec
     epochs: 30
     init_size: 8659
     loss_fn:
       type: cross_entropy
-    max_n_classes: 55
+    n_classes: 51
     optimizer:
-      lr: 0.011548600803070894
+      lr: 0.0023678540882449252
       type: nadam
     sequence_model:
-      dropout: 0.06286364852405335
-      hidden_dim: 52
-      num_layers: 2
+      dropout: 0.3804765093542517
+      hidden_dim: 43
+      num_layers: 3
       type: lstm
     sequence_window: 6
     w2v_window: 5

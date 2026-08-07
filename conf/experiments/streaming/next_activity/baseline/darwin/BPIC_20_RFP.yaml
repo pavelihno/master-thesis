@@ -14,22 +14,22 @@ model:
     batch_size: 64
     drift_detector:
       type: adwin
-    dynamic_n_classes: true
-    embedding_dim: 128
+    embedding_dim: 16
+    encoding: word2vec
     epochs: 30
     init_size: 3680
     loss_fn:
       type: cross_entropy
-    max_n_classes: 30
+    n_classes: 19
     optimizer:
-      lr: 0.02066315915304916
+      lr: 0.0026245921873039504
       type: nadam
     sequence_model:
-      dropout: 0.2893999937062631
-      hidden_dim: 11
+      dropout: 0.4213960800946638
+      hidden_dim: 65
       num_layers: 2
       type: lstm
-    sequence_window: 3
+    sequence_window: 7
     w2v_window: 5
   type: darwin_classifier
 output:
