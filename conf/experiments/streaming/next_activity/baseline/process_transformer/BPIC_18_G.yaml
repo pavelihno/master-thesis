@@ -14,20 +14,20 @@ model:
     batch_size: 32
     drift_detector:
       type: adwin
-    embedding_dim: 8
+    embedding_dim: 4
     encoding: word2vec
-    epochs: 100
+    epochs: 30
     init_size: 43601
     loss_fn:
       type: cross_entropy
     n_classes: 16
     optimizer:
-      lr: 0.0023573519705423884
+      lr: 0.0013316849652496916
       type: nadam
     sequence_model:
-      dropout: 0.15833042707050204
-      head_dim: 32
-      num_heads: 8
+      dropout: 0.13789674063188717
+      head_dim: 16
+      num_heads: 4
       num_layers: 2
       pooling_dropout: 0.1
       pooling_type: last
